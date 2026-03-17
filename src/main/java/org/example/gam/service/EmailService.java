@@ -37,8 +37,13 @@ public class EmailService {
 
         if(saveCode != null && saveCode.equals(inputCode)){
             redisTemplate.delete(email);
+            redisTemplate.opsForValue().set("AuthSuccess:" + email, "true", Duration.ofMinutes(30));
             return true;
         }
         return false;
+    }
+
+    public boolean isVerified(String email){
+        return Boolean.TRUE.toString().equals(redisTemplate.opsForValue().get("AuthSuccess:" + email));
     }
 }

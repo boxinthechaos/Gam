@@ -10,6 +10,7 @@ import org.example.gam.entitiy.RefreshToken;
 import org.example.gam.entitiy.Role;
 import org.example.gam.entitiy.User;
 import org.example.gam.token.TokenProvider;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,13 +18,18 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+    private final EmailService emailService;
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
+    private final StringRedisTemplate redisTemplate;
 
     @Transactional
     public void join(JoinRequest request){
+        if(!emailService.isVerified(request.getEmail())){
+            throw new IllegalArgumentException("이메일 인증을 먼저 진행해주세요");
+        }
         if(userRepository.existsByEmail(request.getEmail())){
             throw new IllegalArgumentException("이미 사용 중인 이메일 입니다");
         }
@@ -40,6 +46,7 @@ public class AuthService {
                 .build();
 
         userRepository.save(user);
+        redisTemplate.delete("AuthSuccess:" + request.getEmail());
     }
 
     @Transactional
