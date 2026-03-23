@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+@keyframes appear{
+  from{
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to{
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@theme{
+  --animate-appear: appear 0.5s ease-out forwards;
+  --animate-appear2: appear 0.5s ease-out 0.1s forwards;
+  --animate-appear3: appear 0.5s ease-out 0.2s forwards;
+  --animate-appear4: appear 0.5s ease-out 0.3s forwards;
+  --animate-appear5: appear 0.5s ease-out 0.3s forwards;
+}
+
+.auth-text{
+  @apply text-base font-bold 
+
+  md:text-2xl 
+  lg:text-3xl;
+}
+
+.auth-input{
+  @apply block w-full h-8 mb-3 pl-2 border border-[#dddddd] rounded-md placeholder-[#dddddd] text-xs placeholder:text-xs
+
+  md:h-10 md:pl-3 md:text-base md:placeholder:text-base
+  lg:h-12 lg:pl-5; 
+}
+
+.auth-btn{
+  @apply w-full h-10 mt-2 rounded-md text-base font-extrabold
+
+  md:h-12 md:text-lg 
+  lg:h-15 lg:text-xl;
+}
+
+.orange-btn{
+  @apply bg-[#ff8c00] text-white;
+}
+
+.gray-btn{
+  @apply bg-[#dddddd] text-black;
+}
