@@ -2,6 +2,7 @@ package org.example.gam.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.gam.token.TokenProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -27,5 +29,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private String resolveToken(HttpServletRequest request){
+        String bearerToken = request.getHeader("Authorization");
+        if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")){
+            return bearerToken.substring(7);
+        }
+
+        Cookie[] cookies = request.getCookies();
+        if(cookies != null){
+            for (Cookie cookie : cookies){
+                if("accessToken".equals(cookie.getName())){
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
     }
 }

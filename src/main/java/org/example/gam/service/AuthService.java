@@ -50,11 +50,11 @@ public class AuthService {
     }
 
     @Transactional
-    public TokenResponse login(LoginRequest request){
+    public TokenResponse login(LoginRequest request) {
         User user = userRepository.findByNickname(request.getNickname())
                 .orElseThrow(() -> new IllegalArgumentException("가입하지 않은 유저 입니다"));
 
-        if(!passwordEncoder.matches(request.getPassword(), user.getPassword())){
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치 하지 않습니다");
         }
 
@@ -71,5 +71,10 @@ public class AuthService {
         refreshTokenRepository.save(saveRefreshToken);
 
         return new TokenResponse(accessToken, refreshToken);
+    }
+
+    @Transactional
+    public void logout(String email){
+        refreshTokenRepository.deleteByEmail(email);
     }
 }

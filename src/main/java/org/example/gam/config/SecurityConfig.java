@@ -37,8 +37,19 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/**", "/api/v1/travel/**").permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers("/api/v1/auth/**").permitAll()
+                        .requestMatchers("/api/v1/travel/**", "/api/v1/music/**").hasAnyAuthority("USER", "ADMIN")
+                        .anyRequest().denyAll()
+                )
+
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(((request, response, authException) -> {
+                            response.sendRedirect("/api/v1/auth/login");
+                        }))
+
+                        .accessDeniedHandler(((request, response, accessDeniedException) -> {
+                            response.sendRedirect("/api/v1/auth/login");
+                        }))
                 )
 
                 .addFilterBefore(new JwtAuthenticationFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);

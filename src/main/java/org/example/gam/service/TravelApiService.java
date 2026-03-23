@@ -61,6 +61,8 @@ public class TravelApiService {
                 cleanTitle = HtmlUtils.htmlUnescape(cleanTitle);
                 item.setTitle(cleanTitle);
                 String encodedTitle = URLEncoder.encode(cleanTitle, StandardCharsets.UTF_8);
+                String naverMapUrl = "https://map.naver.com/p/search/" + encodedTitle;
+                item.setLink(naverMapUrl);
 
                 String customBookingUrl = "https://www.yanolja.com/search/" + encodedTitle;
                 item.setBookingUrl(customBookingUrl);

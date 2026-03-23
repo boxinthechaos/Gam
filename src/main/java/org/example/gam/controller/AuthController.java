@@ -1,13 +1,18 @@
 package org.example.gam.controller;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.gam.dto.*;
 import org.example.gam.service.AuthService;
 import org.example.gam.service.EmailService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+@Controller
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
@@ -21,8 +26,15 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest loginRequest){
+    public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response){
         TokenResponse tokenResponse = authService.login(loginRequest);
+
+        Cookie cookie = new Cookie("accessToken", tokenResponse.getAccessToken());
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(60 * 60 * 24);
+
+        response.addCookie(cookie);
         return ResponseEntity.ok(tokenResponse);
     }
 
@@ -41,5 +53,35 @@ public class AuthController {
         } else {
             return ResponseEntity.badRequest().body("인증 번호가 틀렸거나 만료되었습니다.");
         }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletResponse response){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if(authentication != null && authentication.isAuthenticated()){
+            String email = authentication.getName();
+            authService.logout(email);
+        }
+
+        Cookie cookie = new Cookie("accessToken", null);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+
+        SecurityContextHolder.clearContext();
+
+        return ResponseEntity.ok("로그아웃 성공");
+    }
+
+    @GetMapping("/login")
+    public String loginP(){
+        return "login";
+    }
+
+    @GetMapping("/join")
+    public String joinP(){
+        return "join";
     }
 }

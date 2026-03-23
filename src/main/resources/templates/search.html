@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=dfc1c04eed67aaead9f9fa5f91d92c64&libraries=services"></script>
+  <meta charset="UTF-8">
+  <title>AI & 지역 정보 여행 플래너</title>
+  <style>
+    /* 기본 스타일 세팅 */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #e9ecef;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    /* 메인 컨테이너 (flex로 두 칼럼 배치) */
+    #travel-finder-app {
+      background-color: white;
+      width: 90%;
+      max-width: 1200px;
+      height: 85vh;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* 왼쪽: 컨트롤 & 결과 칼럼 (와이어프레임 좌측) */
+    #control-panel {
+      width: 35%;
+      height: 100%;
+      border-right: 1px solid #dee2e6;
+      display: flex;
+      flex-direction: column;
+      padding: 25px;
+      box-sizing: border-box;
+    }
+
+    /* 오른쪽: 지도 칼럼 (와이어프레임 우측) */
+    #map-panel {
+      width: 65%;
+      height: 100%;
+      background-color: #f8f9fa;
+      position: relative;
+    }
+
+    /* 와이어프레임 [식당, 숙소, 관광지] 탭 버튼 */
+    .category-tabs {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 25px;
+    }
+    .category-btn {
+      width: 31%;
+      padding: 12px;
+      background-color: #f1f3f5;
+      border: 1px solid #ced4da;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #495057;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .category-btn:hover { background-color: #e2e6ea; }
+    .category-btn.active {
+      background-color: #212529; /* 블랙으로 시크하게 */
+      color: white;
+      border-color: #212529;
+    }
+
+    /* 와이어프레임 [위치] 입력 박스 */
+    #location-section {
+      margin-bottom: 25px;
+    }
+    #location-section label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #343a40;
+    }
+    #location-input {
+      width: 100%;
+      padding: 15px;
+      border: 1px solid #ced4da;
+      border-radius: 10px;
+      font-size: 16px;
+      box-sizing: border-box;
+      background-color: #f8f9fa;
+    }
+
+    /* 와이어프레임 [검색] 버튼 */
+    #search-btn {
+      width: 100%;
+      padding: 15px;
+      background-color: #007bff; /* 파란색으로 포인트 */
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 25px;
+    }
+    #search-btn:hover { background-color: #0069d9; }
+
+    /* 결과 목록 영역 */
+    #results-container {
+      flex-grow: 1; /* 남은 공간 다 차지 */
+      overflow-y: auto; /* 결과 많으면 스크롤 */
+      border-top: 1px solid #dee2e6;
+      padding-top: 20px;
+    }
+    #results-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #343a40;
+      margin-bottom: 15px;
+    }
+
+    /* ✨ 와이어프레임 핵심: 호텔에서만 나오는 [URL] 라운드 버튼 스타일 ✨ */
+    .hotel-result-item {
+      display: block;
+      width: 100%;
+      padding: 18px;
+      margin-bottom: 12px;
+      background-color: #f1f3f5;
+      border: 1px solid #ced4da;
+      border-radius: 12px;
+      font-size: 16px;
+      color: #495057;
+      text-align: left;
+      text-decoration: none; /* 링크 밑줄 제거 */
+      cursor: pointer;
+      transition: all 0.2s;
+      box-sizing: border-box;
+    }
+    .hotel-result-item:hover {
+      background-color: #e2e6ea;
+      border-color: #adb5bd;
+      transform: translateY(-2px);
+    }
+    .hotel-result-item b {
+      color: #212529;
+      font-size: 17px;
+    }
+
+    /* 식당/관광지용 일반 목록 스타일 (와이어프레임엔 없지만 필요) */
+    .general-result-item {
+      padding: 15px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    .general-result-title {
+      font-size: 17px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    /* 오른쪽 지도 영역 내부 스타일 (모크) */
+    #map-title-bar {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 10px 20px;
+      background-color: rgba(255,255,255,0.9);
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      font-weight: bold;
+    }
+    #map-marker-mock {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 80px;
+      color: #adb5bd;
+    }
+
+    /* 로딩바 */
+    #loading { display: none; margin-top: 20px; font-weight: bold; color: #ff6b6b; text-align: center;}
+  </style>
+</head>
+<body>
+
+<div id="travel-finder-app">
+  <div id="control-panel">
+    <div class="category-tabs">
+      <button class="category-btn active" onclick="setCategory(this, 'restaurants')">식당 🍔</button>
+      <button class="category-btn" onclick="setCategory(this, 'hotels')">숙소 🏨</button>
+      <button class="category-btn" onclick="setCategory(this, 'attractions')">관광지 📸</button>
+    </div>
+
+    <div id="location-section">
+      <label for="location-input">📍 검색할 위치</label>
+      <input type="text" id="location-input" placeholder="예: 부산 해운대, 강릉">
+    </div>
+
+    <button id="search-btn" onclick="executeSearch()">검색하기 🔍</button>
+    <div style="text-align: right; margin-bottom: 10px;">
+      <span onclick="handleLogout()" style="cursor:pointer; color: #adb5bd; font-size: 14px; text-decoration: underline;">로그아웃</span>
+    </div>
+    <div id="loading">데이터를 불러오는 중입니다... ⏳</div>
+
+    <div id="results-container">
+      <div id="results-title"></div>
+      <div id="results-list">
+        <p style="text-align: center; color: #adb5bd; margin-top: 50px;">위치를 입력하고 검색해보세요!</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="map-panel">
+    <div id="map-title-bar" style="z-index: 2;">🗺️ 여행지 지도</div> <div id="kakao-map" style="width: 100%; height: 100%;"></div>
+  </div>
+</div>
+
+<script>
+  // 현재 선택된 카테고리 (기본값: 식당)
+  let currentCategory = 'restaurants';
+  let currentCategoryKorean = '식당';
+  let map;
+  let geocoder;
+  let markers = [];
+
+  function initKakaoMap() {
+    const container = document.getElementById('kakao-map');
+    const options = {
+      center: new kakao.maps.LatLng(37.566826, 126.9786567),
+      level: 5
+    };
+    map = new kakao.maps.Map(container, options);
+    geocoder = new kakao.maps.services.Geocoder();
+  }
+
+  // 페이지가 로드되면 지도 초기화 실행
+  window.onload = function() {
+    initKakaoMap();
+  };
+
+  // 1. 와이어프레임 메모: "누르면 Category값을 누른 값으로 변경"
+  function setCategory(btn, category) {
+    // 모든 버튼 비활성화 -> 클릭한 버튼만 활성화 (CSS 클래스 교체)
+    document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    // 상태값 업데이트
+    currentCategory = category;
+    currentCategoryKorean = btn.innerText;
+
+    // 결과 목록 초기화 (새로운 검색을 유도)
+    document.getElementById('results-list').innerHTML = `<p style="text-align: center; color: #adb5bd; margin-top: 50px;">'${currentCategoryKorean}' 카테고리로 검색해주세요!</p>`;
+    document.getElementById('results-title').innerText = '';
+  }
+
+  // 2. 검색 실행 함수
+  async function executeSearch() {
+    const locationInput = document.getElementById('location-input');
+    const region = locationInput.value;
+
+    if (!region) {
+      alert("지역을 입력해주세요! (예: 강릉)");
+      locationInput.focus();
+      return;
+    }
+
+    const loading = document.getElementById('loading');
+    const resultsTitle = document.getElementById('results-title');
+    const resultsList = document.getElementById('results-list');
+
+    loading.style.display = 'block';
+    resultsList.innerHTML = '';
+    resultsTitle.innerText = '';
+
+    try {
+      const url = `/api/v1/travel/${currentCategory}?region=${encodeURIComponent(region)}`;
+      const response = await fetch(url, { method: 'GET' });
+
+      if (!response.ok) throw new Error("서버 에러가 발생했습니다!");
+
+      const data = await response.json();
+
+      // 🚨 핵심 수정: 데이터가 배열로 바로 오는지, items 안에 있는지 둘 다 대응!
+      const places = Array.isArray(data) ? data : (data.items || []);
+
+      renderResults(places); // 왼쪽 목록 그리기
+      updateMapWithMarkers(places, region); // 오른쪽 지도에 마커 여러 개 꽂기!
+
+    } catch (error) {
+      resultsList.innerHTML = `<p style="color: #ff6b6b; text-align: center;">앗! 오류가 발생했습니다. 백엔드 서버를 확인해주세요.</p>`;
+      console.error(error);
+    } finally {
+      loading.style.display = 'none';
+    }
+  }
+
+  // 결과 렌더링 함수
+  function renderResults(data) {
+    const resultsTitle = document.getElementById('results-title');
+    const resultsList = document.getElementById('results-list');
+    const region = document.getElementById('location-input').value;
+
+    resultsTitle.innerText = `[${region}] ${currentCategoryKorean} 검색 결과`;
+
+    if(data.length === 0) {
+      resultsList.innerHTML = '<p style="text-align: center; color: #adb5bd; margin-top: 50px;">검색 결과가 없습니다 😢</p>';
+      return;
+    }
+
+    let html = '';
+
+    // 🚨 와이어프레임 핵심: "Url들은 호텔에서만 나오게끔" 처리
+    if (currentCategory === 'hotels') {
+      data.forEach(item => {
+        // 숙소일 때만 나오는 라운드 버튼 형태 (와이어프레임 [URL] 버튼)
+        // 기장님이 짜두신 bookingUrl 변수명을 그대로 사용합니다.
+        html += `
+                    <a href="${item.bookingUrl}" target="_blank" class="hotel-result-item">
+                        <b>📌 ${item.title}</b><br>
+                        야놀자 숙소 URL 👉
+                    </a>
+                `;
+      });
+    } else {
+      // 식당이나 관광지일 때는 일반 목록으로 표시
+      data.forEach(item => {
+        html += `
+                    <div class="general-result-item">
+                        <div class="general-result-title">📌 ${item.title}</div>
+                        <a href="${item.link}" target="_blank" style="font-size: 14px; color: #007bff; text-decoration: none;">상세보기 👉</a>
+                    </div>
+                `;
+      });
+    }
+
+    resultsList.innerHTML = html;
+  }
+
+  function updateMapWithMarkers(places, region) {
+    const mapTitleBar = document.getElementById('map-title-bar');
+    mapTitleBar.innerText = `🗺️ [${region}] ${currentCategoryKorean} 위치`;
+
+    // 1. 이전에 찍어둔 마커 지우기
+    markers.forEach(marker => marker.setMap(null));
+    markers = [];
+
+    if (places.length === 0) return;
+
+    const bounds = new kakao.maps.LatLngBounds();
+
+    places.forEach(place => {
+      // 🚨 핵심 수정: 네이버 좌표를 카카오맵 좌표로 변환하기 위해 10,000,000 으로 나눔!
+      const lat = Number(place.mapy) / 10000000;
+      const lng = Number(place.mapx) / 10000000;
+
+      if (lat && lng) {
+        const position = new kakao.maps.LatLng(lat, lng);
+
+        const marker = new kakao.maps.Marker({
+          map: map,
+          position: position,
+          title: place.title
+        });
+
+        markers.push(marker);
+        bounds.extend(position);
+      }
+    });
+
+    if (markers.length > 0) {
+      map.setBounds(bounds);
+    }
+  }
+
+  async function handleLogout() {
+    if (!confirm("로그아웃 하시겠습니까?")) return;
+
+    try {
+      const response = await fetch('/api/v1/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        alert("성공적으로 로그아웃되었습니다.");
+        // 로그아웃 후 로그인 페이지로 이동
+        window.location.href = "/api/v1/auth/login";
+      } else {
+        const errorMsg = await response.text();
+        alert("로그아웃 실패: " + errorMsg);
+      }
+    } catch (error) {
+      console.error("로그아웃 중 오류 발생:", error);
+      alert("네트워크 오류가 발생했습니다.");
+    }
+  }
+</script>
+
+</body>
+</html>

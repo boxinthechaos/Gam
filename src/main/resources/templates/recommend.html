@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>AI 여행지 추천 테스트</title>
+    <style>
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 400px;
+            text-align: center;
+        }
+        h2 { color: #333; }
+        select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0 20px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover { background-color: #0056b3; }
+
+        /* 로딩바 & 결과창 스타일 */
+        #loading { display: none; margin-top: 20px; font-weight: bold; color: #ff6b6b; }
+        #result-box {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e3f2fd;
+            border-radius: 10px;
+            text-align: left;
+        }
+        .region-title { font-size: 20px; font-weight: bold; color: #1565c0; margin-bottom: 10px; }
+        .reason-text { font-size: 14px; color: #333; line-height: 1.5; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>✈️ AI 맞춤 여행지 추천</h2>
+
+    <div style="text-align: left;">
+        <label><b>누구랑 가나요?</b></label>
+        <select id="companion">
+            <option value="썸녀">썸녀 👩‍🦰</option>
+            <option value="연인">연인 💑</option>
+            <option value="친구">친구 👯‍♂️</option>
+            <option value="혼자">혼자 🚶‍♂️</option>
+            <option value="가족">가족 👨‍👩‍👧‍👦</option>
+        </select>
+
+        <label><b>어떤 풍경이 좋나요?</b></label>
+        <select id="scenery">
+            <option value="밤바다">밤바다 🌊</option>
+            <option value="푸른 산">푸른 산 ⛰️</option>
+            <option value="화려한 도심">화려한 도심 🏙️</option>
+            <option value="고즈넉한 역사">고즈넉한 역사 🏯</option>
+        </select>
+
+        <label><b>여행 스타일은?</b></label>
+        <select id="style">
+            <option value="감성카페">감성카페 ☕</option>
+            <option value="먹방">돼지런한 먹방 🐷</option>
+            <option value="액티비티">짜릿한 액티비티 🪂</option>
+            <option value="조용한 힐링">조용한 힐링 🌿</option>
+        </select>
+
+        <label><b>이동 수단은?</b></label>
+        <select id="transport">
+            <option value="뚜벅이">뚜벅이 (대중교통) 🚌</option>
+            <option value="자차">자차 (드라이브) 🚗</option>
+        </select>
+    </div>
+
+    <button onclick="getRecommendation()">AI 추천 받기 🚀</button>
+
+    <div id="loading">제미나이가 여행지를 고르고 있습니다... 🤔 (약 3초)</div>
+
+    <div id="result-box">
+        <div class="region-title" id="region"></div>
+        <div class="reason-text" id="reason"></div>
+    </div>
+</div>
+
+<script>
+    async function getRecommendation() {
+        // 1. 값 가져오기
+        const requestData = {
+            companion: document.getElementById('companion').value,
+            scenery: document.getElementById('scenery').value,
+            style: document.getElementById('style').value,
+            transport: document.getElementById('transport').value
+        };
+
+        // 2. UI 상태 변경 (로딩 표시)
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('result-box').style.display = 'none';
+
+        try {
+            // 3. 백엔드(우리 서버)로 POST 요청 쏘기!
+            const response = await fetch('/api/v1/travel/recommend', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            });
+
+            if (!response.ok) {
+                throw new Error("서버 에러가 발생했습니다!");
+            }
+
+            // 4. 응답 받아서 화면에 뿌리기
+            const data = await response.json();
+
+            document.getElementById('region').innerText = "📍 추천 여행지: " + data.recommendedRegion;
+            document.getElementById('reason').innerText = "💡 " + data.reason;
+
+            // 로딩 숨기고 결과창 보여주기
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('result-box').style.display = 'block';
+
+        } catch (error) {
+            alert("앗! 오류가 났습니다. 서버가 켜져 있는지 확인해주세요.");
+            document.getElementById('loading').style.display = 'none';
+            console.error(error);
+        }
+    }
+</script>
+
+</body>
+</html>

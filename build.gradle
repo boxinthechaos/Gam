@@ -25,21 +25,41 @@ repositories {
 }
 
 dependencies {
+    // ── Spring Boot Core ──────────────────────────────────────────
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+
+    // ── Thymeleaf ─────────────────────────────────────────────────
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+
+    // ── Lombok ────────────────────────────────────────────────────
     compileOnly 'org.projectlombok:lombok'
-    runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'
+
+    // ── Database ──────────────────────────────────────────────────
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+    // ── JWT ───────────────────────────────────────────────────────
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
+
+    // ── Mail & Redis ──────────────────────────────────────────────
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // ── Google YouTube API ────────────────────────────────────────
+    implementation 'com.google.apis:google-api-services-youtube:v3-rev20231011-2.0.0'
+    implementation 'com.google.api-client:google-api-client:2.2.0'
+    implementation 'com.google.http-client:google-http-client-gson:1.43.3'
+
+    // ── Test ──────────────────────────────────────────────────────
     testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    implementation 'io.jsonwebtoken:jjwt-api:0.12.5'
-    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.5'
-    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
-    implementation 'org.springframework.boot:spring-boot-starter-mail'
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 tasks.named('test') {

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>GAM 플레이리스트 테스트</title>
+    <style>
+        body { font-family: 'Malgun Gothic', sans-serif; padding: 20px; background-color: #f9f9f9; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #333; }
+        .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; }
+        button { padding: 10px 20px; background-color: #ff0000; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 16px;}
+        button:hover { background-color: #cc0000; }
+        .song-item { padding: 15px; border-bottom: 1px solid #eee; display: flex; flex-direction: column; gap: 5px; }
+        .song-item:last-child { border-bottom: none; }
+        .song-title { font-size: 1.1em; font-weight: bold; color: #333; text-decoration: none; }
+        .song-title:hover { color: #ff0000; text-decoration: underline; }
+        .song-info { color: #666; font-size: 0.9em; margin-top: 5px; }
+        #loading { text-align: center; display: none; color: #666; font-weight: bold; margin: 20px 0; }
+        .summary { margin-bottom: 20px; padding: 15px; background: #fff3f3; border-radius: 5px; text-align: center; font-weight: bold; color: #d32f2f; border: 1px solid #ffcdd2;}
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🎵 GAM 플레이리스트 생성기</h1>
+    <div class="input-group">
+        <select id="genre" style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px;">
+            <option value="K-POP">K-POP</option>
+            <option value="팝송">팝송 (Pop)</option>
+            <option value="재즈">재즈 (Jazz)</option>
+            <option value="클래식">클래식 (Classic)</option>
+            <option value="J-POP">J-POP</option>
+            <option value="디즈니 OST">디즈니 OST</option>
+            <option value="보컬로이드">보컬로이드</option>
+
+        </select>
+        <input type="number" id="minutes" placeholder="원하는 시간을 입력하세요 (예: 30)" value="30">
+        <button onclick="getPlaylist()">만들기</button>
+    </div>
+    <div id="loading">⏳ 유튜브에서 열심히 영상을 찾고 있습니다...</div>
+    <div id="result"></div>
+</div>
+
+<script>
+    async function getPlaylist() {
+        const minutes = document.getElementById('minutes').value;
+        // 💡 선택한 장르 값을 가져옵니다.
+        const genre = document.getElementById('genre').value;
+        const resultDiv = document.getElementById('result');
+        const loadingDiv = document.getElementById('loading');
+
+        if (!minutes) {
+            alert("시간(분)을 입력해주세요!");
+            return;
+        }
+
+        resultDiv.innerHTML = '';
+        loadingDiv.style.display = 'block';
+
+        try {
+            // 💡 주소 맨 뒤에 &genre=장르 값을 추가해서 서버로 보냅니다!
+            const response = await fetch(`http://localhost:8080/api/v1/music/recommend?minutes=${minutes}&genre=${genre}`);
+
+            if (!response.ok) {
+                throw new Error('서버 에러가 발생했습니다.');
+            }
+
+            const data = await response.json();
+            loadingDiv.style.display = 'none';
+
+            if (data.length === 0) {
+                resultDiv.innerHTML = '<p style="text-align:center;">조건에 맞는 영상이 없습니다.</p>';
+                return;
+            }
+
+            let totalMs = 0;
+
+            // 요약 박스 (총 몇 곡, 총 몇 분)
+            const summaryDiv = document.createElement('div');
+            summaryDiv.className = 'summary';
+            resultDiv.appendChild(summaryDiv);
+
+            // 목록 렌더링
+            data.forEach((song, index) => {
+                totalMs += song.durationMs;
+
+                // 밀리초(ms)를 분/초 로 예쁘게 변환
+                const totalSeconds = Math.floor(song.durationMs / 1000);
+                const mins = Math.floor(totalSeconds / 60);
+                const secs = totalSeconds % 60;
+
+                const songDiv = document.createElement('div');
+                songDiv.className = 'song-item';
+                songDiv.innerHTML = `
+                        <a class="song-title" href="${song.youtubeUrl}" target="_blank">
+                            ${index + 1}. ${song.title}
+                        </a>
+                        <div class="song-info">🎤 ${song.artist} &nbsp;|&nbsp; ⏱️ ${mins}분 ${secs}초</div>
+                    `;
+                resultDiv.appendChild(songDiv);
+            });
+
+            // 총 재생 시간 계산해서 요약 박스에 넣기
+            const totalSecs = Math.floor(totalMs / 1000);
+            const totalMins = Math.floor(totalSecs / 60);
+            const remainSecs = totalSecs % 60;
+            summaryDiv.innerHTML = `🎉 총 ${data.length}곡이 담겼습니다! (총 재생 시간: ${totalMins}분 ${remainSecs}초)`;
+
+        } catch (error) {
+            loadingDiv.style.display = 'none';
+            alert("에러: " + error.message + "\n\n스프링 서버가 켜져 있는지, 그리고 Controller에 @CrossOrigin 설정이 되어 있는지 확인해주세요!");
+        }
+    }
+</script>
+</body>
+</html>
