@@ -46,4 +46,8 @@ public class EmailService {
     public boolean isVerified(String email){
         return Boolean.TRUE.toString().equals(redisTemplate.opsForValue().get("AuthSuccess:" + email));
     }
+
+    public void clearVerificationStatus(String email){
+        redisTemplate.delete("AuthSuccess" + email);
+    }
 }

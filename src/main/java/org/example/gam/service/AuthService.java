@@ -3,17 +3,18 @@ package org.example.gam.service;
 import lombok.RequiredArgsConstructor;
 import org.example.gam.Repository.RefreshTokenRepository;
 import org.example.gam.Repository.UserRepository;
-import org.example.gam.dto.JoinRequest;
-import org.example.gam.dto.LoginRequest;
-import org.example.gam.dto.TokenResponse;
+import org.example.gam.dto.*;
 import org.example.gam.entitiy.RefreshToken;
 import org.example.gam.entitiy.Role;
 import org.example.gam.entitiy.User;
 import org.example.gam.token.TokenProvider;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 @RequiredArgsConstructor
@@ -76,5 +77,47 @@ public class AuthService {
     @Transactional
     public void logout(String email){
         refreshTokenRepository.deleteByEmail(email);
+    }
+
+    @Transactional
+    public TokenResponse reissue(String refreshTokenRequest){
+        if(!tokenProvider.validateToken(refreshTokenRequest)){
+            throw new IllegalArgumentException("리프레시 토큰이 만료되었거나 유효하지 않습니다");
+        }
+
+        RefreshToken savedToken = refreshTokenRepository.findByToken(refreshTokenRequest)
+                .orElseThrow(() -> new IllegalArgumentException("일치하는 리프레시 토큰을 찾을 수 없습니다"));
+
+        User user = userRepository.findByEmail(savedToken.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다"));
+
+        String newAccessToken = tokenProvider.createToken(user.getEmail(), user.getRole().name());
+        String newRefreshToken = tokenProvider.createRefreshToken(user.getEmail());
+
+        savedToken.updateToken(newRefreshToken);
+
+        return new TokenResponse(newAccessToken, newRefreshToken);
+    }
+
+    @Transactional(readOnly = true)
+    public UserResponse findByEmail(String email){
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("유저 없음"));
+
+        return new UserResponse(user.getEmail(), user.getNickname());
+    }
+
+    @Transactional
+    public void resetPassword(ResetPasswordRequest request){
+        if(!emailService.isVerified(request.getEmail())){
+            throw new IllegalArgumentException("이메일 인증을 먼저 진행해주세요");
+        }
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("가입하지 않은 유저입니다"));
+
+        String encodedPassword = passwordEncoder.encode(request.getNewPassword());
+        user.updatePassword(encodedPassword);
+
+        redisTemplate.delete("AuthSuccess:" + request.getEmail());
     }
 }

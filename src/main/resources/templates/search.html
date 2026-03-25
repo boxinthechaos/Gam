@@ -221,13 +221,11 @@
 </div>
 
 <script>
-  // 현재 선택된 카테고리 (기본값: 식당)
   let currentCategory = 'restaurants';
   let currentCategoryKorean = '식당';
-  let map;
-  let geocoder;
-  let markers = [];
+  let map, geocoder, markers = [];
 
+  // 1. 지도 초기화 (window.onload에서 호출됨)
   function initKakaoMap() {
     const container = document.getElementById('kakao-map');
     const options = {
@@ -238,168 +236,141 @@
     geocoder = new kakao.maps.services.Geocoder();
   }
 
-  // 페이지가 로드되면 지도 초기화 실행
   window.onload = function() {
     initKakaoMap();
   };
 
-  // 1. 와이어프레임 메모: "누르면 Category값을 누른 값으로 변경"
+  // 2. 카테고리 설정
   function setCategory(btn, category) {
-    // 모든 버튼 비활성화 -> 클릭한 버튼만 활성화 (CSS 클래스 교체)
     document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-
-    // 상태값 업데이트
     currentCategory = category;
     currentCategoryKorean = btn.innerText;
-
-    // 결과 목록 초기화 (새로운 검색을 유도)
     document.getElementById('results-list').innerHTML = `<p style="text-align: center; color: #adb5bd; margin-top: 50px;">'${currentCategoryKorean}' 카테고리로 검색해주세요!</p>`;
-    document.getElementById('results-title').innerText = '';
   }
 
-  // 2. 검색 실행 함수
+  // 3. ✨ [중요] 토큰 재발급 대응 fetch 함수
+  async function fetchWithToken(url, options = {}) {
+    options.credentials = 'include';
+    let response = await fetch(url, options);
+
+    if (response.status === 401) {
+      console.log("Access Token 만료. 재발급 시도...");
+      const refreshToken = localStorage.getItem('refreshToken');
+
+      if (!refreshToken) {
+        window.location.href = "/api/v1/auth/login";
+        return response;
+      }
+
+      const reissueRes = await fetch('/api/v1/auth/reissue', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refreshToken: refreshToken })
+      });
+
+      if (reissueRes.ok) {
+        const data = await reissueRes.json();
+        localStorage.setItem('refreshToken', data.refreshToken);
+        // 재발급 성공 후 원래 요청 다시 시도
+        return await fetch(url, options);
+      } else {
+        alert("세션이 만료되었습니다. 다시 로그인해주세요.");
+        localStorage.removeItem('refreshToken');
+        window.location.href = "/api/v1/auth/login";
+        return reissueRes;
+      }
+    }
+    return response;
+  }
+
+  // 4. 검색 실행
   async function executeSearch() {
     const locationInput = document.getElementById('location-input');
     const region = locationInput.value;
-
-    if (!region) {
-      alert("지역을 입력해주세요! (예: 강릉)");
-      locationInput.focus();
-      return;
-    }
+    if (!region) { alert("지역을 입력해주세요!"); return; }
 
     const loading = document.getElementById('loading');
-    const resultsTitle = document.getElementById('results-title');
     const resultsList = document.getElementById('results-list');
+    const resultsTitle = document.getElementById('results-title');
 
     loading.style.display = 'block';
-    resultsList.innerHTML = '';
-    resultsTitle.innerText = '';
 
     try {
       const url = `/api/v1/travel/${currentCategory}?region=${encodeURIComponent(region)}`;
-      const response = await fetch(url, { method: 'GET' });
+      const response = await fetchWithToken(url, { method: 'GET' });
 
-      if (!response.ok) throw new Error("서버 에러가 발생했습니다!");
+      if (!response.ok) throw new Error("데이터 호출 실패");
 
       const data = await response.json();
-
-      // 🚨 핵심 수정: 데이터가 배열로 바로 오는지, items 안에 있는지 둘 다 대응!
       const places = Array.isArray(data) ? data : (data.items || []);
 
-      renderResults(places); // 왼쪽 목록 그리기
-      updateMapWithMarkers(places, region); // 오른쪽 지도에 마커 여러 개 꽂기!
-
+      renderResults(places, region); // 👈 region 인자 추가
+      updateMapWithMarkers(places, region);
     } catch (error) {
-      resultsList.innerHTML = `<p style="color: #ff6b6b; text-align: center;">앗! 오류가 발생했습니다. 백엔드 서버를 확인해주세요.</p>`;
       console.error(error);
+      resultsList.innerHTML = `<p style="color: #ff6b6b; text-align: center;">데이터를 불러오는 중 오류가 발생했습니다.</p>`;
     } finally {
       loading.style.display = 'none';
     }
   }
 
-  // 결과 렌더링 함수
-  function renderResults(data) {
+  // 5. 결과 목록 렌더링
+  function renderResults(data, region) {
     const resultsTitle = document.getElementById('results-title');
     const resultsList = document.getElementById('results-list');
-    const region = document.getElementById('location-input').value;
-
     resultsTitle.innerText = `[${region}] ${currentCategoryKorean} 검색 결과`;
 
-    if(data.length === 0) {
+    if (data.length === 0) {
       resultsList.innerHTML = '<p style="text-align: center; color: #adb5bd; margin-top: 50px;">검색 결과가 없습니다 😢</p>';
       return;
     }
 
     let html = '';
-
-    // 🚨 와이어프레임 핵심: "Url들은 호텔에서만 나오게끔" 처리
-    if (currentCategory === 'hotels') {
-      data.forEach(item => {
-        // 숙소일 때만 나오는 라운드 버튼 형태 (와이어프레임 [URL] 버튼)
-        // 기장님이 짜두신 bookingUrl 변수명을 그대로 사용합니다.
-        html += `
-                    <a href="${item.bookingUrl}" target="_blank" class="hotel-result-item">
-                        <b>📌 ${item.title}</b><br>
-                        야놀자 숙소 URL 👉
-                    </a>
-                `;
-      });
-    } else {
-      // 식당이나 관광지일 때는 일반 목록으로 표시
-      data.forEach(item => {
-        html += `
-                    <div class="general-result-item">
-                        <div class="general-result-title">📌 ${item.title}</div>
-                        <a href="${item.link}" target="_blank" style="font-size: 14px; color: #007bff; text-decoration: none;">상세보기 👉</a>
-                    </div>
-                `;
-      });
-    }
-
+    data.forEach(item => {
+      if (currentCategory === 'hotels') {
+        html += `<a href="${item.bookingUrl || '#'}" target="_blank" class="hotel-result-item">
+                    <b>📌 ${item.title}</b><br>야놀자 숙소 URL 👉</a>`;
+      } else {
+        html += `<div class="general-result-item">
+                    <div class="general-result-title">📌 ${item.title}</div>
+                    <a href="${item.link || '#'}" target="_blank" style="font-size: 14px; color: #007bff; text-decoration: none;">상세보기 👉</a>
+                </div>`;
+      }
+    });
     resultsList.innerHTML = html;
   }
 
+  // 6. 지도 마커 업데이트
   function updateMapWithMarkers(places, region) {
     const mapTitleBar = document.getElementById('map-title-bar');
     mapTitleBar.innerText = `🗺️ [${region}] ${currentCategoryKorean} 위치`;
-
-    // 1. 이전에 찍어둔 마커 지우기
-    markers.forEach(marker => marker.setMap(null));
+    markers.forEach(m => m.setMap(null));
     markers = [];
 
-    if (places.length === 0) return;
-
     const bounds = new kakao.maps.LatLngBounds();
-
     places.forEach(place => {
-      // 🚨 핵심 수정: 네이버 좌표를 카카오맵 좌표로 변환하기 위해 10,000,000 으로 나눔!
       const lat = Number(place.mapy) / 10000000;
       const lng = Number(place.mapx) / 10000000;
-
       if (lat && lng) {
-        const position = new kakao.maps.LatLng(lat, lng);
-
-        const marker = new kakao.maps.Marker({
-          map: map,
-          position: position,
-          title: place.title
-        });
-
+        const pos = new kakao.maps.LatLng(lat, lng);
+        const marker = new kakao.maps.Marker({ map: map, position: pos, title: place.title });
         markers.push(marker);
-        bounds.extend(position);
+        bounds.extend(pos);
       }
     });
-
-    if (markers.length > 0) {
-      map.setBounds(bounds);
-    }
+    if (markers.length > 0) map.setBounds(bounds);
   }
 
+  // 7. 로그아웃
   async function handleLogout() {
     if (!confirm("로그아웃 하시겠습니까?")) return;
-
     try {
-      const response = await fetch('/api/v1/auth/logout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (response.ok) {
-        alert("성공적으로 로그아웃되었습니다.");
-        // 로그아웃 후 로그인 페이지로 이동
-        window.location.href = "/api/v1/auth/login";
-      } else {
-        const errorMsg = await response.text();
-        alert("로그아웃 실패: " + errorMsg);
-      }
-    } catch (error) {
-      console.error("로그아웃 중 오류 발생:", error);
-      alert("네트워크 오류가 발생했습니다.");
-    }
+      const response = await fetch('/api/v1/auth/logout', { method: 'POST' });
+      localStorage.removeItem('refreshToken');
+      alert("로그아웃 되었습니다.");
+      window.location.href = "/api/v1/auth/login";
+    } catch (e) { console.error(e); }
   }
 </script>
 

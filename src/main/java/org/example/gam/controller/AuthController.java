@@ -75,6 +75,33 @@ public class AuthController {
         return ResponseEntity.ok("로그아웃 성공");
     }
 
+    @PostMapping("/reissue")
+    public ResponseEntity<TokenResponse> reissue(@RequestBody ReissueRequest request, HttpServletResponse response){
+        TokenResponse tokenResponse = authService.reissue(request.getRefreshToken());
+        Cookie cookie = new Cookie("accessToken", tokenResponse.getAccessToken());
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(60 * 60 * 24);
+
+        response.addCookie(cookie);
+        return ResponseEntity.ok(tokenResponse);
+    }
+
+    @GetMapping("/user/email")
+    public ResponseEntity<?> getUserByEmail(@RequestParam String email){
+        if (!emailService.isVerified(email)) {
+            return ResponseEntity.status(403).body("이메일 인증이 완료되지 않았습니다.");
+        }
+        return ResponseEntity.ok(authService.findByEmail(email));
+    }
+
+    @PatchMapping("/reset-password")
+    public ResponseEntity<String> updatePassword(@RequestBody ResetPasswordRequest request){
+        authService.resetPassword(request);
+        return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
+    }
+
     @GetMapping("/login")
     public String loginP(){
         return "login";
