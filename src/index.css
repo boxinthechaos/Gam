@@ -11,26 +11,17 @@
   }
 }
 
-@theme{
-  --animate-appear: appear 0.5s ease-out forwards;
-  --animate-appear2: appear 0.5s ease-out 0.1s forwards;
-  --animate-appear3: appear 0.5s ease-out 0.2s forwards;
-  --animate-appear4: appear 0.5s ease-out 0.3s forwards;
-  --animate-appear5: appear 0.5s ease-out 0.3s forwards;
-}
-
 .auth-text{
   @apply text-base font-bold 
 
-  md:text-2xl 
-  lg:text-3xl;
+  md:text-3xl; 
 }
 
 .auth-input{
   @apply block w-full h-8 mb-3 pl-2 border border-[#dddddd] rounded-md placeholder-[#dddddd] text-xs placeholder:text-xs
 
   md:h-10 md:pl-3 md:text-base md:placeholder:text-base
-  lg:h-12 lg:pl-5; 
+  lg:h-12 lg:pl-4; 
 }
 
 .auth-btn{

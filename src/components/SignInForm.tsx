@@ -8,19 +8,22 @@ export default function SignInForm(){
     const [password, setPassword] = useState<string>("");
     const [isPasswordShown, setIsPasswordShown] = useState<boolean>(false);
 
-    const isInfoValid:boolean = nickName.trim().length > 0 && password.trim().length > 0;
+    const isInfoValid: boolean = nickName.trim().length > 0 && password.trim().length > 0;
 
     return(
-        <div className="w-160 h-auto px-5">
+        <div className="w-full max-w-md mx-auto px-5
+        md:max-w-lg
+        lg:max-w-xl"
+        >
 
-            <p className="opacity-0 animate-appear auth-text">
+            <p className="opacity-0 animate-[appear_0.5s_ease-out_forwards] auth-text">
                 안녕하세요 :)
             </p>
 
             <p className="
-                opacity-0 animate-appear auth-text mb-8 
+                opacity-0 animate-[appear_0.5s_ease-out_forwards] auth-text mb-8 
                 md:mb-10 
-                lg:mb-15"
+                lg:mb-12"
             >
                 로그인하고 감과 함께 떠나볼까요?
             </p>
@@ -32,10 +35,10 @@ export default function SignInForm(){
                 placeholder="닉네임"
                 value={nickName} 
                 onChange={(e) => setNickName(e.target.value)}
-                className="opacity-0 auth-input animate-appear2"
+                className="opacity-0 animate-[appear_0.5s_ease-out_0.1s_forwards] auth-input"
                 />
 
-                <div className="opacity-0 animate-appear3 relative">
+                <div className="opacity-0 animate-[appear_0.5s_ease-out_0.2s_forwards] relative">
 
                     <input 
                     type={isPasswordShown ? "text" : "password"}
@@ -48,12 +51,7 @@ export default function SignInForm(){
                     <img 
                         src={isPasswordShown ? show : noshow} 
                         onClick={() => setIsPasswordShown(!isPasswordShown)}
-                        className="
-                            absolute right-3 top-4 
-                            w-4 
-                            cursor-pointer
-                            md:top-5 md:w-6
-                            lg:top-6 -translate-y-1/2"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 w-5"
                     />
 
                 </div>
@@ -63,8 +61,8 @@ export default function SignInForm(){
                 className={`
                     ${isInfoValid ? "orange-btn cursor-pointer" : "gray-btn"} 
                         opacity-0 
-                        auth-btn 
-                        animate-appear4
+                        animate-[appear_0.5s_ease-out_0.3s_forwards]
+                        auth-btn
                     `}
                 >
                     로그인
@@ -74,7 +72,7 @@ export default function SignInForm(){
 
             <div 
             className="
-                opacity-0 animate-appear5 
+                opacity-0 animate-[appear_0.5s_ease-out_0.4s_forwards] 
                 flex justify-center items-center 
                 w-full 
                 mt-5 
