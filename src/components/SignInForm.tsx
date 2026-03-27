@@ -21,7 +21,7 @@ export default function SignInForm(){
             </p>
 
             <p className="
-                opacity-0 animate-[appear_0.5s_ease-out_forwards] auth-text mb-8 
+                opacity-0 animate-[appear_0.5s_ease-out_forwards] auth-text mb-6 
                 md:mb-10 
                 lg:mb-12"
             >
@@ -51,7 +51,9 @@ export default function SignInForm(){
                     <img 
                         src={isPasswordShown ? show : noshow} 
                         onClick={() => setIsPasswordShown(!isPasswordShown)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 w-5"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 w-4
+                        md:w-5
+                        lg:w-6"
                     />
 
                 </div>
@@ -80,15 +82,15 @@ export default function SignInForm(){
                 md:text-base"
             >
 
-                <p className="cursor-pointer">닉네임 찾기</p>
+                <p className="cursor-pointer hover:underline">닉네임 찾기</p>
 
                 <p className="mx-2 text-xs text-[#AAAAAA]">|</p>
 
-                <p className="cursor-pointer">비밀번호 재설정</p>
+                <p className="cursor-pointer hover:underline">비밀번호 재설정</p>
 
                 <p className="mx-2 text-xs text-[#AAAAAA]">|</p>
 
-                <p className="cursor-pointer">회원가입</p>
+                <p className="cursor-pointer hover:underline">회원가입</p>
 
             </div>
 
