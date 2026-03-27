@@ -18,7 +18,7 @@
 }
 
 .auth-input{
-  @apply block w-full h-8 mb-4 pl-2 border border-[#cccccc] rounded-md placeholder-[#cccccc] text-xs placeholder:text-xs
+  @apply block w-full h-8 mb-2 pl-2 border border-[#cccccc] rounded-md placeholder-[#cccccc] text-xs placeholder:text-xs
 
   focus:outline-none focus:ring-1 focus:ring-[#ff8c00]
 
@@ -27,7 +27,7 @@
 }
 
 .auth-btn{
-  @apply w-full h-10 mt-6 rounded-md text-base font-extrabold
+  @apply w-full h-10 mt-4 rounded-md text-base font-extrabold
 
   md:h-12 md:text-lg 
   lg:h-15 lg:text-xl;
