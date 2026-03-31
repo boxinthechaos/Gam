@@ -1,4 +1,4 @@
-<img width="878" height="529" alt="스크린샷 2026-03-26 165744" src="https://github.com/user-attachments/assets/c17703f2-a710-42e3-b1e6-0be9f87660f9" /># GAM
+# GAM
 ## 성능 최적화
 ● Before : 2.45초 소요<br>
 <img width="878" height="529" alt="스크린샷 2026-03-26 165744" src="https://github.com/user-attachments/assets/597973aa-a6c6-4626-828a-e70195351c04" />
