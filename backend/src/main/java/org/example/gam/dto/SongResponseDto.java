@@ -1,8 +1,10 @@
 package org.example.gam.dto;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class SongResponseDto {
     private String title;
     private String artist;

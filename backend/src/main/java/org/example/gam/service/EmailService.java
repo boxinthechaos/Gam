@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -19,6 +20,7 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String senderEmail;
 
+    @Async
     public void sendVerificationCode(String toEmail){
         String code = String.valueOf((int) (Math.random() * 899999) + 100000);
 
