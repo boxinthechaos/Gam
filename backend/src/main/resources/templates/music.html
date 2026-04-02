@@ -8,8 +8,9 @@
         .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         h1 { text-align: center; color: #333; }
         .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
-        input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; }
-        button { padding: 10px 20px; background-color: #ff0000; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 16px;}
+        input, select { padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; }
+        .flex-auto { flex: 1; } /* 남은 공간을 채우기 위한 클래스 */
+        button { padding: 10px 20px; background-color: #ff0000; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 16px; white-space: nowrap;}
         button:hover { background-color: #cc0000; }
         .song-item { padding: 15px; border-bottom: 1px solid #eee; display: flex; flex-direction: column; gap: 5px; }
         .song-item:last-child { border-bottom: none; }
@@ -23,38 +24,50 @@
 <body>
 <div class="container">
     <h1>🎵 GAM 플레이리스트 생성기</h1>
-    <div class="input-group">
-        <select id="genre" style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px;">
-            <option value="K-POP">K-POP</option>
-            <option value="팝송">팝송 (Pop)</option>
-            <option value="재즈">재즈 (Jazz)</option>
-            <option value="클래식">클래식 (Classic)</option>
-            <option value="J-POP">J-POP</option>
-            <option value="디즈니 OST">디즈니 OST</option>
-            <option value="보컬로이드">보컬로이드</option>
-            <option value="창팝">창팝</option>
 
+    <div class="input-group">
+        <select id="searchType">
+            <option value="artist">가수 이름</option>
         </select>
-        <input type="number" id="minutes" placeholder="원하는 시간을 입력하세요 (예: 30)" value="30">
+        <input type="text" id="keyword" class="flex-auto" placeholder="검색어 입력 (예: 에스파)" value="">
+        <input type="number" id="minutes" placeholder="분" value="30" style="width: 70px;">
         <button onclick="getPlaylist()">만들기</button>
     </div>
-    <div id="loading">⏳ 유튜브에서 열심히 영상을 찾고 있습니다...</div>
+
+    <div id="loading">⏳ 스포티파이에서 열심히 음악을 찾고 있습니다...</div>
     <div id="save-section" style="display: none; margin-top: 20px; padding: 15px; border: 1px dashed #ccc; border-radius: 10px; background-color: #fff;">
-        <input type="text" id="playlist-title" placeholder="플레이리스트 제목을 입력하세요" style="width: 70%; margin-bottom: 10px;">
-        <button onclick="savePlaylist()" style="background-color: #4CAF50; width: 100%;">이 플레이리스트 저장하기 💾</button>
+        <input type="text" id="playlist-title" placeholder="플레이리스트 제목을 입력하세요" style="width: 65%; margin-bottom: 10px;">
+        <button onclick="savePlaylist()" style="background-color: #4CAF50; width: 30%;">저장하기 💾</button>
     </div>
     <div id="result"></div>
 </div>
 
 <script>
     let currentPlaylistData = [];
+
     async function getPlaylist() {
         const minutes = document.getElementById('minutes').value;
-        // 💡 선택한 장르 값을 가져옵니다.
-        const genre = document.getElementById('genre').value;
+        const searchType = document.getElementById('searchType').value;
+        const keyword = document.getElementById('keyword').value;
         const resultDiv = document.getElementById('result');
         const loadingDiv = document.getElementById('loading');
 
+
+        // 💡 1. 검색어 빈 값 체크
+        if (!keyword.trim()) {
+            alert("검색어를 입력해주세요!");
+            document.getElementById('keyword').focus();
+            return;
+        }
+
+        const englishOnlyRegex = /^[a-zA-Z0-9\s\-_,]+$/;
+        if (!englishOnlyRegex.test(keyword)) {
+            alert("검색어는 영어, 숫자, 쉼표(,)만 입력 가능합니다! \n(예: BTS, NewJeans, aespa)");
+            document.getElementById('keyword').focus();
+            return;
+        }
+
+        // 💡 3. 시간 체크
         if (!minutes) {
             alert("시간(분)을 입력해주세요!");
             return;
@@ -62,9 +75,12 @@
 
         resultDiv.innerHTML = '';
         loadingDiv.style.display = 'block';
+        document.getElementById('save-section').style.display = 'none';
 
         try {
-            const response = await fetch(`http://localhost:8080/api/v1/music/recommend?minutes=${minutes}&genre=${genre}`);
+            // 💡 fetch URL 수정: searchType과 keyword 파라미터 전달
+            const url = `http://localhost:8080/api/v1/music/recommend?minutes=${minutes}&searchType=${searchType}&keyword=${encodeURIComponent(keyword)}`;
+            const response = await fetch(url);
 
             if (!response.ok) {
                 throw new Error('서버 에러가 발생했습니다.');
@@ -73,25 +89,22 @@
             const data = await response.json();
             loadingDiv.style.display = 'none';
             currentPlaylistData = data;
-            document.getElementById('save-section').style.display = 'block';
 
             if (data.length === 0) {
-                resultDiv.innerHTML = '<p style="text-align:center;">조건에 맞는 영상이 없습니다.</p>';
+                resultDiv.innerHTML = '<p style="text-align:center;">조건에 맞는 노래가 없습니다.</p>';
                 return;
             }
 
+            document.getElementById('save-section').style.display = 'block';
             let totalMs = 0;
 
-            // 요약 박스 (총 몇 곡, 총 몇 분)
             const summaryDiv = document.createElement('div');
             summaryDiv.className = 'summary';
             resultDiv.appendChild(summaryDiv);
 
-            // 목록 렌더링
             data.forEach((song, index) => {
                 totalMs += song.durationMs;
 
-                // 밀리초(ms)를 분/초 로 예쁘게 변환
                 const totalSeconds = Math.floor(song.durationMs / 1000);
                 const mins = Math.floor(totalSeconds / 60);
                 const secs = totalSeconds % 60;
@@ -99,7 +112,7 @@
                 const songDiv = document.createElement('div');
                 songDiv.className = 'song-item';
                 songDiv.innerHTML = `
-                        <a class="song-title" href="${song.youtubeUrl}" target="_blank">
+                        <a class="song-title" href="${song.spotifyUrl}" target="_blank">
                             ${index + 1}. ${song.title}
                         </a>
                         <div class="song-info">🎤 ${song.artist} &nbsp;|&nbsp; ⏱️ ${mins}분 ${secs}초</div>
@@ -107,7 +120,6 @@
                 resultDiv.appendChild(songDiv);
             });
 
-            // 총 재생 시간 계산해서 요약 박스에 넣기
             const totalSecs = Math.floor(totalMs / 1000);
             const totalMins = Math.floor(totalSecs / 60);
             const remainSecs = totalSecs % 60;
@@ -115,9 +127,11 @@
 
         } catch (error) {
             loadingDiv.style.display = 'none';
-            alert("에러: " + error.message + "\n\n스프링 서버가 켜져 있는지, 그리고 Controller에 @CrossOrigin 설정이 되어 있는지 확인해주세요!");
+            alert("에러: " + error.message + "\n\n스프링 서버가 켜져 있는지 확인해주세요!");
         }
     }
+
+    // savePlaylist() 함수는 기존과 완벽히 동일하므로 그대로 두시면 됩니다!
     async function savePlaylist() {
         const titleInput = document.getElementById('playlist-title');
         const title = titleInput.value;
@@ -127,18 +141,15 @@
             return;
         }
 
-        // 서버의 PlaylistSaveRequestDto 구조와 똑같이 맞춤
         const data = {
-            title: title,        // DTO의 private String title;
-            songs: currentPlaylistData // DTO의 private List<SongResponseDto> songs;
+            title: title,
+            songs: currentPlaylistData
         };
 
         try {
             const response = await fetch('http://localhost:8080/api/v1/music/save', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             });
 

@@ -1,10 +1,7 @@
 package org.example.gam.service;
 
-import com.google.api.services.youtube.YouTube;
-import com.google.api.services.youtube.model.SearchListResponse;
-import com.google.api.services.youtube.model.SearchResult;
-import com.google.api.services.youtube.model.Video;
-import com.google.api.services.youtube.model.VideoListResponse;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.example.gam.Repository.PlaylistRepository;
 import org.example.gam.Repository.UserRepository;
 import org.example.gam.dto.PlaylistSaveRequestDto;
@@ -12,137 +9,136 @@ import org.example.gam.dto.SongResponseDto;
 import org.example.gam.entitiy.Playlist;
 import org.example.gam.entitiy.Song;
 import org.example.gam.entitiy.User;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import se.michaelthelin.spotify.SpotifyApi;
+import se.michaelthelin.spotify.model_objects.credentials.ClientCredentials;
+import se.michaelthelin.spotify.model_objects.specification.Paging;
+import se.michaelthelin.spotify.model_objects.specification.Track;
+import se.michaelthelin.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
 
-import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class PlaylistService {
-
-    @Value("${youtube.api-key}")
-    private final String youtubeApiKey;
-
-    private final YouTube youtube;
-    private final PlaylistRepository playlistRepository;
+    private final SpotifyApi spotifyApi;
     private final UserRepository userRepository;
+    private final PlaylistRepository playlistRepository;
 
-    public PlaylistService(YouTube youtube, @Value("${youtube.api-key}") String youtubeApiKey,
-                           PlaylistRepository playlistRepository, UserRepository userRepository) {
-        this.youtube = youtube;
-        this.youtubeApiKey = youtubeApiKey;
-        this.playlistRepository = playlistRepository;
-        this.userRepository = userRepository;
+    private void refreshAccessToken() throws Exception{
+        ClientCredentialsRequest request = spotifyApi.clientCredentials().build();
+        ClientCredentials clientCredentials = request.execute();
+        spotifyApi.setAccessToken(clientCredentials.getAccessToken());
     }
 
-    public List<SongResponseDto> recommendPlayListByTime(int targetMinutes, String genre) {
+    public List<SongResponseDto> recommendPlayListByTime(int targetMinutes, String searchType, String keyword){
+        if (keyword == null || keyword.trim().isEmpty()) {
+            System.out.println("❌ 검색어가 입력되지 않았습니다.");
+            return new ArrayList<>();
+        }
+
         long targetDurationMs = targetMinutes * 60 * 1000L;
         long currentDurationMs = 0L;
-        List<SongResponseDto> playList = new ArrayList<>();
-
-        String[] suffixes = {"Official MV", "Official Audio", "Official Music Video"};
-
-        String antiAiQuery = " -ai -cover -sunu -udio -plink -fanmade";
+        List<SongResponseDto> playlist = new ArrayList<>();
 
         try {
-            List<Video> allVideos = new ArrayList<>();
-            List<String> shuffledSuffixes = new ArrayList<>(List.of(suffixes));
-            Collections.shuffle(shuffledSuffixes);
+            refreshAccessToken();
+            List<Track> allTracks = new ArrayList<>();
 
-            for (String suffix : shuffledSuffixes) {
-                YouTube.Search.List searchRequest = youtube.search().list(List.of("id", "snippet"));
-                SearchListResponse searchResponse = searchRequest
-                        .setKey(youtubeApiKey)
-                        .setQ(genre + " " + suffix + antiAiQuery)
-                        .setType(List.of("video"))
-                        .setVideoCategoryId("10")
-                        .setOrder("relevance")
-                        .setMaxResults(50L)
-                        .execute();
+            List<String> keywordList = Arrays.stream(keyword.split(","))
+                    .map(String::trim)
+                    .toList();
 
-                List<SearchResult> searchResults = searchResponse.getItems();
-                if (searchResults == null || searchResults.isEmpty()) continue;
+            String query;
+            for (String k : keywordList) {
+                if (searchType != null && !searchType.isBlank()) {
+                    query = searchType + ":" + k;
+                } else {
+                    query = k;
+                }
 
-                List<String> videoIds = searchResults.stream()
-                        .map(result -> result.getId().getVideoId())
-                        .toList();
+                int[] offsets = {0, 20, 40, 60};
+                for (int offset : offsets) {
+                    try {
+                        Paging<Track> tracks = spotifyApi
+                                .searchTracks(query)
+                                .offset(offset)
+                                .build()
+                                .execute();
 
-                YouTube.Videos.List videoRequest = youtube.videos().list(List.of("contentDetails", "snippet", "topicDetails"));
-                VideoListResponse videoResponse = videoRequest
-                        .setKey(youtubeApiKey)
-                        .setId(videoIds)
-                        .execute();
-
-                if (videoResponse.getItems() != null) {
-                    allVideos.addAll(videoResponse.getItems());
+                        if (tracks.getItems() != null) {
+                            allTracks.addAll(List.of(tracks.getItems()));
+                        }
+                    } catch (Exception e) {
+                        System.out.println("❌ " + k + " 검색 중 일부 오류 발생 (무시하고 계속 진행): " + e.getMessage());
+                    }
                 }
             }
 
-            java.util.Set<String> seen = new java.util.HashSet<>();
-            List<Video> dedupedVideos = allVideos.stream()
-                    .filter(v -> seen.add(v.getId()))
-                    .collect(Collectors.toList());
-            Collections.shuffle(dedupedVideos);
+            Collections.shuffle(allTracks);
 
-            for (Video video : dedupedVideos) {
-                String title = video.getSnippet().getTitle().toLowerCase();
-                String channelTitle = video.getSnippet().getChannelTitle().toLowerCase();
+            for (Track track : allTracks) {
+                long trackDuration = track.getDurationMs();
 
-                if (title.contains("ai") || title.contains("cover") || title.contains("fanmade")) continue;
+                if (trackDuration < 120000) continue;
 
-                boolean isOfficial = title.contains("official") ||
-                        channelTitle.contains("official") ||
-                        channelTitle.contains("vevo") ||
-                        channelTitle.endsWith("- topic");
+                if ("artist".equals(searchType)) {
+                    boolean isExactMatch = false;
 
-                if (!isOfficial) continue;
+                    for (var artist : track.getArtists()) {
+                        for (String k : keywordList) {
+                            if (artist.getName().equalsIgnoreCase(k)) {
+                                isExactMatch = true;
+                                break;
+                            }
+                        }
+                        if (isExactMatch) break;
+                    }
+                    if (!isExactMatch) continue;
+                }
 
-                String durationIso = video.getContentDetails().getDuration();
-                long trackDuration = Duration.parse(durationIso).toMillis();
-
-                if (trackDuration < 120000 || trackDuration > 360000) continue;
-
-                if (currentDurationMs + trackDuration <= targetDurationMs + 60000) {
-                    playList.add(new SongResponseDto(
-                            video.getSnippet().getTitle(),
-                            video.getSnippet().getChannelTitle(),
+                if (currentDurationMs + trackDuration <= targetDurationMs + 150000) {
+                    playlist.add(new SongResponseDto(
+                            track.getName(),
+                            track.getArtists()[0].getName(),
                             trackDuration,
-                            "https://www.youtube.com/watch?v=" + video.getId()
+                            track.getExternalUrls().get("spotify")
                     ));
                     currentDurationMs += trackDuration;
                 }
 
-                if (currentDurationMs >= targetDurationMs - 30000) break;
+                if (currentDurationMs >= targetDurationMs - 60000) break;
             }
 
         } catch (Exception e) {
-            System.err.println("❌ 노래 로드 중 오류: " + e.getMessage());
+            System.out.println("❌ 노래 로드 중 오류: " + e.getMessage());
         }
-        return playList;
+        return playlist;
     }
 
     @Transactional
-    public void savePlayList(PlaylistSaveRequestDto request, String email){
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("유저가 존재하지 않습니다"));
+    public void savePlayList(PlaylistSaveRequestDto requestDto, String userEmail){
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다"));
 
         Playlist playlist = new Playlist();
-        playlist.setTitle(request.getTitle());
+        playlist.setTitle(requestDto.getTitle());
         playlist.setUser(user);
 
-        for (SongResponseDto songDto : request.getSongs()) {
-            Song song = new Song();
-            song.setTitle(songDto.getTitle());
-            song.setArtistName(songDto.getArtist());
-            song.setTrackDuration(songDto.getDurationMs());
-            song.setYoutubeUrl(songDto.getYoutubeUrl());
-            playlist.addSong(song);
+        if(requestDto.getSongs() != null){
+            for (SongResponseDto songDto : requestDto.getSongs()) {
+                Song song = new Song();
+                song.setTitle(songDto.getTitle());
+                song.setArtistName(songDto.getArtist());
+                song.setTrackDuration(songDto.getDurationMs());
+                song.setSpotifyUrl(songDto.getSpotifyUrl());
+                playlist.addSong(song);
         }
-        playlistRepository.save(playlist);
+
+            playlistRepository.save(playlist);
+        }
     }
 }

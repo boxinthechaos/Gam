@@ -9,13 +9,13 @@ public class SongResponseDto {
     private String title;
     private String artist;
     private long durationMs;
-    private String youtubeUrl;
+    private String spotifyUrl;
 
-    public SongResponseDto(String title, String artist, long durationMs, String youtubeUrl) {
+    public SongResponseDto(String title, String artist, long durationMs, String spotifyUrl) {
         this.title = title;
         this.artist = artist;
         this.durationMs = durationMs;
-        this.youtubeUrl = youtubeUrl;
+        this.spotifyUrl = spotifyUrl;
 
     }
 }

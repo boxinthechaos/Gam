@@ -14,10 +14,8 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +32,9 @@ public class TravelApiService {
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    private final Deque<String> recentRegions = new ConcurrentLinkedDeque<>();
+    private static final int MAX_HISTORY = 3;
 
     public List<TravelSearchResponse.Item> searchLocal(String query){
         String[] suffixes;
@@ -107,14 +108,15 @@ public class TravelApiService {
 
     public RecommendResponseDto getRecommendationFromAI(RecommendRequestDto dto){
         String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=" + geminiApiKey;
+        String excludeRegions = String.join(", ", recentRegions);
         String prompt = String.format(
                 "너는 한국 최고의 1타 여행 가이드야. 유저가 '%s'와 함께, '%s' 풍경을 보며, '%s' 스타일의 '%s' 여행을 하고 싶어해. " +
                         "이 조건에 가장 완벽하게 어울리는 국내 여행지(도시 이름, 예: 강릉, 부산, 경주) 딱 1곳을 추천해 줘. " +
                         "이유는 감성적이고 설득력 있게 2~3줄로 작성해 줘. " +
+                        "★중요★ 최근에 추천했던 지역인 [%s] 지역은 절대 중복해서 추천하지 마. 반드시 다른 새로운 지역을 찾아봐! " +
                         "반드시 아래 JSON 형식으로만 대답하고, 마크다운 기호나 다른 설명은 일절 추가하지 마: " +
-                        "그리고 동일한 지역은 추천하지 말아줘 그리니까 너가 아까 광주를 추천 했으면 다음에는 광주가 아닌 다른 지역을 추천해줘 그리고 광주를 추천하고 다른 지역 추천 하고 다시 추천할 때 광주가 다시 나와도 괜찮아" +
                         "{\"recommendedRegion\": \"도시이름\", \"reason\": \"추천하는 이유\"}",
-                dto.getCompanion(), dto.getScenery(), dto.getStyle(), dto.getTransport()
+                dto.getCompanion(), dto.getScenery(), dto.getStyle(), dto.getTransport(), excludeRegions
         );
 
         Map<String, Object> textPart = new HashMap<>();
@@ -143,7 +145,18 @@ public class TravelApiService {
                     .path("text").asText();
             aiAnswer = aiAnswer.replace("```json", "").replace("```", "").trim();
 
-            return objectMapper.readValue(aiAnswer, RecommendResponseDto.class);
+            RecommendResponseDto responseDto = objectMapper.readValue(aiAnswer, RecommendResponseDto.class);
+
+            if (responseDto.getRecommendedRegion() != null) {
+                recentRegions.addLast(responseDto.getRecommendedRegion());
+                // 기억력이 MAX_HISTORY(3개)를 넘어가면 제일 오래된 기억 삭제 (다시 추천될 수 있게 됨)
+                if (recentRegions.size() > MAX_HISTORY) {
+                    recentRegions.removeFirst();
+                }
+            }
+
+            return responseDto;
+            
         } catch (Exception e) {
             e.printStackTrace();
             return new RecommendResponseDto("제주도", "AI가 잠시 혼란에 빠졌지만, 언제 가도 완벽한 제주도를 추천합니다!");

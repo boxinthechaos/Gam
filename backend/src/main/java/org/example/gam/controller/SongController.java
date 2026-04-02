@@ -21,8 +21,9 @@ public class SongController {
     @GetMapping("/recommend")
     public ResponseEntity<List<SongResponseDto>> recommendMusic(
             @RequestParam(defaultValue = "30") int minutes,
-            @RequestParam(defaultValue = "K-POP") String genre){
-        List<SongResponseDto> playList = playlistService.recommendPlayListByTime(minutes, genre);
+            @RequestParam(defaultValue = "artist") String searchType,
+            @RequestParam(defaultValue = "new jeans") String keyword) {
+        List<SongResponseDto> playList = playlistService.recommendPlayListByTime(minutes, searchType, keyword);
         return ResponseEntity.ok(playList);
     }
 

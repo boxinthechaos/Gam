@@ -16,7 +16,7 @@ public class Song {
     private String title;
     private String artistName;
     private Long trackDuration;
-    private String youtubeUrl;
+    private String spotifyUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "playlist_id")

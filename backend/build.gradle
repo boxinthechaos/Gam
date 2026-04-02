@@ -55,6 +55,9 @@ dependencies {
     implementation 'com.google.api-client:google-api-client:2.2.0'
     implementation 'com.google.http-client:google-http-client-gson:1.43.3'
 
+    // ── Spotify ────────────────────────────────────────────────────
+    implementation 'se.michaelthelin.spotify:spotify-web-api-java:8.4.1'
+
     // ── Test ──────────────────────────────────────────────────────
     testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
