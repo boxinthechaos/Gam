@@ -1,4 +1,4 @@
-package org.example.gam.dto;
+package org.example.gam.dto.music;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

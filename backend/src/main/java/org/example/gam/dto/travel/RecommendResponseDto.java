@@ -1,4 +1,4 @@
-package org.example.gam.dto;
+package org.example.gam.dto.travel;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

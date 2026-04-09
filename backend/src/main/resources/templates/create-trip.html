@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>새로운 여행 만들기 ✈️</title>
+    <style>
+        /* 기본 스타일 및 레이아웃 유지 */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #e9ecef; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .main-wrapper { display: flex; gap: 20px; width: 100%; max-width: 1300px; padding: 20px; box-sizing: border-box; }
+        .content-container { background-color: white; flex: 1; padding: 30px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); box-sizing: border-box; max-height: 85vh; overflow-y: auto; }
+        .content-container h2, .schedule-panel h2 { margin-top: 0; margin-bottom: 20px; color: #343a40; text-align: center; font-size: 20px; }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #495057; font-size: 14px; }
+        .input-group input { width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 8px; font-size: 14px; box-sizing: border-box; background-color: #f8f9fa; }
+        .date-group { display: flex; gap: 10px; }
+        .date-group .input-group { flex: 1; }
+        .btn-submit, .btn-back { width: 100%; padding: 12px; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.2s; margin-top: 8px; }
+        .btn-submit { background-color: #007bff; }
+        .btn-back { background-color: #6c757d; font-size: 14px; }
+        .trip-list { list-style: none; padding: 0; margin: 0; }
+        .trip-item { background-color: #f8f9fa; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; }
+        .trip-item.selected { border: 2px solid #007bff; background-color: #eef2f7; }
+        .trip-title { font-size: 16px; font-weight: bold; color: #2b6cb0; margin-bottom: 4px; }
+        .trip-dates { font-size: 13px; color: #718096; }
+        .schedule-panel { background-color: white; flex: 1.5; padding: 30px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); box-sizing: border-box; max-height: 85vh; overflow-y: auto; position: relative; }
+        .timeline-container { display: flex; gap: 15px; margin-top: 20px; position: relative; overflow-x: auto; padding-bottom: 20px; }
+        .timeline-day { flex: 1; min-width: 180px; border-left: 2px solid #cbd5e0; padding: 0 10px; min-height: 1000px; position: relative; background-image: repeating-linear-gradient(transparent, transparent 39px, #edf2f7 39px, #edf2f7 40px); background-position: 0 50px; }
+        .timeline-day h4 { margin: 0 0 10px 0; color: #4a5568; font-size: 15px; font-weight: bold; height: 40px; text-align: center; background-color: white; position: sticky; top: 0; z-index: 20; }
+        .schedule-bar { background-color: #66b2ff; color: white; padding: 8px; border-radius: 8px; position: absolute; width: calc(100% - 20px); box-sizing: border-box; transition: transform 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
+        .schedule-time { font-size: 11px; margin-bottom: 2px; opacity: 0.9; }
+        .schedule-name { font-size: 14px; font-weight: bold; }
+        .song-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; background-color: #f8f9fa; border-radius: 10px; margin-bottom: 10px; border: 1px solid #e2e8f0; }
+        .btn-spotify { background-color: #1DB954; color: white; padding: 8px 15px; border-radius: 20px; text-decoration: none; font-size: 12px; font-weight: bold; }
+        .empty-message { text-align: center; color: #a0aec0; padding: 20px; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<div class="main-wrapper">
+    <div class="content-container">
+        <h2>새로운 여행 만들기 ✈️</h2>
+        <div class="input-group"><label for="trip-title">📝 여행 제목</label><input type="text" id="trip-title" placeholder="예: 2박 3일 부산 먹방 여행"></div>
+        <div class="date-group">
+            <div class="input-group"><label for="start-date">📅 시작일</label><input type="date" id="start-date"></div>
+            <div class="input-group"><label for="end-date">🏁 종료일</label><input type="date" id="end-date"></div>
+        </div>
+        <button class="btn-submit" onclick="submitTrip()">여행 생성하기 ✨</button>
+        <button class="btn-back" onclick="goToSearch()">지도 검색으로 돌아가기 🗺️</button>
+    </div>
+
+    <div class="content-container">
+        <h2>내 여행 목록 🧳</h2>
+        <ul id="trip-list" class="trip-list"><div class="empty-message">목록 불러오는 중...</div></ul>
+
+        <h2 style="margin-top: 40px;">내 플레이리스트 🎵</h2>
+        <ul id="playlist-list" class="trip-list"><div class="empty-message">플리 불러오는 중...</div></ul>
+    </div>
+
+    <div class="schedule-panel" id="schedule-panel">
+        <h2 id="schedule-title">일정 상세 보기</h2>
+        <div id="timeline-container" class="timeline-container">
+            <div class="empty-message" style="width: 100%;">항목을 선택하세요.</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => { fetchTrips(); fetchPlaylists(); });
+
+    async function fetchWithToken(url, options = {}) {
+        options.credentials = 'include';
+        let response = await fetch(url, options);
+        if (response.status === 401) {
+            const reissueRes = await fetch('/api/v1/auth/reissue', { method: 'POST', credentials: 'include' });
+            if (reissueRes.ok) return await fetch(url, options);
+            else { alert("세션 만료"); window.location.href = "/api/v1/auth/login"; return reissueRes; }
+        }
+        return response;
+    }
+
+    async function fetchTrips() {
+        const listContainer = document.getElementById('trip-list');
+        const response = await fetchWithToken('/api/v1/travel/trips', { method: 'GET' });
+        if (response.ok) {
+            const trips = await response.json();
+            listContainer.innerHTML = trips.length ? '' : '<div class="empty-message">등록된 여행이 없습니다.</div>';
+            trips.forEach(trip => {
+                const li = document.createElement('li');
+                li.className = 'trip-item';
+                li.onclick = () => selectTrip(trip.id, li);
+                li.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <div><div class="trip-title">✈️ ${trip.title}</div><div class="trip-dates">${trip.startDate} ~ ${trip.endDate}</div></div>
+                    <button onclick="deleteTrip(event, ${trip.id})" style="background:none; border:none; color:#dc3545; cursor:pointer; font-size:16px; padding:5px;">🗑️</button>
+                </div>`;
+                listContainer.appendChild(li);
+            });
+        }
+    }
+
+    async function fetchPlaylists() {
+        const container = document.getElementById('playlist-list');
+        const res = await fetchWithToken('/api/v1/music/playlists');
+        if (res.ok) {
+            const playlists = await res.json();
+            container.innerHTML = playlists.length ? '' : '<div class="empty-message">플리가 없습니다.</div>';
+            playlists.forEach(pl => {
+                const li = document.createElement('li');
+                li.className = 'trip-item';
+                li.onclick = () => selectPlaylist(pl, li);
+                li.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <div><div class="trip-title">🎵 ${pl.title}</div><div class="trip-dates">${pl.songs.length}곡</div></div>
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <button onclick="openYoutube(event, ${pl.id})" style="background-color:#ff0000; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; font-size:12px; font-weight:bold;">YouTube</button>
+                        <button onclick="deletePlaylist(event, ${pl.id})" style="background:none; border:none; color:#dc3545; cursor:pointer; font-size:16px; padding:5px;">🗑️</button>
+                    </div>
+                </div>`;
+                container.appendChild(li);
+            });
+        }
+    }
+
+    async function deletePlaylist(event, id) { event.stopPropagation(); if (confirm("삭제?")) { const res = await fetchWithToken(`/api/v1/music/playlists/${id}`, { method: 'DELETE' }); if (res.ok) fetchPlaylists(); } }
+
+    function selectPlaylist(playlist, el) {
+        document.querySelectorAll('.trip-item').forEach(i => i.classList.remove('selected'));
+        el.classList.add('selected');
+
+        // 제목 옆에 유튜브 버튼 하나 더 배치
+        document.getElementById('schedule-title').innerHTML = `
+        🎧 ${playlist.title}
+        <button onclick="openYoutube(event, ${playlist.id})" style="background-color:#ff0000; color:white; border:none; padding:3px 8px; border-radius:4px; cursor:pointer; font-size:11px; margin-left:10px; vertical-align:middle;">전체 재생</button>
+    `;
+
+        const container = document.getElementById('timeline-container');
+        container.innerHTML = '';
+        const wrapper = document.createElement('div');
+        wrapper.style.width = '100%';
+        playlist.songs.forEach(s => {
+            const div = document.createElement('div');
+            div.className = 'song-item';
+            div.innerHTML = `<div><b>${s.title}</b><br><small>${s.artist}</small></div><a href="${s.spotifyUrl}" target="_blank" class="btn-spotify">Play</a>`;
+            wrapper.appendChild(div);
+        });
+        container.appendChild(wrapper);
+    }
+
+    async function submitTrip() {
+        const title = document.getElementById('trip-title').value;
+        const startDate = document.getElementById('start-date').value;
+        const endDate = document.getElementById('end-date').value;
+        if (!title || !startDate || !endDate) return;
+        const response = await fetchWithToken('/api/v1/travel/trips', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title, startDate, endDate }) });
+        if (response.ok) fetchTrips();
+    }
+
+    async function selectTrip(tripId, itemElement) {
+        window.currentTripId = tripId;
+        document.querySelectorAll('.trip-item').forEach(i => i.classList.remove('selected'));
+        itemElement.classList.add('selected');
+        const response = await fetchWithToken(`/api/v1/travel/trips/${tripId}`, { method: 'GET' });
+        if (response.ok) {
+            const tripDetail = await response.json();
+            document.getElementById('schedule-title').textContent = `📍 ${tripDetail.title} 일정`;
+            renderScheduleTimeline(tripDetail);
+        }
+    }
+
+    function renderScheduleTimeline(tripDetail) {
+        const container = document.getElementById('timeline-container');
+        container.innerHTML = '';
+        const startDate = new Date(tripDetail.startDate);
+        const endDate = new Date(tripDetail.endDate);
+        const diffDays = Math.ceil(Math.abs(endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+
+        for (let i = 0; i < diffDays; i++) {
+            const currentDay = new Date(startDate);
+            currentDay.setDate(startDate.getDate() + i);
+            const dateKey = currentDay.toISOString().split('T')[0];
+            const dateStr = currentDay.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' });
+            const dayColumn = document.createElement('div');
+            dayColumn.className = 'timeline-day'; dayColumn.id = `day-${dateKey}`;
+            dayColumn.innerHTML = `<h4>Day ${i+1}<br><span style="font-size:12px; color:#718096;">${dateStr}</span></h4>`;
+            container.appendChild(dayColumn);
+        }
+
+        tripDetail.schedules.forEach(schedule => {
+            const startDayColumn = document.getElementById(`day-${schedule.visitDate}`);
+            if (!startDayColumn) return;
+            const [startH, startM] = schedule.startTime.split(':').map(Number);
+            let endH = startH + 1, endM = startM;
+            if (schedule.endTime) { const parts = schedule.endTime.split(':'); endH = parseInt(parts[0]); endM = parseInt(parts[1]); }
+
+            const startMinutes = (startH * 60) + startM;
+            const endMinutes = (endH * 60) + endM;
+            const block = document.createElement('div');
+            block.className = 'schedule-bar';
+            block.style.top = `${50 + (startMinutes / 60) * 40}px`;
+            block.style.height = `${Math.max(30, ((endMinutes - startMinutes) / 60) * 40)}px`;
+
+            // 핵심 수정: 시간 형식을 "11:00 ~ 14:00" 형태로 출력
+            const timeRange = schedule.endTime ? `${schedule.startTime} ~ ${schedule.endTime}` : `${schedule.startTime}`;
+
+            block.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <div class="schedule-time">⏰ ${timeRange}</div>
+                    <button onclick="deleteSchedule(event, ${schedule.id})" style="background:none; border:none; color:white; cursor:pointer; font-size:12px;">✕</button>
+                </div>
+                <div class="schedule-name">${schedule.placeName}</div>
+            `;
+            startDayColumn.appendChild(block);
+        });
+    }
+
+    async function deleteSchedule(event, scheduleId) { event.stopPropagation(); if (confirm("삭제?")) { const response = await fetchWithToken(`/api/v1/travel/trips/${window.currentTripId}/schedules/${scheduleId}`, { method: 'DELETE' }); if (response.ok) selectTrip(window.currentTripId, document.querySelector('.trip-item.selected')); } }
+    async function deleteTrip(event, tripId) { event.stopPropagation(); if (confirm("삭제?")) { const response = await fetchWithToken(`/api/v1/travel/trips/${tripId}`, { method: 'DELETE' }); if (response.ok) fetchTrips(); } }
+    function goToSearch() { window.location.href = "/api/v1/travel/search"; }
+
+    async function openYoutube(event, playlistId) {
+        event.stopPropagation(); // 부모 요소인 li의 onclick(상세보기) 방지
+
+        // 버튼 상태 변경 (로딩 표시)
+        const btn = event.target;
+        const originalText = btn.textContent;
+        btn.textContent = "Loading...";
+        btn.disabled = true;
+
+        try {
+            const response = await fetchWithToken(`/api/v1/music/${playlistId}/youtube`, { method: 'GET' });
+            if (response.ok) {
+                const youtubeUrl = await response.text();
+                if (youtubeUrl && youtubeUrl.startsWith('http')) {
+                    window.open(youtubeUrl, '_blank');
+                } else {
+                    alert("유튜브 링크를 생성할 수 없습니다: " + youtubeUrl);
+                }
+            } else {
+                alert("링크를 불러오는 데 실패했습니다.");
+            }
+        } catch (error) {
+            console.error("Youtube Error:", error);
+            alert("오류가 발생했습니다.");
+        } finally {
+            btn.textContent = originalText;
+            btn.disabled = false;
+        }
+    }
+</script>
+</body>
+</html>

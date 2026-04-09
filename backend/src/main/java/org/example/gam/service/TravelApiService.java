@@ -1,9 +1,9 @@
 package org.example.gam.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.gam.dto.RecommendRequestDto;
-import org.example.gam.dto.RecommendResponseDto;
-import org.example.gam.dto.TravelSearchResponse;
+import org.example.gam.dto.travel.RecommendRequestDto;
+import org.example.gam.dto.travel.RecommendResponseDto;
+import org.example.gam.dto.travel.TravelSearchResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;

@@ -3,18 +3,15 @@ package org.example.gam.service;
 import lombok.RequiredArgsConstructor;
 import org.example.gam.Repository.RefreshTokenRepository;
 import org.example.gam.Repository.UserRepository;
-import org.example.gam.dto.*;
+import org.example.gam.dto.auth.*;
 import org.example.gam.entitiy.RefreshToken;
 import org.example.gam.entitiy.Role;
 import org.example.gam.entitiy.User;
 import org.example.gam.token.TokenProvider;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 @RequiredArgsConstructor

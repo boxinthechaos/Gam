@@ -86,8 +86,7 @@
             });
 
             if (response.ok) {
-                const data = await response.json();
-                localStorage.setItem('refreshToken', data.refreshToken);
+                // 백엔드가 알아서 쿠키를 구워주므로 JS는 그냥 페이지 이동만 하면 됨!
                 alert('로그인 성공! 이동합니다.');
                 window.location.href = '/api/v1/travel/search';
             } else {

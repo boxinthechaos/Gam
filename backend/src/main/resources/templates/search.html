@@ -17,7 +17,7 @@
       height: 100vh;
     }
 
-    /* 메인 컨테이너 (flex로 두 칼럼 배치) */
+    /* 메인 컨테이너 */
     #travel-finder-app {
       background-color: white;
       width: 90%;
@@ -29,7 +29,7 @@
       overflow: hidden;
     }
 
-    /* 왼쪽: 컨트롤 & 결과 칼럼 (와이어프레임 좌측) */
+    /* 왼쪽: 컨트롤 & 결과 칼럼 */
     #control-panel {
       width: 35%;
       height: 100%;
@@ -40,7 +40,7 @@
       box-sizing: border-box;
     }
 
-    /* 오른쪽: 지도 칼럼 (와이어프레임 우측) */
+    /* 오른쪽: 지도 칼럼 */
     #map-panel {
       width: 65%;
       height: 100%;
@@ -48,7 +48,7 @@
       position: relative;
     }
 
-    /* 와이어프레임 [식당, 숙소, 관광지] 탭 버튼 */
+    /* 카테고리 탭 버튼 */
     .category-tabs {
       display: flex;
       justify-content: space-between;
@@ -68,12 +68,12 @@
     }
     .category-btn:hover { background-color: #e2e6ea; }
     .category-btn.active {
-      background-color: #212529; /* 블랙으로 시크하게 */
+      background-color: #212529;
       color: white;
       border-color: #212529;
     }
 
-    /* 와이어프레임 [위치] 입력 박스 */
+    /* 위치 입력 박스 */
     #location-section {
       margin-bottom: 25px;
     }
@@ -93,11 +93,11 @@
       background-color: #f8f9fa;
     }
 
-    /* 와이어프레임 [검색] 버튼 */
+    /* 검색 버튼 */
     #search-btn {
       width: 100%;
       padding: 15px;
-      background-color: #007bff; /* 파란색으로 포인트 */
+      background-color: #007bff;
       color: white;
       border: none;
       border-radius: 10px;
@@ -111,8 +111,8 @@
 
     /* 결과 목록 영역 */
     #results-container {
-      flex-grow: 1; /* 남은 공간 다 차지 */
-      overflow-y: auto; /* 결과 많으면 스크롤 */
+      flex-grow: 1;
+      overflow-y: auto;
       border-top: 1px solid #dee2e6;
       padding-top: 20px;
     }
@@ -123,7 +123,7 @@
       margin-bottom: 15px;
     }
 
-    /* ✨ 와이어프레임 핵심: 호텔에서만 나오는 [URL] 라운드 버튼 스타일 ✨ */
+    /* 숙소 결과 아이템 */
     .hotel-result-item {
       display: block;
       width: 100%;
@@ -135,22 +135,12 @@
       font-size: 16px;
       color: #495057;
       text-align: left;
-      text-decoration: none; /* 링크 밑줄 제거 */
-      cursor: pointer;
-      transition: all 0.2s;
       box-sizing: border-box;
     }
-    .hotel-result-item:hover {
-      background-color: #e2e6ea;
-      border-color: #adb5bd;
-      transform: translateY(-2px);
-    }
-    .hotel-result-item b {
-      color: #212529;
-      font-size: 17px;
-    }
+    .hotel-result-item b { color: #212529; font-size: 17px; }
+    .hotel-result-item a { color: #007bff; text-decoration: none; font-weight: bold; }
 
-    /* 식당/관광지용 일반 목록 스타일 (와이어프레임엔 없지만 필요) */
+    /* 식당/관광지 결과 아이템 */
     .general-result-item {
       padding: 15px;
       margin-bottom: 10px;
@@ -160,9 +150,25 @@
       font-size: 17px;
       font-weight: bold;
       color: #333;
+      margin-bottom: 5px;
     }
 
-    /* 오른쪽 지도 영역 내부 스타일 (모크) */
+    /* 일정 추가 버튼 */
+    .schedule-btn {
+      float: right;
+      cursor: pointer;
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
+    .schedule-btn:hover { background: #218838; }
+
+    /* 오른쪽 지도 타이틀 */
     #map-title-bar {
       position: absolute;
       top: 20px;
@@ -173,17 +179,86 @@
       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
       font-weight: bold;
     }
-    #map-marker-mock {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 80px;
-      color: #adb5bd;
-    }
 
     /* 로딩바 */
     #loading { display: none; margin-top: 20px; font-weight: bold; color: #ff6b6b; text-align: center;}
+
+    /* ✨ 일정 추가 모달(팝업) 스타일 ✨ */
+    #schedule-modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+    #schedule-modal-box {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      width: 350px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    #schedule-modal-box h3 {
+      margin: 0 0 10px 0;
+      color: #343a40;
+      font-size: 20px;
+    }
+    .modal-input-group label {
+      display: block;
+      font-weight: bold;
+      color: #495057;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+    .modal-input-group select,
+    .modal-input-group input[type="time"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ced4da;
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-size: 15px;
+    }
+    .modal-btn-group {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .modal-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 15px;
+    }
+    .btn-cancel { background: #e9ecef; color: #495057; }
+    .btn-cancel:hover { background: #dee2e6; }
+    .btn-save { background: #007bff; color: white; }
+    .btn-save:hover { background: #0069d9; }
+
+    /* 다음 날 체크박스 컨테이너 스타일 */
+    .next-day-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 5px;
+      font-size: 14px;
+      color: #495057;
+      cursor: pointer;
+    }
+    .next-day-container input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -216,7 +291,46 @@
   </div>
 
   <div id="map-panel">
-    <div id="map-title-bar" style="z-index: 2;">🗺️ 여행지 지도</div> <div id="kakao-map" style="width: 100%; height: 100%;"></div>
+    <div id="map-title-bar" style="z-index: 2;">🗺️ 여행지 지도</div>
+    <div id="kakao-map" style="width: 100%; height: 100%;"></div>
+  </div>
+</div>
+
+<div id="schedule-modal-overlay">
+  <div id="schedule-modal-box">
+    <h3 id="modal-place-title">장소 이름</h3>
+
+    <div class="modal-input-group">
+      <label>🧳 내 여행 목록 (어디에 추가할까요?)</label>
+      <select id="modal-trip-id">
+        <option value="">여행을 선택해주세요 ✈️</option>
+      </select>
+    </div>
+
+    <div class="modal-input-group">
+      <label>📅 방문 일차 (날짜)</label>
+      <select id="modal-date">
+        <option value="">위에서 여행을 먼저 선택해주세요</option>
+      </select>
+    </div>
+
+    <div class="modal-input-group">
+      <label>⏰ 시작 시간 (언제 가실 건가요?)</label>
+      <input type="time" id="modal-time">
+    </div>
+
+    <div class="modal-input-group">
+      <label>⏳ 종료 시간 (언제까지 계실 건가요?)</label>
+      <input type="time" id="modal-end-time">
+      <label class="next-day-container">
+        <input type="checkbox" id="modal-next-day"> 다음 날 종료 (자정 이후)
+      </label>
+    </div>
+
+    <div class="modal-btn-group">
+      <button class="modal-btn btn-cancel" onclick="closeScheduleModal()">취소</button>
+      <button class="modal-btn btn-save" onclick="submitScheduleForm()">일정 저장</button>
+    </div>
   </div>
 </div>
 
@@ -225,22 +339,15 @@
   let currentCategoryKorean = '식당';
   let map, geocoder, markers = [];
 
-  // 1. 지도 초기화 (window.onload에서 호출됨)
   function initKakaoMap() {
     const container = document.getElementById('kakao-map');
-    const options = {
-      center: new kakao.maps.LatLng(37.566826, 126.9786567),
-      level: 5
-    };
+    const options = { center: new kakao.maps.LatLng(37.566826, 126.9786567), level: 5 };
     map = new kakao.maps.Map(container, options);
     geocoder = new kakao.maps.services.Geocoder();
   }
 
-  window.onload = function() {
-    initKakaoMap();
-  };
+  window.onload = function() { initKakaoMap(); };
 
-  // 2. 카테고리 설정
   function setCategory(btn, category) {
     document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
@@ -249,42 +356,34 @@
     document.getElementById('results-list').innerHTML = `<p style="text-align: center; color: #adb5bd; margin-top: 50px;">'${currentCategoryKorean}' 카테고리로 검색해주세요!</p>`;
   }
 
-  // 3. ✨ [중요] 토큰 재발급 대응 fetch 함수
   async function fetchWithToken(url, options = {}) {
-    options.credentials = 'include';
+    options.credentials = 'include'; // 쿠키 전송을 위해 필수!
+
     let response = await fetch(url, options);
 
-    if (response.status === 401) {
-      console.log("Access Token 만료. 재발급 시도...");
-      const refreshToken = localStorage.getItem('refreshToken');
+    // 401 에러거나, 스프링이 로그인 페이지로 튕겨낸 경우 둘 다 캐치!
+    if (response.status === 401 || (response.redirected && response.url.includes('/login'))) {
+      console.log("토큰 만료 감지. 쿠키로 재발급 시도...");
 
-      if (!refreshToken) {
-        window.location.href = "/api/v1/auth/login";
-        return response;
-      }
-
+      // 백엔드 몰래 새 토큰 발급 요청 (이제 body에 refreshToken 안 넣어도 브라우저가 알아서 쿠키로 보냄!)
       const reissueRes = await fetch('/api/v1/auth/reissue', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ refreshToken: refreshToken })
+        credentials: 'include' // 👈 이게 핵심!
       });
 
       if (reissueRes.ok) {
-        const data = await reissueRes.json();
-        localStorage.setItem('refreshToken', data.refreshToken);
-        // 재발급 성공 후 원래 요청 다시 시도
-        return await fetch(url, options);
+        console.log("토큰 재발급 성공! 원래 하려던 요청 다시 쏩니다 🚀");
+        return await fetch(url, options); // 원래 요청 다시 쏘기
       } else {
         alert("세션이 만료되었습니다. 다시 로그인해주세요.");
-        localStorage.removeItem('refreshToken');
         window.location.href = "/api/v1/auth/login";
         return reissueRes;
       }
     }
+
     return response;
   }
 
-  // 4. 검색 실행
   async function executeSearch() {
     const locationInput = document.getElementById('location-input');
     const region = locationInput.value;
@@ -292,7 +391,6 @@
 
     const loading = document.getElementById('loading');
     const resultsList = document.getElementById('results-list');
-    const resultsTitle = document.getElementById('results-title');
 
     loading.style.display = 'block';
 
@@ -305,7 +403,7 @@
       const data = await response.json();
       const places = Array.isArray(data) ? data : (data.items || []);
 
-      renderResults(places, region); // 👈 region 인자 추가
+      renderResults(places, region);
       updateMapWithMarkers(places, region);
     } catch (error) {
       console.error(error);
@@ -315,7 +413,6 @@
     }
   }
 
-  // 5. 결과 목록 렌더링
   function renderResults(data, region) {
     const resultsTitle = document.getElementById('results-title');
     const resultsList = document.getElementById('results-list');
@@ -328,20 +425,27 @@
 
     let html = '';
     data.forEach(item => {
+      const safeTitle = encodeURIComponent(item.title);
+
       if (currentCategory === 'hotels') {
-        html += `<a href="${item.bookingUrl || '#'}" target="_blank" class="hotel-result-item">
-                    <b>📌 ${item.title}</b><br>야놀자 숙소 URL 👉</a>`;
+        html += `<div class="hotel-result-item">
+                    <b>📌 ${item.title}</b><br>
+                    <div style="margin-top: 10px;">
+                        <a href="${item.bookingUrl || '#'}" target="_blank">야놀자 숙소 URL 👉</a>
+                        <button class="schedule-btn" onclick="openScheduleModal('${safeTitle}')">일정 추가 📅</button>
+                    </div>
+                </div>`;
       } else {
         html += `<div class="general-result-item">
                     <div class="general-result-title">📌 ${item.title}</div>
                     <a href="${item.link || '#'}" target="_blank" style="font-size: 14px; color: #007bff; text-decoration: none;">상세보기 👉</a>
+                    <button class="schedule-btn" onclick="openScheduleModal('${safeTitle}')">일정 추가 📅</button>
                 </div>`;
       }
     });
     resultsList.innerHTML = html;
   }
 
-  // 6. 지도 마커 업데이트
   function updateMapWithMarkers(places, region) {
     const mapTitleBar = document.getElementById('map-title-bar');
     mapTitleBar.innerText = `🗺️ [${region}] ${currentCategoryKorean} 위치`;
@@ -362,15 +466,166 @@
     if (markers.length > 0) map.setBounds(bounds);
   }
 
-  // 7. 로그아웃
   async function handleLogout() {
     if (!confirm("로그아웃 하시겠습니까?")) return;
     try {
-      const response = await fetch('/api/v1/auth/logout', { method: 'POST' });
-      localStorage.removeItem('refreshToken');
+      await fetch('/api/v1/auth/logout', {
+        method: 'POST',
+        credentials: 'include' // 로그아웃 할 때도 쿠키를 보내야 백엔드가 누군지 알고 쿠키를 지워줌!
+      });
+
+      // 🗑️ 원래 있던 localStorage.removeItem('refreshToken'); 삭제됨!
+
       alert("로그아웃 되었습니다.");
       window.location.href = "/api/v1/auth/login";
     } catch (e) { console.error(e); }
+  }
+
+  // =========================================================
+  // ✨ 일정 추가 모달 로직 (드롭다운 & 날짜 자동 계산 적용) ✨
+  // =========================================================
+  let selectedPlaceForSchedule = "";
+  let userTripsData = []; // 서버에서 불러온 여행 목록 전체를 저장해둘 변수
+
+  async function openScheduleModal(encodedTitle) {
+    selectedPlaceForSchedule = decodeURIComponent(encodedTitle);
+    document.getElementById('modal-place-title').innerText = `📌 ${selectedPlaceForSchedule}`;
+
+    // 폼 초기화
+    document.getElementById('modal-trip-id').innerHTML = '<option value="">여행 목록 불러오는 중... ⏳</option>';
+    document.getElementById('modal-date').innerHTML = '<option value="">위에서 여행을 먼저 선택해주세요</option>';
+    document.getElementById('modal-time').value = '';
+    document.getElementById('modal-end-time').value = '';
+    document.getElementById('modal-next-day').checked = false;
+
+    // 모달창 띄우기
+    document.getElementById('schedule-modal-overlay').style.display = 'flex';
+
+    // 여행 목록 불러오기 실행
+    await loadUserTrips();
+  }
+
+  function closeScheduleModal() {
+    document.getElementById('schedule-modal-overlay').style.display = 'none';
+  }
+
+  // 서버에서 여행 목록 불러오기
+  async function loadUserTrips() {
+    try {
+      const response = await fetchWithToken('/api/v1/travel/trips', { method: 'GET' });
+      const selectEl = document.getElementById('modal-trip-id');
+
+      if (response.ok) {
+        userTripsData = await response.json();
+
+        selectEl.innerHTML = '<option value="">추가할 여행을 선택해주세요 ✈️</option>';
+
+        if (userTripsData.length === 0) {
+          selectEl.innerHTML = '<option value="">생성된 여행이 없습니다. 먼저 여행을 만들어주세요!</option>';
+          return;
+        }
+
+        userTripsData.forEach(trip => {
+          const option = document.createElement('option');
+          option.value = trip.id;
+          option.text = trip.title;
+          selectEl.appendChild(option);
+        });
+      } else {
+        selectEl.innerHTML = '<option value="">여행 목록을 불러오지 못했습니다.</option>';
+      }
+    } catch (error) {
+      console.error("여행 목록 조회 실패:", error);
+      document.getElementById('modal-trip-id').innerHTML = '<option value="">서버 통신 오류 발생</option>';
+    }
+  }
+
+  // 여행 선택 시 발생하는 이벤트 -> 방문 날짜 자동 세팅!
+  document.getElementById('modal-trip-id').addEventListener('change', function() {
+    const tripId = this.value;
+    const dateSelectEl = document.getElementById('modal-date');
+
+    if (!tripId) {
+      dateSelectEl.innerHTML = '<option value="">위에서 여행을 먼저 선택해주세요</option>';
+      return;
+    }
+
+    const selectedTrip = userTripsData.find(t => t.id == tripId);
+
+    if (selectedTrip && selectedTrip.startDate && selectedTrip.endDate) {
+      dateSelectEl.innerHTML = ''; // 기존 옵션 비우기
+
+      const start = new Date(selectedTrip.startDate);
+      const end = new Date(selectedTrip.endDate);
+      let currentDate = new Date(start);
+      let dayCount = 1;
+
+      // 시작일부터 종료일까지 하루씩 더해가며 드롭다운 옵션 생성
+      while (currentDate <= end) {
+        // YYYY-MM-DD 형식으로 변환
+        const dateString = currentDate.toISOString().split('T')[0];
+
+        const option = document.createElement('option');
+        option.value = dateString;
+        option.text = `${dayCount}일차 (${dateString})`;
+        dateSelectEl.appendChild(option);
+
+        currentDate.setDate(currentDate.getDate() + 1); // 하루 추가
+        dayCount++;
+      }
+    } else {
+      dateSelectEl.innerHTML = '<option value="">날짜 정보를 불러올 수 없습니다.</option>';
+    }
+  });
+
+  function submitScheduleForm() {
+    const tripId = document.getElementById('modal-trip-id').value;
+    const date = document.getElementById('modal-date').value;
+    const startTime = document.getElementById('modal-time').value;
+    const endTime = document.getElementById('modal-end-time').value;
+    const isNextDay = document.getElementById('modal-next-day').checked;
+
+    if (!tripId) {
+      alert("여행을 선택해주세요!");
+      return;
+    }
+    if (!date || !startTime || !endTime) {
+      alert("날짜와 시간을 모두 선택/입력해주세요!");
+      return;
+    }
+
+    saveScheduleToServer(tripId, date, startTime, endTime, isNextDay);
+    closeScheduleModal();
+  }
+
+  async function saveScheduleToServer(tripId, date, startTime, endTime, isNextDay) {
+    const payload = {
+      placeName: selectedPlaceForSchedule,
+      category: currentCategoryKorean.replace(/[^가-힣a-zA-Z]/g, ''),
+      visitDate: date,
+      startTime: startTime,
+      endTime: endTime,
+      isNextDay: isNextDay
+    };
+
+    try {
+      const url = `/api/v1/travel/trips/${tripId}/schedules`;
+      const response = await fetchWithToken(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        alert(`✅ [${selectedPlaceForSchedule}] 일정이 성공적으로 저장되었습니다!`);
+      } else {
+        const errorText = await response.text();
+        alert(`❌ 일정 저장에 실패했습니다. (${errorText})`);
+      }
+    } catch (error) {
+      console.error("일정 저장 오류:", error);
+      alert("❌ 서버 통신 오류가 발생했습니다.");
+    }
   }
 </script>
 

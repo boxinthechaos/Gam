@@ -1,12 +1,12 @@
 package org.example.gam.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.example.gam.dto.RecommendRequestDto;
-import org.example.gam.dto.RecommendResponseDto;
-import org.example.gam.dto.TravelSearchResponse;
+import org.example.gam.dto.travel.*;
+import org.example.gam.service.CalendarService;
 import org.example.gam.service.TravelApiService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +19,7 @@ import java.util.List;
 public class TravelController {
 
     private final TravelApiService travelApiService;
+    private final CalendarService calendarService;
 
     @Value("${kakao.restapi.key}")
     private String kakaoApiKey;
@@ -60,5 +61,82 @@ public class TravelController {
         RecommendResponseDto response = travelApiService.getRecommendationFromAI(request);
 
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/trips/{tripId}/schedules")
+    public ResponseEntity<String> createSchedule(
+            @PathVariable Long tripId,
+            Authentication authentication,
+            @RequestBody ScheduleRequestDto requestDto){
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(401).body("로그인이 필요합니다.");
+        }
+
+        String email = authentication.getName();
+        calendarService.addSchedule(tripId, email, requestDto);
+
+        return ResponseEntity.ok("일정이 성공적으로 추가되었습니다!");
+    }
+
+    @GetMapping("/trips")
+    public ResponseEntity<List<TripResponseDto>> getMyTrips(Authentication authentication) {
+        String email = authentication.getName();
+        List<TripResponseDto> tripList = calendarService.getUserTrips(email);
+
+        return ResponseEntity.ok(tripList);
+    }
+
+    @PostMapping("/trips")
+    public ResponseEntity<Long> createTrip(Authentication authentication, @RequestBody TripRequestDto dto) {
+        String email = authentication.getName();
+        Long tripId = calendarService.createTrip(email, dto);
+        return ResponseEntity.ok(tripId);
+    }
+
+    @GetMapping("/trips/{tripId}")
+    public ResponseEntity<TripDetailDto> getTripDetail(
+            @PathVariable Long tripId,
+            Authentication authentication) {
+        String email = authentication.getName();
+        TripDetailDto tripDetail = calendarService.getTripDetail(tripId, email);
+        return ResponseEntity.ok(tripDetail);
+    }
+
+    @DeleteMapping("/trips/{tripId}")
+    public ResponseEntity<String> deleteTrip(
+            @PathVariable Long tripId,
+            Authentication authentication) {
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(401).body("로그인이 필요합니다.");
+        }
+
+        String email = authentication.getName();
+        calendarService.deleteTrip(tripId, email);
+
+        return ResponseEntity.ok("여행이 성공적으로 삭제되었습니다.");
+    }
+
+    @DeleteMapping("/trips/{tripId}/schedules/{scheduleId}")
+    public ResponseEntity<String> deleteSchedule(
+            @PathVariable Long tripId,
+            @PathVariable Long scheduleId,
+            Authentication authentication) {
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(401).body("로그인이 필요합니다.");
+        }
+
+        String email = authentication.getName();
+        calendarService.deleteSchedule(tripId, scheduleId, email);
+
+        return ResponseEntity.ok("일정이 성공적으로 삭제되었습니다.");
+    }
+
+
+    @GetMapping("/trip-create")
+    public String createTripPage() {
+        return "create-trip";
     }
 }

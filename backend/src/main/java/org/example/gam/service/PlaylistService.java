@@ -1,14 +1,18 @@
 package org.example.gam.service;
 
+import com.google.api.services.youtube.YouTube;
+import com.google.api.services.youtube.model.SearchListResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.gam.Repository.PlaylistRepository;
 import org.example.gam.Repository.UserRepository;
-import org.example.gam.dto.PlaylistSaveRequestDto;
-import org.example.gam.dto.SongResponseDto;
+import org.example.gam.dto.music.PlaylistResponseDto;
+import org.example.gam.dto.music.PlaylistSaveRequestDto;
+import org.example.gam.dto.music.SongResponseDto;
 import org.example.gam.entitiy.Playlist;
 import org.example.gam.entitiy.Song;
 import org.example.gam.entitiy.User;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import se.michaelthelin.spotify.SpotifyApi;
 import se.michaelthelin.spotify.model_objects.credentials.ClientCredentials;
@@ -27,6 +31,10 @@ public class PlaylistService {
     private final SpotifyApi spotifyApi;
     private final UserRepository userRepository;
     private final PlaylistRepository playlistRepository;
+    private final YouTube youtube;
+
+    @Value("${youtube.api.key}")
+    private String apiKey;
 
     private void refreshAccessToken() throws Exception{
         ClientCredentialsRequest request = spotifyApi.clientCredentials().build();
@@ -140,5 +148,86 @@ public class PlaylistService {
 
             playlistRepository.save(playlist);
         }
+    }
+
+    public List<PlaylistResponseDto> getMyPlaylists(String userEmail){
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다"));
+        List<Playlist> playlists = playlistRepository.findByUser(user);
+        return playlists.stream()
+                .map(playlist -> new PlaylistResponseDto(
+                        playlist.getId(),
+                        playlist.getTitle(),
+                        playlist.getSongs().stream()
+                                .map(song -> new SongResponseDto(
+                                        song.getTitle(),
+                                        song.getArtistName(),
+                                        song.getTrackDuration(),
+                                        song.getSpotifyUrl()
+                                )).toList()
+                )).toList();
+    }
+
+    public void deletePlaylist(Long PlaylistId, String userEmail){
+        Playlist playlist = playlistRepository.findById(PlaylistId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 플레이리스트가 존재하지 않습니다"));
+
+        if(!playlist.getUser().getEmail().equals(userEmail)){
+            throw new IllegalStateException("삭제 권한이 없습니다.");
+        }
+
+        playlistRepository.delete(playlist);
+    }
+
+    public String getYoutubeUrlFromPlaylist(Long playlistId, String userEmail) {
+        Playlist playlist = playlistRepository.findById(playlistId)
+                .orElseThrow(() -> new IllegalArgumentException("플레이리스트가 존재하지 않습니다."));
+        if (!playlist.getUser().getEmail().equals(userEmail)) {
+            throw new IllegalStateException("권한이 없습니다.");
+        }
+
+        List<String> videoIds = new ArrayList<>();
+
+        for (Song song : playlist.getSongs()) {
+            String query = song.getArtistName() + " " + song.getTitle();
+            String videoId = searchYoutubeVideoId(query);
+
+            if (videoId != null) {
+                videoIds.add(videoId);
+            }
+        }
+        if (videoIds.isEmpty()) {
+            return "검색 결과가 없습니다.";
+        }
+        return "https://www.youtube.com/watch_videos?video_ids=" + String.join(",", videoIds);
+    }
+
+    private String searchYoutubeVideoId(String query) {
+        try {
+            SearchListResponse response = youtube.search()
+                    .list(Collections.singletonList("id"))
+                    .setQ(query)
+                    .setKey(apiKey)
+                    .setType(Collections.singletonList("video"))
+                    .setMaxResults(1L)
+                    .setFields("items(id(videoId))") // 필요한 필드만 가져와서 속도 향상
+                    .execute();
+
+            if (response.getItems() != null && !response.getItems().isEmpty()) {
+                return response.getItems().get(0).getId().getVideoId();
+            }
+        } catch (Exception e) {
+            System.err.println("❌ 유튜브 검색 중 오류 발생: " + query + " -> " + e.getMessage());
+        }
+        return null;
+    }
+
+    public String getYoutubeUrlFromDtoList(List<SongResponseDto> songs) {
+        List<String> videoIds = new ArrayList<>();
+        for (SongResponseDto song : songs) {
+            String videoId = searchYoutubeVideoId(song.getArtist() + " " + song.getTitle());
+            if (videoId != null) videoIds.add(videoId);
+        }
+        return videoIds.isEmpty() ? "" : "https://www.youtube.com/watch_videos?video_ids=" + String.join(",", videoIds);
     }
 }

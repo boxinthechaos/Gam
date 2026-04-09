@@ -3,7 +3,7 @@ package org.example.gam.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.example.gam.dto.*;
+import org.example.gam.dto.auth.*;
 import org.example.gam.service.AuthService;
 import org.example.gam.service.EmailService;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +33,12 @@ public class AuthController {
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setMaxAge(60 * 60 * 24);
+
+        Cookie refreshCookie = new Cookie("refreshToken", tokenResponse.getRefreshToken());
+        refreshCookie.setHttpOnly(true);
+        refreshCookie.setPath("/");
+        refreshCookie.setMaxAge(60 * 60 * 24 * 7);
+        response.addCookie(refreshCookie);
 
         response.addCookie(cookie);
         return ResponseEntity.ok(tokenResponse);
@@ -70,21 +76,42 @@ public class AuthController {
         cookie.setMaxAge(0);
         response.addCookie(cookie);
 
+        Cookie refreshCookie = new Cookie("refreshToken", null);
+        refreshCookie.setPath("/");
+        refreshCookie.setHttpOnly(true);
+        refreshCookie.setMaxAge(0);
+        response.addCookie(refreshCookie);
+
         SecurityContextHolder.clearContext();
 
         return ResponseEntity.ok("로그아웃 성공");
     }
 
     @PostMapping("/reissue")
-    public ResponseEntity<TokenResponse> reissue(@RequestBody ReissueRequest request, HttpServletResponse response){
-        TokenResponse tokenResponse = authService.reissue(request.getRefreshToken());
-        Cookie cookie = new Cookie("accessToken", tokenResponse.getAccessToken());
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(60 * 60 * 24);
+    public ResponseEntity<TokenResponse> reissue(
+            @CookieValue(value = "refreshToken", required = false) String refreshToken,
+            HttpServletResponse response){
 
-        response.addCookie(cookie);
+        if (refreshToken == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        TokenResponse tokenResponse = authService.reissue(refreshToken);
+
+        Cookie accessCookie = new Cookie("accessToken", tokenResponse.getAccessToken());
+        accessCookie.setHttpOnly(true);
+        accessCookie.setSecure(true);
+        accessCookie.setPath("/");
+        accessCookie.setMaxAge(60 * 60 * 24);
+        response.addCookie(accessCookie);
+
+        Cookie refreshCookie = new Cookie("refreshToken", tokenResponse.getRefreshToken());
+        refreshCookie.setHttpOnly(true);
+        refreshCookie.setSecure(true);
+        refreshCookie.setPath("/");
+        refreshCookie.setMaxAge(60 * 60 * 24 * 7);
+        response.addCookie(refreshCookie);
+
         return ResponseEntity.ok(tokenResponse);
     }
 

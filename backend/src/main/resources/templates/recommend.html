@@ -106,8 +106,37 @@
 </div>
 
 <script>
+    // 💡 한층 더 강력해진 만능 fetch 함수! (리다이렉트 방어 추가)
+    async function fetchWithToken(url, options = {}) {
+        options.credentials = 'include'; // 쿠키 전송을 위해 필수!
+
+        let response = await fetch(url, options);
+
+        // 401 에러거나, 스프링이 로그인 페이지로 튕겨낸 경우 둘 다 캐치!
+        if (response.status === 401 || (response.redirected && response.url.includes('/login'))) {
+            console.log("토큰 만료 감지. 쿠키로 재발급 시도...");
+
+            // 백엔드 몰래 새 토큰 발급 요청 (이제 body에 refreshToken 안 넣어도 브라우저가 알아서 쿠키로 보냄!)
+            const reissueRes = await fetch('/api/v1/auth/reissue', {
+                method: 'POST',
+                credentials: 'include' // 👈 이게 핵심!
+            });
+
+            if (reissueRes.ok) {
+                console.log("토큰 재발급 성공! 원래 하려던 요청 다시 쏩니다 🚀");
+                return await fetch(url, options); // 원래 요청 다시 쏘기
+            } else {
+                alert("세션이 만료되었습니다. 다시 로그인해주세요.");
+                window.location.href = "/api/v1/auth/login";
+                return reissueRes;
+            }
+        }
+
+        return response;
+    }
+
+    // 기존 추천 함수
     async function getRecommendation() {
-        // 1. 값 가져오기
         const requestData = {
             companion: document.getElementById('companion').value,
             scenery: document.getElementById('scenery').value,
@@ -115,13 +144,11 @@
             transport: document.getElementById('transport').value
         };
 
-        // 2. UI 상태 변경 (로딩 표시)
         document.getElementById('loading').style.display = 'block';
         document.getElementById('result-box').style.display = 'none';
 
         try {
-            // 3. 백엔드(우리 서버)로 POST 요청 쏘기!
-            const response = await fetch('/api/v1/travel/recommend', {
+            const response = await fetchWithToken('/api/v1/travel/recommend', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -133,13 +160,11 @@
                 throw new Error("서버 에러가 발생했습니다!");
             }
 
-            // 4. 응답 받아서 화면에 뿌리기
             const data = await response.json();
 
             document.getElementById('region').innerText = "📍 추천 여행지: " + data.recommendedRegion;
             document.getElementById('reason').innerText = "💡 " + data.reason;
 
-            // 로딩 숨기고 결과창 보여주기
             document.getElementById('loading').style.display = 'none';
             document.getElementById('result-box').style.display = 'block';
 
