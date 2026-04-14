@@ -162,4 +162,39 @@ public class TravelApiService {
             return new RecommendResponseDto("제주도", "AI가 잠시 혼란에 빠졌지만, 언제 가도 완벽한 제주도를 추천합니다!");
         }
     }
+
+    public List<TravelSearchResponse.Item> searchKeyword(String query) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-Naver-Client-Id", clientId);
+        headers.set("X-Naver-Client-Secret", clientSecret);
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+        List<TravelSearchResponse.Item> resultItems = new java.util.ArrayList<>();
+        // 정확한 검색을 위해 suffix를 붙이지 않고 검색어 그대로 요청합니다. (상위 5개만)
+        String url = "https://openapi.naver.com/v1/search/local.json?query={query}&display=5&start=1";
+
+        try {
+            ResponseEntity<TravelSearchResponse> response = restTemplate.exchange(
+                    url, HttpMethod.GET, entity, TravelSearchResponse.class, query
+            );
+
+            if (response.getBody() != null && response.getBody().getItems() != null) {
+                List<TravelSearchResponse.Item> items = response.getBody().getItems();
+
+                for (TravelSearchResponse.Item item : items) {
+                    String cleanTitle = item.getTitle().replaceAll("<[^>]*>", "");
+                    cleanTitle = HtmlUtils.htmlUnescape(cleanTitle);
+                    item.setTitle(cleanTitle);
+                    String encodedTitle = URLEncoder.encode(cleanTitle, StandardCharsets.UTF_8);
+
+                    item.setLink("https://map.naver.com/p/search/" + encodedTitle);
+                }
+                resultItems.addAll(items);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return resultItems;
+    }
 }

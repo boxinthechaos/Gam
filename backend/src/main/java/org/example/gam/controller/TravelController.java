@@ -2,6 +2,7 @@ package org.example.gam.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.gam.dto.travel.*;
+import org.example.gam.service.AiService;
 import org.example.gam.service.CalendarService;
 import org.example.gam.service.TravelApiService;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,7 @@ public class TravelController {
 
     private final TravelApiService travelApiService;
     private final CalendarService calendarService;
+    private final AiService aiService;
 
     @Value("${kakao.restapi.key}")
     private String kakaoApiKey;
@@ -138,5 +140,25 @@ public class TravelController {
     @GetMapping("/trip-create")
     public String createTripPage() {
         return "create-trip";
+    }
+
+    @GetMapping("/keyword")
+    public ResponseEntity<List<TravelSearchResponse.Item>> getKeywordSearch(@RequestParam String query) {
+        List<TravelSearchResponse.Item> result = travelApiService.searchKeyword(query);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/feedback/trips/{tripId}")
+    public ResponseEntity<String> getTripFeedback(
+            @PathVariable Long tripId,
+            Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(401).body("로그인이 필요합니다.");
+        }
+        String email = authentication.getName();
+
+        String feedback = calendarService.getTripFeedback(tripId, email);
+
+        return ResponseEntity.ok(feedback);
     }
 }

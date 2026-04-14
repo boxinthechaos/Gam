@@ -9,9 +9,22 @@ import org.example.gam.dto.travel.*;
 import org.example.gam.entitiy.Schedule;
 import org.example.gam.entitiy.Trip;
 import org.example.gam.entitiy.User;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import org.example.gam.dto.travel.ScheduleResponseDto;
+import org.example.gam.dto.travel.TripDetailDto;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,6 +33,9 @@ public class CalendarService {
     private final ScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
     private final TripRepository tripRepository;
+    private final AiService aiService;
+    private final RestTemplate restTemplate = new RestTemplate();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Transactional
     public void addSchedule(Long tripId, String username, ScheduleRequestDto dto) {
@@ -46,6 +62,8 @@ public class CalendarService {
                 .build();
 
         scheduleRepository.save(schedule);
+
+        trip.setAiFeedback(null);
     }
 
     @Transactional
@@ -125,6 +143,8 @@ public class CalendarService {
         }
 
         scheduleRepository.delete(schedule);
+
+        trip.setAiFeedback(null);
     }
 
     @Transactional
@@ -141,5 +161,19 @@ public class CalendarService {
         }
 
         tripRepository.delete(trip);
+    }
+
+    @Transactional
+    public String getTripFeedback(Long tripId, String username) {
+        Trip trip = tripRepository.findById(tripId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 여행을 찾을 수 없습니다."));
+        if (trip.getAiFeedback() != null && !trip.getAiFeedback().isEmpty()) {
+            return trip.getAiFeedback();
+        }
+        TripDetailDto tripDetail = getTripDetail(tripId, username);
+        String feedback = aiService.getTripFeedback(tripDetail);
+        trip.setAiFeedback(feedback);
+
+        return feedback;
     }
 }

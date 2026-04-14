@@ -143,9 +143,14 @@ public class PlaylistService {
                 song.setArtistName(songDto.getArtist());
                 song.setTrackDuration(songDto.getDurationMs());
                 song.setSpotifyUrl(songDto.getSpotifyUrl());
-                playlist.addSong(song);
-        }
 
+                // 🔥 유튜브 비디오 ID 검색 및 저장
+                String query = songDto.getArtist() + " " + songDto.getTitle();
+                String videoId = searchYoutubeVideoId(query);
+                song.setYoutubeVideoId(videoId);
+
+                playlist.addSong(song);
+            }
             playlistRepository.save(playlist);
         }
     }
@@ -182,23 +187,22 @@ public class PlaylistService {
     public String getYoutubeUrlFromPlaylist(Long playlistId, String userEmail) {
         Playlist playlist = playlistRepository.findById(playlistId)
                 .orElseThrow(() -> new IllegalArgumentException("플레이리스트가 존재하지 않습니다."));
+
         if (!playlist.getUser().getEmail().equals(userEmail)) {
             throw new IllegalStateException("권한이 없습니다.");
         }
 
         List<String> videoIds = new ArrayList<>();
-
         for (Song song : playlist.getSongs()) {
-            String query = song.getArtistName() + " " + song.getTitle();
-            String videoId = searchYoutubeVideoId(query);
-
-            if (videoId != null) {
-                videoIds.add(videoId);
+            if (song.getYoutubeVideoId() != null && !song.getYoutubeVideoId().isEmpty()) {
+                videoIds.add(song.getYoutubeVideoId());
             }
         }
+
         if (videoIds.isEmpty()) {
             return "검색 결과가 없습니다.";
         }
+
         return "https://www.youtube.com/watch_videos?video_ids=" + String.join(",", videoIds);
     }
 

@@ -18,6 +18,9 @@ public class Song {
     private Long trackDuration;
     private String spotifyUrl;
 
+    @Column(name = "youtube_video_id")
+    private String youtubeVideoId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "playlist_id")
     private Playlist playlist;
