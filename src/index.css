@@ -27,16 +27,8 @@
 }
 
 .auth-btn{
-  @apply w-full h-10 mt-4 rounded-md text-base font-extrabold
+  @apply w-full h-10 mt-4 rounded-md text-base text-white font-extrabold
 
   md:h-12 md:text-lg 
   lg:h-15 lg:text-xl;
-}
-
-.orange-btn{
-  @apply bg-[#ff8c00] text-white;
-}
-
-.gray-btn{
-  @apply bg-[#dddddd] text-black;
 }
