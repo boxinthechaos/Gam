@@ -3,31 +3,29 @@ import { useState } from "react";
 export default function RequestingCode() {
     const [email, setEmail] = useState<string>("");
 
-    const isInfoValid: boolean = email.trim().length > 0;
+    const isEmailValid: boolean = email.trim().length > 0;
 
     return (
-        <div className="flex gap-2.5">
+        <div className="flex gap-3 animate-[appear_0.5s_ease-out_0.1s_forwards]">
 
-            <input
+            <input 
             type="text"
             placeholder="이메일"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="opacity-0 animate-[appear_0.5s_ease-out_0.1s_forwards] auth-input w-[75%]"
+            className="auth-input w-[80%]"
             />
-            
-            <button className={`
-                opacity-0 
-                animate-[appear_0.5s_ease-out_0.1s_forwards] 
-                auth-btn
-                w-[25%] h-8 
+
+            <button 
+            className={`
+                auth-btn w-[20%] h-8 text-sm
 
                 md:h-10 md:text-base
 
-                ${isInfoValid 
-                    ? "auth-btn-able" 
+                ${isEmailValid
+                    ? "auth-btn-able"
                     : "auth-btn-disabled"
-                }
+                } 
             `}
             >
                 코드 발송
