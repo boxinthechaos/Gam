@@ -5,4 +5,5 @@ export type PasswordInputProps = {
     onChange: (e: ChangeEvent<HTMLInputElement>) => void;
     isPasswordShown: boolean;
     onClick: () => void;
+    animation: string;
 }

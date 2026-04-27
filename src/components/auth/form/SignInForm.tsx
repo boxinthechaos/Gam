@@ -16,26 +16,27 @@ export default function SignInForm(){
     const nav = useNavigate();
 
     return(
-        <div className="w-full max-w-md mx-auto px-5
-        md:max-w-lg
-        lg:max-w-xl"
+        <div className="
+            w-full max-w-md mx-auto px-5
+            md:max-w-lg"
         >
 
-            <p className="opacity-0 animate-[appear_0.5s_ease-out_forwards] auth-text">
+            <p className="auth-text">
                 안녕하세요 :)
             </p>
 
             <p className="
-                opacity-0 animate-[appear_0.5s_ease-out_forwards] auth-text mb-6 
-                md:mb-10 
-                lg:mb-12"
+                auth-text mb-6 
+                md:mb-10"
             >
                 로그인하고 감과 함께 떠나볼까요?
             </p>
 
             <AuthInput
-            nickName={nickName}
+            value={nickName}
+            placeholder="닉네임"
             onChange={(e) => setNickName(e.target.value)}
+            animation="animate-[appear_0.5s_ease-out_0.1s_forwards]"
             />
 
             <PasswordInput
@@ -43,18 +44,21 @@ export default function SignInForm(){
             onChange={(e) => setPassword(e.target.value)}
             isPasswordShown={isPasswordShown}
             onClick={() => setIsPasswordShown(!isPasswordShown)}
+            animation="animate-[appear_0.5s_ease-out_0.2s_forwards]"
             />
 
             <AuthButton isInfoValid={isInfoValid} text="로그인"/>
 
-            <AuthLinks
-                links={[
-                    { label: "닉네임 찾기", onClick: () => nav('/find-nickname') },
-                    { label: "비밀번호 재설정", onClick: () => nav('/reset-password') },
-                    { label: "회원가입", onClick: () => nav('/sign-in') },
-                ]}
-            />
-
+            <div className="flex justify-center w-full">
+                <AuthLinks
+                    links={[
+                        { label: "닉네임 찾기", onClick: () => nav('/verify') },
+                        { label: "비밀번호 재설정", onClick: () => nav('/verify') },
+                        { label: "회원가입", onClick: () => nav('/verify') },
+                    ]}
+                />
+            </div>
+            
         </div>
     );
 }

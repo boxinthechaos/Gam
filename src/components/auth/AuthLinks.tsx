@@ -5,12 +5,12 @@ export default function AuthLinks({ links }: AuthLinksProps) {
         <div
         className="
             opacity-0 animate-[appear_0.5s_ease-out_0.4s_forwards] 
-            flex justify-center items-center 
-            w-full 
+            flex 
             mt-5 
             text-xs 
             md:text-base"
         >
+
             {links.map((link, index) => (
                 <div key={index} className="flex items-center">
                     <p
@@ -25,6 +25,7 @@ export default function AuthLinks({ links }: AuthLinksProps) {
                     )}
                 </div>
             ))}
+            
         </div>
     );
 }

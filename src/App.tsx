@@ -1,5 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
 import SignIn from "./pages/auth/SignIn";
+import VerifyEmail from "./pages/auth/VerifyEmail";
 
 function App() {
   return (
@@ -8,6 +10,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/sign-in" replace/>}/>
           <Route path="/sign-in" element={<SignIn/>}/>
+          <Route path="/verify" element={<VerifyEmail/>}/>
         </Routes>
       </BrowserRouter>
     </>
