@@ -7,11 +7,11 @@ import AuthButton from "../AuthButton";
 import AuthLinks from "../AuthLinks";
 
 export default function SignInForm(){
-    const [nickName, setNickName] = useState<string>("");
+    const [nickname, setNickname] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [isPasswordShown, setIsPasswordShown] = useState<boolean>(false);
 
-    const isInfoValid: boolean = nickName.trim().length > 0 && password.trim().length > 0;
+    const isInfoValid: boolean = nickname.trim().length > 0 && password.trim().length > 0;
 
     const nav = useNavigate();
 
@@ -33,9 +33,9 @@ export default function SignInForm(){
             </p>
 
             <AuthInput
-            value={nickName}
+            value={nickname}
             placeholder="닉네임"
-            onChange={(e) => setNickName(e.target.value)}
+            onChange={(e) => setNickname(e.target.value)}
             animation="animate-[appear_0.5s_ease-out_0.1s_forwards]"
             />
 
@@ -47,7 +47,11 @@ export default function SignInForm(){
             animation="animate-[appear_0.5s_ease-out_0.2s_forwards]"
             />
 
-            <AuthButton isInfoValid={isInfoValid} text="로그인"/>
+            <AuthButton 
+            
+            isInfoValid={isInfoValid} 
+            text="로그인"
+            />
 
             <div className="flex justify-center w-full">
                 <AuthLinks

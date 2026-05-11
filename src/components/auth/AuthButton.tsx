@@ -1,8 +1,9 @@
 import type { AuthButtonProps } from "../../types/AuthButtonProps";
 
-export default function AuthButton({ isInfoValid, text }: AuthButtonProps) {
+export default function AuthButton({ isInfoValid, text, func }: AuthButtonProps) {
     return (
         <button 
+        onClick={func}
         disabled={!isInfoValid} 
         className={`
             opacity-0 

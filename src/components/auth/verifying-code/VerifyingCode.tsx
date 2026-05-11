@@ -19,6 +19,7 @@ export default function VerifyingCode() {
             />
 
             <AuthButton
+            
             isInfoValid={isCodeValid}
             text="인증하기"
             />
