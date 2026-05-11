@@ -138,4 +138,7 @@ public class AuthController {
     public String joinP(){
         return "join";
     }
+
+    @GetMapping("/user/mypage")
+    public String myPage(){return "my-page";}
 }

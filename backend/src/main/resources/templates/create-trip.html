@@ -4,109 +4,73 @@
     <meta charset="UTF-8">
     <title>새로운 여행 만들기 ✈️</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #e9ecef; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        .main-wrapper { display: flex; gap: 20px; width: 100%; max-width: 1300px; padding: 20px; box-sizing: border-box; height: 95vh; }
-        .content-container { background-color: white; flex: 1; padding: 25px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); box-sizing: border-box; overflow-y: auto; }
-        .content-container h2, .schedule-panel h2 { margin-top: 0; margin-bottom: 20px; color: #343a40; text-align: center; font-size: 18px; }
-        .input-group { margin-bottom: 12px; }
-        .input-group label { display: block; margin-bottom: 4px; font-weight: bold; color: #495057; font-size: 13px; }
-        .input-group input { width: 100%; padding: 8px; border: 1px solid #ced4da; border-radius: 8px; font-size: 13px; box-sizing: border-box; background-color: #f8f9fa; }
-        .date-group { display: flex; gap: 10px; }
-        .btn-submit, .btn-back { width: 100%; padding: 10px; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; margin-top: 5px; }
+        /* 공통 스타일 유지 */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #e9ecef; margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; }
+        .custom-navbar { display: flex; justify-content: space-between; align-items: center; background-color: #ffffff; padding: 15px 30px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05); position: sticky; top: 0; z-index: 1000; }
+        .nav-brand { font-size: 22px; font-weight: 800; color: #007bff; text-decoration: none; letter-spacing: -0.5px; }
+        .nav-links { display: flex; gap: 25px; align-items: center; }
+        .nav-links a { text-decoration: none; color: #495057; font-size: 15px; font-weight: 600; transition: color 0.2s ease; }
+        .nav-links a:hover { color: #007bff; }
+        .nav-auth { display: flex; gap: 12px; align-items: center; }
+        .btn-nav { padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: bold; cursor: pointer; border: none; transition: all 0.2s; }
+        .btn-login { background-color: #f8f9fa; color: #343a40; border: 1px solid #ced4da; }
+        .btn-login:hover { background-color: #e2e6ea; }
+        .btn-logout { background-color: #ff4757; color: white; }
+        .btn-logout:hover { background-color: #ff6b81; }
+
+        /* 생성 폼 전용 스타일 */
+        .main-wrapper { display: flex; justify-content: center; align-items: center; width: 100%; max-width: 600px; padding: 20px; box-sizing: border-box; margin: 50px auto; }
+        .content-container { background-color: white; width: 100%; padding: 30px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); box-sizing: border-box; }
+        .content-container h2 { margin-top: 0; margin-bottom: 25px; color: #343a40; text-align: center; font-size: 20px; }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; margin-bottom: 6px; font-weight: bold; color: #495057; font-size: 14px; }
+        .input-group input { width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 8px; font-size: 14px; box-sizing: border-box; background-color: #f8f9fa; }
+        .date-group { display: flex; gap: 15px; }
+        .btn-submit, .btn-back { width: 100%; padding: 12px; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; }
         .btn-submit { background-color: #007bff; }
-        .btn-youtube { background-color: #ff0000; color: white; border: none; border-radius: 5px; padding: 5px 10px; font-size: 12px; font-weight: bold; cursor: pointer; margin-left: 10px; }
+        .btn-submit:hover { background-color: #0069d9; }
         .btn-back { background-color: #6c757d; }
-        .trip-list { list-style: none; padding: 0; margin: 0; }
-        .trip-item { background-color: #f8f9fa; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; }
-        .trip-item.selected { border: 2px solid #007bff; background-color: #eef2f7; }
-        .trip-title { font-size: 14px; font-weight: bold; color: #2b6cb0; }
-        .trip-dates { font-size: 12px; color: #718096; }
-        .schedule-panel { background-color: white; flex: 1.5; padding: 25px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); box-sizing: border-box; overflow-y: auto; position: relative; }
-        .timeline-container { display: flex; gap: 15px; margin-top: 15px; overflow-x: auto; padding-bottom: 20px; }
-        .timeline-day { flex: 1; min-width: 180px; border-left: 2px solid #cbd5e0; padding: 0 10px; min-height: 1100px; position: relative; background-image: repeating-linear-gradient(transparent, transparent 39px, #edf2f7 39px, #edf2f7 40px); background-position: 0 50px; }
-        .timeline-day h4 { margin: 0; height: 40px; text-align: center; background: white; position: sticky; top: 0; z-index: 20; font-size: 14px; padding-top: 5px; }
-        .schedule-bar { background-color: #66b2ff; color: white; padding: 8px; border-radius: 8px; position: absolute; width: calc(100% - 20px); box-sizing: border-box; box-shadow: 0 2px 5px rgba(0,0,0,0.1); font-size: 12px; overflow: hidden; cursor: pointer; transition: transform 0.1s; }
-        .schedule-bar:hover { transform: scale(1.02); filter: brightness(1.05); z-index: 10; }
-        .schedule-time { font-size: 10px; opacity: 0.9; margin-bottom: 2px; }
-        .schedule-name { font-weight: bold; }
-        .song-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background-color: #f8f9fa; border-radius: 10px; margin-bottom: 8px; border: 1px solid #e2e8f0; }
-        .empty-message { text-align: center; color: #a0aec0; padding: 20px; font-size: 13px; }
-
-        /* ✨ 추가하신 일정 상세 모달 스타일 (건드리지 않음) */
-        #detail-modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.6); z-index: 9999; justify-content: center; align-items: center;
-        }
-        #detail-modal-box {
-            background: white; padding: 25px; border-radius: 15px; width: 320px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex; flex-direction: column; gap: 12px;
-        }
-        #detail-modal-title { margin: 0 0 5px 0; color: #343a40; font-size: 20px; font-weight: bold; border-bottom: 2px solid #e9ecef; padding-bottom: 10px; }
-        .detail-item { font-size: 14px; color: #495057; }
-        .detail-item strong { display: inline-block; width: 70px; color: #212529; }
-        .btn-close-modal { align-self: flex-end; padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; transition: 0.2s;}
-        .btn-close-modal:hover { background-color: #0069d9; }
-
-        /* ✨ 새롭게 추가된 AI 피드백 모달 및 버튼 스타일 */
-        #ai-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 10000; justify-content: center; align-items: center; }
-        #ai-modal-box { background: white; padding: 25px; border-radius: 15px; width: 500px; max-width: 90%; max-height: 80vh; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex; flex-direction: column; gap: 12px; }
-        #ai-modal-title { margin: 0 0 5px 0; color: #343a40; font-size: 20px; font-weight: bold; border-bottom: 2px solid #e9ecef; padding-bottom: 10px; }
-        #ai-modal-content { font-size: 14px; color: #495057; overflow-y: auto; white-space: pre-wrap; line-height: 1.6; flex: 1; }
-        .btn-ai { background-color: #6f42c1; color: white; border: none; border-radius: 5px; padding: 5px 10px; font-size: 12px; font-weight: bold; cursor: pointer; margin-left: 10px; }
-        .btn-ai:hover { background-color: #59339d; }
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #6f42c1; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 20px auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .btn-back:hover { background-color: #5a6268; }
     </style>
 </head>
 <body>
+<nav class="custom-navbar">
+    <a href="/api/v1/index" class="nav-brand">✈️ GAM</a>
+    <div class="nav-links">
+        <a href="/api/v1/travel/search">지도 검색 🗺️</a>
+        <a href="/api/v1/travel/recommend">AI 여행지 추천 🤖</a>
+        <a href="/api/v1/travel/trip-create">내 여행 만들기 🧳</a>
+        <a href="/api/v1/music/playlist">음악 플레이리스트 🎵</a>
+    </div>
+    <div class="nav-auth" id="nav-auth"></div>
+</nav>
 
 <div class="main-wrapper">
     <div class="content-container">
         <h2>새로운 여행 만들기 ✈️</h2>
-        <div class="input-group"><label>📝 여행 제목</label><input type="text" id="trip-title" placeholder="어디로 가시나요?"></div>
+        <div class="input-group">
+            <label>📝 여행 제목</label>
+            <input type="text" id="trip-title" placeholder="어디로 가시나요? (예: 즐거운 제주도 여행)">
+        </div>
         <div class="date-group">
-            <div class="input-group" style="flex:1;"><label>📅 시작일</label><input type="date" id="start-date"></div>
-            <div class="input-group" style="flex:1;"><label>🏁 종료일</label><input type="date" id="end-date"></div>
+            <div class="input-group" style="flex:1;">
+                <label>📅 시작일</label>
+                <input type="date" id="start-date">
+            </div>
+            <div class="input-group" style="flex:1;">
+                <label>🏁 종료일</label>
+                <input type="date" id="end-date">
+            </div>
         </div>
         <button class="btn-submit" onclick="submitTrip()">여행 생성하기 ✨</button>
         <button class="btn-back" onclick="goToSearch()">지도 검색으로 돌아가기 🗺️</button>
     </div>
-
-    <div class="content-container">
-        <h2>내 여행 목록 🧳</h2>
-        <ul id="trip-list" class="trip-list"></ul>
-        <h2 style="margin-top: 30px;">내 플레이리스트 🎵</h2>
-        <ul id="playlist-list" class="trip-list"></ul>
-    </div>
-
-    <div class="schedule-panel" id="schedule-panel">
-        <h2 id="schedule-title">일정 상세 보기</h2>
-        <div id="timeline-container" class="timeline-container">
-            <div class="empty-message" style="width: 100%;">항목을 선택하세요.</div>
-        </div>
-    </div>
-</div>
-
-<div id="detail-modal-overlay" onclick="closeDetailModal()">
-    <div id="detail-modal-box" onclick="event.stopPropagation()">
-        <h3 id="detail-modal-title">장소 이름</h3>
-        <div class="detail-item"><strong>📅 날짜</strong> <span id="detail-modal-date"></span></div>
-        <div class="detail-item"><strong>⏰ 시간</strong> <span id="detail-modal-time"></span></div>
-        <div class="detail-item"><strong>🏷️ 종류</strong> <span id="detail-modal-category"></span></div>
-        <button class="btn-close-modal" onclick="closeDetailModal()">확인</button>
-    </div>
-</div>
-
-<div id="ai-modal-overlay" onclick="closeAiModal()">
-    <div id="ai-modal-box" onclick="event.stopPropagation()">
-        <h3 id="ai-modal-title">🤖 AI 여행 피드백</h3>
-        <div id="ai-modal-content"></div>
-        <button class="btn-close-modal" onclick="closeAiModal()" style="background-color: #6f42c1;">닫기</button>
-    </div>
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", () => { fetchTrips(); fetchPlaylists(); });
+    document.addEventListener("DOMContentLoaded", () => {
+        checkAuthAndUpdateNav();
+    });
 
     async function fetchWithToken(url, options = {}) {
         options.credentials = 'include';
@@ -119,229 +83,59 @@
         return res;
     }
 
-    async function fetchTrips() {
-        const res = await fetchWithToken('/api/v1/travel/trips');
-        if (res.ok) {
-            const trips = await res.json();
-            const container = document.getElementById('trip-list');
-            container.innerHTML = trips.length ? '' : '<div class="empty-message">여행이 없습니다.</div>';
-            trips.forEach(t => {
-                const li = document.createElement('li');
-                li.className = 'trip-item';
-                li.onclick = (e) => { if (e.target.tagName !== 'BUTTON') selectTrip(t.id, li); };
-                li.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div><div class="trip-title">✈️ ${t.title}</div><div class="trip-dates">${t.startDate} ~ ${t.endDate}</div></div>
-                    <button onclick="deleteTrip(event, ${t.id})" style="background:none; border:none; cursor:pointer;">🗑️</button>
-                </div>`;
-                container.appendChild(li);
-            });
-        }
-    }
-
-    async function fetchPlaylists() {
-        const res = await fetchWithToken('/api/v1/music/playlists');
-        if (res.ok) {
-            const playlists = await res.json();
-            const container = document.getElementById('playlist-list');
-            container.innerHTML = playlists.length ? '' : '<div class="empty-message">플리가 없습니다.</div>';
-            playlists.forEach(pl => {
-                const li = document.createElement('li');
-                li.className = 'trip-item';
-                li.onclick = (e) => { if (e.target.tagName !== 'BUTTON') selectPlaylist(pl, li); };
-                li.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div><div class="trip-title">🎵 ${pl.title}</div><div class="trip-dates">${pl.songs.length}곡</div></div>
-                    <button onclick="deletePlaylist(event, ${pl.id})" style="background:none; border:none; cursor:pointer;">🗑️</button>
-                </div>`;
-                container.appendChild(li);
-            });
-        }
-    }
-
-    // 🎵 복구된 플리 선택 로직: 전체 재생 버튼 추가 (개별 유튜브 버튼 삭제)
-    function selectPlaylist(pl, el) {
-        document.querySelectorAll('.trip-item').forEach(i => i.classList.remove('selected'));
-        el.classList.add('selected');
-
-        // 상단 타이틀 옆에 백엔드 API 연동용 "전체 재생" 버튼 추가
-        document.getElementById('schedule-title').innerHTML = `🎧 ${pl.title} <button onclick="playFullYoutube(${pl.id})" class="btn-youtube">전체 플리 유튜브 재생 🎬</button>`;
-
-        const container = document.getElementById('timeline-container');
-        container.innerHTML = '';
-        const wrapper = document.createElement('div'); wrapper.style.width = '100%';
-        pl.songs.forEach(s => {
-            const div = document.createElement('div'); div.className = 'song-item';
-            div.innerHTML = `<div><b>${s.title}</b><br><small>${s.artist}</small></div>`;
-            wrapper.appendChild(div);
-        });
-        container.appendChild(wrapper);
-    }
-
-    // 🎬 백엔드 getYoutubeUrlFromPlaylist API 호출용 함수 추가!
-    async function playFullYoutube(playlistId) {
+    // 네비게이션 바 상태 업데이트 (로그인 여부 확인)
+    async function checkAuthAndUpdateNav() {
+        const navAuth = document.getElementById('nav-auth');
         try {
-            const res = await fetchWithToken(`/api/v1/music/${playlistId}/youtube`);
+            const res = await fetch('/api/v1/travel/trips', { credentials: 'include' });
             if (res.ok) {
-                const url = await res.text();
-                if (url && url.startsWith('http')) {
-                    window.open(url, '_blank');
-                } else {
-                    alert(url || '유튜브 재생 링크를 가져올 수 없습니다.');
-                }
-            } else {
-                alert('유튜브 전체 재생 링크를 생성하는 데 실패했습니다.');
-            }
+                // 로그인 상태
+                navAuth.innerHTML = `
+                    <a href="/api/v1/auth/user/mypage" class="nav-links" style="font-size: 15px; font-weight: bold; margin-right: 15px; color:#343a40;">마이페이지 👤</a>
+                    <button onclick="handleLogout()" class="btn-nav btn-logout">로그아웃</button>
+                `;
+            } else { throw new Error('Not logged in'); }
         } catch (error) {
-            console.error("Youtube playlist play error:", error);
-            alert('서버 오류가 발생했습니다.');
+            // 비로그인 상태
+            navAuth.innerHTML = `
+                <a href="/api/v1/auth/login" class="btn-nav btn-login">로그인</a>
+                <a href="/api/v1/auth/join" class="nav-links" style="font-size: 14px; font-weight: bold; margin-right: 10px; color:#343a40;">회원가입</a>
+            `;
         }
     }
 
-    async function selectTrip(id, el) {
-        window.currentTripId = id;
-        document.querySelectorAll('.trip-item').forEach(i => i.classList.remove('selected'));
-        el.classList.add('selected');
-        const res = await fetchWithToken(`/api/v1/travel/trips/${id}`);
-        if (res.ok) {
-            const data = await res.json();
-            // ✨ 타이틀 옆에 AI 피드백 버튼 추가 (기존 코드 살짝 변경된 부분)
-            document.getElementById('schedule-title').innerHTML = `📍 ${data.title} 일정 <button onclick="askAIFeedback(${data.id})" class="btn-ai">AI 피드백 받기 🤖</button>`;
-            renderScheduleTimeline(data);
-        }
-    }
-
-    function renderScheduleTimeline(trip) {
-        const container = document.getElementById('timeline-container');
-        container.innerHTML = '';
-        const startDate = new Date(trip.startDate);
-        const endDate = new Date(trip.endDate);
-        const diffDays = Math.ceil(Math.abs(endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
-
-        for (let i = 0; i < diffDays; i++) {
-            const currentDay = new Date(startDate);
-            currentDay.setDate(startDate.getDate() + i);
-            const dateKey = currentDay.toISOString().split('T')[0];
-            const dayCol = document.createElement('div');
-            dayCol.className = 'timeline-day'; dayCol.id = `day-${dateKey}`;
-            dayCol.innerHTML = `<h4>Day ${i+1}<br><span style="font-size:10px; color:#718096;">${dateKey}</span></h4>`;
-            container.appendChild(dayCol);
-        }
-
-        trip.schedules.forEach(s => {
-            const col = document.getElementById(`day-${s.visitDate}`);
-            if (!col) return;
-
-            const [sh, sm] = s.startTime.split(':').map(Number);
-            const startTotal = sh * 60 + sm;
-
-            let endTotal = startTotal + 60;
-            let isNextDay = false;
-            let nextDateKey = null;
-
-            if (s.endTime) {
-                const [eh, em] = s.endTime.split(':').map(Number);
-                endTotal = eh * 60 + em;
-
-                if (endTotal <= startTotal) {
-                    isNextDay = true;
-                    const d = new Date(s.visitDate);
-                    d.setDate(d.getDate() + 1);
-                    nextDateKey = d.toISOString().split('T')[0];
+    async function handleLogout() {
+        if(confirm("로그아웃 하시겠습니까? 😢")) {
+            try {
+                const response = await fetch('/api/v1/auth/logout', { method: 'POST', headers: { 'Content-Type': 'application/json' }});
+                if(response.ok) {
+                    alert("성공적으로 로그아웃 되었습니다.");
+                    window.location.href = '/api/v1/auth/login';
                 }
-            }
-
-            const block = document.createElement('div');
-            block.className = 'schedule-bar';
-            block.style.top = `${50 + (startTotal / 60) * 40}px`;
-
-            // 모달 열기 이벤트
-            block.onclick = () => openDetailModal(s);
-
-            if (isNextDay) {
-                block.style.height = `${((1440 - startTotal) / 60) * 40}px`;
-                block.style.borderBottomLeftRadius = '0';
-                block.style.borderBottomRightRadius = '0';
-            } else {
-                block.style.height = `${((endTotal - startTotal) / 60) * 40}px`;
-            }
-
-            const timeTxt = s.endTime ? `${s.startTime} ~ ${s.endTime}` : s.startTime;
-            block.innerHTML = `<div style="display:flex; justify-content:space-between;"><div class="schedule-time">⏰ ${timeTxt}</div><button onclick="deleteSchedule(event, ${s.id})" style="background:none; border:none; color:white; cursor:pointer; font-size:12px; font-weight:bold;">✕</button></div><div class="schedule-name">${s.placeName}</div>`;
-            col.appendChild(block);
-
-            if (isNextDay && nextDateKey) {
-                const nextCol = document.getElementById(`day-${nextDateKey}`);
-                if (nextCol) {
-                    const nextBlock = document.createElement('div');
-                    nextBlock.className = 'schedule-bar';
-                    nextBlock.style.top = `50px`;
-                    nextBlock.style.height = `${(endTotal / 60) * 40}px`;
-                    nextBlock.style.borderTopLeftRadius = '0';
-                    nextBlock.style.borderTopRightRadius = '0';
-                    nextBlock.style.opacity = '0.8';
-
-                    nextBlock.onclick = () => openDetailModal(s);
-
-                    nextBlock.innerHTML = `<div class="schedule-time">⏰ ~ ${s.endTime} (이어서)</div><div class="schedule-name">${s.placeName}</div>`;
-                    nextCol.appendChild(nextBlock);
-                }
-            }
-        });
-    }
-
-    function openDetailModal(schedule) {
-        document.getElementById('detail-modal-title').innerText = `📌 ${schedule.placeName}`;
-        document.getElementById('detail-modal-date').innerText = schedule.visitDate;
-
-        let timeString = schedule.startTime;
-        if (schedule.endTime) {
-            timeString += ` ~ ${schedule.endTime}`;
+            } catch(error) { console.error("Logout error:", error); }
         }
-        document.getElementById('detail-modal-time').innerText = timeString;
-        document.getElementById('detail-modal-category').innerText = schedule.category || '정보 없음';
-        document.getElementById('detail-modal-overlay').style.display = 'flex';
-    }
-
-    function closeDetailModal() {
-        document.getElementById('detail-modal-overlay').style.display = 'none';
-    }
-
-    // ✨ 새롭게 추가된 AI 피드백 호출 함수
-    async function askAIFeedback(tripId) {
-        document.getElementById('ai-modal-overlay').style.display = 'flex';
-        document.getElementById('ai-modal-content').innerHTML = '<div class="loader"></div><div style="text-align:center;">AI가 일정을 분석 중입니다...</div>';
-
-        try {
-            const res = await fetchWithToken(`/api/v1/travel/feedback/trips/${tripId}`);
-            if (res.ok) {
-                const feedback = await res.text();
-                // Gemini 응답이 마크다운이나 줄바꿈을 포함하므로 text를 그대로 넣어줍니다.
-                // (CSS에 white-space: pre-wrap 적용 완료)
-                document.getElementById('ai-modal-content').innerText = feedback;
-            } else {
-                document.getElementById('ai-modal-content').innerText = "❌ AI 피드백을 가져오는데 실패했습니다.";
-            }
-        } catch (e) {
-            console.error(e);
-            document.getElementById('ai-modal-content').innerText = "❌ 서버 오류가 발생했습니다.";
-        }
-    }
-
-    function closeAiModal() {
-        document.getElementById('ai-modal-overlay').style.display = 'none';
     }
 
     async function submitTrip() {
         const title = document.getElementById('trip-title').value;
         const startDate = document.getElementById('start-date').value;
         const endDate = document.getElementById('end-date').value;
-        if (!title || !startDate || !endDate) return;
-        const res = await fetchWithToken('/api/v1/travel/trips', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title, startDate, endDate }) });
-        if (res.ok) fetchTrips();
+        if (!title || !startDate || !endDate) {
+            alert("모든 필드를 입력해주세요.");
+            return;
+        }
+        const res = await fetchWithToken('/api/v1/travel/trips', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, startDate, endDate })
+        });
+
+        if (res.ok) {
+            alert("여행이 생성되었습니다! 마이페이지로 이동합니다. ✈️");
+            window.location.href = "/api/v1/auth/user/mypage"; // 생성 완료 후 마이페이지로 이동 (경로 확인 필요)
+        }
     }
 
-    async function deleteSchedule(e, id) { e.stopPropagation(); if (confirm("이 일정을 삭제하시겠습니까?")) { const res = await fetchWithToken(`/api/v1/travel/trips/${window.currentTripId}/schedules/${id}`, { method: 'DELETE' }); if (res.ok) selectTrip(window.currentTripId, document.querySelector('.trip-item.selected')); } }
-    async function deleteTrip(e, id) { e.stopPropagation(); if (confirm("여행을 삭제하시겠습니까?")) { const res = await fetchWithToken(`/api/v1/travel/trips/${id}`, { method: 'DELETE' }); if (res.ok) fetchTrips(); } }
-    async function deletePlaylist(e, id) { e.stopPropagation(); if (confirm("플레이리스트를 삭제하시겠습니까?")) { const res = await fetchWithToken(`/api/v1/music/playlists/${id}`, { method: 'DELETE' }); if (res.ok) fetchPlaylists(); } }
     function goToSearch() { window.location.href = "/api/v1/travel/search"; }
 </script>
 </body>

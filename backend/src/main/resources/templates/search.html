@@ -5,16 +5,37 @@
   <meta charset="UTF-8">
   <title>AI & 지역 정보 여행 플래너</title>
   <style>
-    /* 기본 스타일 세팅 */
+    /* navbar */
+    .custom-navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #ffffff;
+      padding: 15px 30px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .nav-brand { font-size: 22px; font-weight: 800; color: #007bff; text-decoration: none; letter-spacing: -0.5px; }
+    .nav-links { display: flex; gap: 25px; align-items: center; }
+    .nav-links a { text-decoration: none; color: #495057; font-size: 15px; font-weight: 600; transition: color 0.2s ease; }
+    .nav-links a:hover { color: #007bff; }
+    .nav-auth { display: flex; gap: 12px; align-items: center; }
+    .btn-nav { padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: bold; cursor: pointer; border: none; transition: all 0.2s; }
+    .btn-login { background-color: #f8f9fa; color: #343a40; border: 1px solid #ced4da; }
+    .btn-login:hover { background-color: #e2e6ea; }
+    .btn-logout { background-color: #ff4757; color: white; }
+    .btn-logout:hover { background-color: #ff6b81; }
+
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-color: #e9ecef;
       margin: 0;
       padding: 0;
       display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      flex-direction: column;
     }
 
     /* 메인 컨테이너 */
@@ -22,11 +43,12 @@
       background-color: white;
       width: 90%;
       max-width: 1200px;
-      height: 85vh;
+      height: calc(100vh - 70px);
       border-radius: 20px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.15);
       display: flex;
       overflow: hidden;
+      margin: 15px auto;
     }
 
     /* 왼쪽: 컨트롤 & 결과 칼럼 */
@@ -53,10 +75,10 @@
       display: flex;
       justify-content: space-between;
       margin-bottom: 25px;
-      gap: 5px; /* 버튼 사이 간격 추가 */
+      gap: 5px;
     }
     .category-btn {
-      flex: 1; /* 너비를 균등하게 분배 (기존 3개에서 4개로 변경됨) */
+      flex: 1;
       padding: 10px 5px;
       background-color: #f1f3f5;
       border: 1px solid #ced4da;
@@ -184,7 +206,7 @@
     /* 로딩바 */
     #loading { display: none; margin-top: 20px; font-weight: bold; color: #ff6b6b; text-align: center;}
 
-    /* ✨ 일정 추가 모달(팝업) 스타일 ✨ */
+    /* 일정 추가 모달 */
     #schedule-modal-overlay {
       display: none;
       position: fixed;
@@ -245,7 +267,6 @@
     .btn-save { background: #007bff; color: white; }
     .btn-save:hover { background: #0069d9; }
 
-    /* 다음 날 체크박스 컨테이너 스타일 */
     .next-day-container {
       display: flex;
       align-items: center;
@@ -263,6 +284,16 @@
   </style>
 </head>
 <body>
+<nav class="custom-navbar">
+  <a href="/api/v1/index" class="nav-brand">✈️ GAM</a>
+  <div class="nav-links">
+    <a href="/api/v1/travel/search">지도 검색 🗺️</a>
+    <a href="/api/v1/travel/recommend">AI 여행지 추천 🤖</a>
+    <a href="/api/v1/travel/trip-create">내 여행 만들기 🧳</a>
+    <a href="/api/v1/music/playlist">음악 플레이리스트 🎵</a>
+  </div>
+  <div class="nav-auth" id="nav-auth"></div>
+</nav>
 
 <div id="travel-finder-app">
   <div id="control-panel">
@@ -279,9 +310,6 @@
     </div>
 
     <button id="search-btn" onclick="executeSearch()">검색하기 🔍</button>
-    <div style="text-align: right; margin-bottom: 10px;">
-      <span onclick="handleLogout()" style="cursor:pointer; color: #adb5bd; font-size: 14px; text-decoration: underline;">로그아웃</span>
-    </div>
     <div id="loading">데이터를 불러오는 중입니다... ⏳</div>
 
     <div id="results-container">
@@ -341,14 +369,36 @@
   let currentCategoryKorean = '식당';
   let map, geocoder, markers = [];
 
+  document.addEventListener("DOMContentLoaded", () => {
+    initKakaoMap();
+    checkAuthAndUpdateNav();
+  });
+
+  // 네비게이션 상태 확인
+  async function checkAuthAndUpdateNav() {
+    const navAuth = document.getElementById('nav-auth');
+    try {
+      const res = await fetch('/api/v1/travel/trips', { credentials: 'include' });
+      if (res.ok) {
+        navAuth.innerHTML = `
+                    <a href="/api/v1/auth/user/mypage" class="nav-links" style="font-size: 15px; font-weight: bold; margin-right: 15px; color:#343a40;">마이페이지 👤</a>
+                    <button onclick="handleLogout()" class="btn-nav btn-logout">로그아웃</button>
+                `;
+      } else { throw new Error('Not logged in'); }
+    } catch (error) {
+      navAuth.innerHTML = `
+                <a href="/api/v1/auth/login" class="btn-nav btn-login">로그인</a>
+                <a href="/api/v1/auth/join" class="nav-links" style="font-size: 14px; font-weight: bold; margin-right: 10px; color:#343a40;">회원가입</a>
+            `;
+    }
+  }
+
   function initKakaoMap() {
     const container = document.getElementById('kakao-map');
     const options = { center: new kakao.maps.LatLng(37.566826, 126.9786567), level: 5 };
     map = new kakao.maps.Map(container, options);
     geocoder = new kakao.maps.services.Geocoder();
   }
-
-  window.onload = function() { initKakaoMap(); };
 
   function setCategory(btn, category) {
     document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
@@ -360,7 +410,6 @@
     const locationInput = document.getElementById('location-input');
     const resultsList = document.getElementById('results-list');
 
-    // '직접 검색' 모드일 때 텍스트 및 안내 문구 변경
     if (category === 'keyword') {
       locationLabel.innerText = '🎯 원하는 장소명';
       locationInput.placeholder = '예: 롯데월드, 해운대 스타벅스';
@@ -395,6 +444,26 @@
     return response;
   }
 
+  /* nav 로그아웃 함수 */
+  async function handleLogout() {
+    if(confirm("로그아웃 하시겠습니까? 😢")) {
+      try {
+        const response = await fetch('/api/v1/auth/logout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        if(response.ok) {
+          alert("성공적으로 로그아웃 되었습니다.");
+          window.location.href = '/api/v1/auth/login';
+        } else {
+          alert("로그아웃 처리 중 문제가 발생했습니다.");
+        }
+      } catch(error) {
+        console.error("Logout error:", error);
+      }
+    }
+  }
+
   async function executeSearch() {
     const locationInput = document.getElementById('location-input');
     const searchWord = locationInput.value;
@@ -407,12 +476,9 @@
 
     try {
       let url = '';
-      // 💡 [변경됨] 카카오 API 대신 방금 만든 백엔드 엔드포인트로 통일해서 요청합니다.
       if (currentCategory === 'keyword') {
-        // 직접 검색 탭: /api/v1/travel/keyword?query=검색어
         url = `/api/v1/travel/keyword?query=${encodeURIComponent(searchWord)}`;
       } else {
-        // 식당, 숙소, 관광지 탭: 기존과 동일
         url = `/api/v1/travel/${currentCategory}?region=${encodeURIComponent(searchWord)}`;
       }
 
@@ -421,7 +487,6 @@
       if (!response.ok) throw new Error("데이터 호출 실패");
 
       const data = await response.json();
-      // 백엔드에서 리스트(Array)로 오거나 items 안에 담겨 오는 경우 모두 처리
       const places = Array.isArray(data) ? data : (data.items || []);
 
       renderResults(places, searchWord);
@@ -458,7 +523,6 @@
                     </div>
                 </div>`;
       } else {
-        // 식당, 관광지, 그리고 '직접 검색'은 모두 이 레이아웃을 사용합니다.
         html += `<div class="general-result-item">
                     <div class="general-result-title">📌 ${item.title}</div>
                     <a href="${item.link || '#'}" target="_blank" style="font-size: 14px; color: #007bff; text-decoration: none;">상세보기 👉</a>
@@ -489,20 +553,8 @@
     if (markers.length > 0) map.setBounds(bounds);
   }
 
-  async function handleLogout() {
-    if (!confirm("로그아웃 하시겠습니까?")) return;
-    try {
-      await fetch('/api/v1/auth/logout', {
-        method: 'POST',
-        credentials: 'include'
-      });
-      alert("로그아웃 되었습니다.");
-      window.location.href = "/api/v1/auth/login";
-    } catch (e) { console.error(e); }
-  }
-
   // =========================================================
-  // ✨ 일정 추가 모달 로직
+  // 일정 추가 모달 로직
   // =========================================================
   let selectedPlaceForSchedule = "";
   let userTripsData = [];

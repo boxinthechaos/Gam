@@ -30,6 +30,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
 
+    // ── JBoss Logging (Hibernate 7.x 필수) ───────────────────────
+    implementation 'org.jboss.logging:jboss-logging:3.6.1.Final'
+
     // ── Thymeleaf ─────────────────────────────────────────────────
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'

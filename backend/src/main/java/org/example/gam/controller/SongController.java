@@ -24,9 +24,8 @@ public class SongController {
     @GetMapping("/recommend")
     public ResponseEntity<List<SongResponseDto>> recommendMusic(
             @RequestParam(defaultValue = "30") int minutes,
-            @RequestParam(defaultValue = "artist") String searchType,
             @RequestParam(defaultValue = "new jeans") String keyword) {
-        List<SongResponseDto> playList = playlistService.recommendPlayListByTime(minutes, searchType, keyword);
+        List<SongResponseDto> playList = playlistService.recommendPlayListByTime(minutes, keyword);
         return ResponseEntity.ok(playList);
     }
 
@@ -90,5 +89,14 @@ public class SongController {
         }
 
         return ResponseEntity.ok(youtubeUrl);
+    }
+
+    @GetMapping("/replace")
+    public ResponseEntity<SongResponseDto> replaceSong(
+            @RequestParam String keyword,
+            @RequestParam List<String> excludeTitles) {
+        SongResponseDto song = playlistService.replaceSong(keyword, excludeTitles);
+        if (song == null) return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(song);
     }
 }

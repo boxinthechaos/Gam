@@ -42,7 +42,7 @@ public class PlaylistService {
         spotifyApi.setAccessToken(clientCredentials.getAccessToken());
     }
 
-    public List<SongResponseDto> recommendPlayListByTime(int targetMinutes, String searchType, String keyword){
+    public List<SongResponseDto> recommendPlayListByTime(int targetMinutes, String keyword){
         if (keyword == null || keyword.trim().isEmpty()) {
             System.out.println("❌ 검색어가 입력되지 않았습니다.");
             return new ArrayList<>();
@@ -60,13 +60,8 @@ public class PlaylistService {
                     .map(String::trim)
                     .toList();
 
-            String query;
             for (String k : keywordList) {
-                if (searchType != null && !searchType.isBlank()) {
-                    query = searchType + ":" + k;
-                } else {
-                    query = k;
-                }
+                    String query = k;
 
                 int[] offsets = {0, 20, 40, 60};
                 for (int offset : offsets) {
@@ -93,20 +88,18 @@ public class PlaylistService {
 
                 if (trackDuration < 120000) continue;
 
-                if ("artist".equals(searchType)) {
-                    boolean isExactMatch = false;
-
-                    for (var artist : track.getArtists()) {
-                        for (String k : keywordList) {
-                            if (artist.getName().equalsIgnoreCase(k)) {
-                                isExactMatch = true;
-                                break;
-                            }
+                // 가수 이름 정확히 일치하는 곡만 필터링
+                boolean isExactMatch = false;
+                for (var artist : track.getArtists()) {
+                    for (String k : keywordList) {
+                        if (artist.getName().equalsIgnoreCase(k)) {
+                            isExactMatch = true;
+                            break;
                         }
-                        if (isExactMatch) break;
                     }
-                    if (!isExactMatch) continue;
+                    if (isExactMatch) break;
                 }
+                if (!isExactMatch) continue;
 
                 if (currentDurationMs + trackDuration <= targetDurationMs + 150000) {
                     playlist.add(new SongResponseDto(
@@ -233,5 +226,79 @@ public class PlaylistService {
             if (videoId != null) videoIds.add(videoId);
         }
         return videoIds.isEmpty() ? "" : "https://www.youtube.com/watch_videos?video_ids=" + String.join(",", videoIds);
+    }
+
+    public SongResponseDto replaceSong(String keyword, List<String> excludeTitles){
+        if (keyword == null || keyword.trim().isEmpty()) {
+            System.out.println("❌ 검색어가 입력되지 않았습니다.");
+            return null;
+        }
+        List<SongResponseDto> playlist = new ArrayList<>();
+
+        try {
+            refreshAccessToken();
+            List<Track> allTracks = new ArrayList<>();
+
+            List<String> keywordList = Arrays.stream(keyword.split(","))
+                    .map(String::trim)
+                    .toList();
+
+            for (String k : keywordList) {
+                String query = k;
+
+                int[] offsets = {0, 20, 40, 60};
+                for (int offset : offsets) {
+                    try {
+                        Paging<Track> tracks = spotifyApi
+                                .searchTracks(query)
+                                .offset(offset)
+                                .build()
+                                .execute();
+
+                        if (tracks.getItems() != null) {
+                            allTracks.addAll(List.of(tracks.getItems()));
+                        }
+                    } catch (Exception e) {
+                        System.out.println("❌ " + k + " 검색 중 일부 오류 발생 (무시하고 계속 진행): " + e.getMessage());
+                    }
+                }
+            }
+
+            Collections.shuffle(allTracks);
+
+            for (Track track : allTracks) {
+                long trackDuration = track.getDurationMs();
+
+                if (trackDuration < 120000) continue;
+
+                // 가수 이름 정확히 일치하는 곡만 필터링
+                boolean isExactMatch = false;
+                for (var artist : track.getArtists()) {
+                    for (String k : keywordList) {
+                        if (artist.getName().equalsIgnoreCase(k)) {
+                            isExactMatch = true;
+                            break;
+                        }
+                    }
+                    if (isExactMatch) break;
+                }
+                if (!isExactMatch) continue;
+
+                // 이미 플레이리스트에 있는 곡 제외
+                if (excludeTitles.contains(track.getName())) continue;
+
+                // 조건 맞는 첫 번째 곡 1개만 반환
+                return new SongResponseDto(
+                        track.getName(),
+                        track.getArtists()[0].getName(),
+                        trackDuration,
+                        track.getExternalUrls().get("spotify")
+                );
+            }
+
+        } catch (Exception e) {
+            System.out.println("❌ 노래 로드 중 오류: " + e.getMessage());
+        }
+        return null;
     }
 }

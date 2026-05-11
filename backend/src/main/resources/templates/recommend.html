@@ -4,14 +4,43 @@
     <meta charset="UTF-8">
     <title>AI 여행지 추천 테스트</title>
     <style>
+        /* navbar */
+        .custom-navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #ffffff;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .nav-brand { font-size: 22px; font-weight: 800; color: #007bff; text-decoration: none; letter-spacing: -0.5px; }
+        .nav-links { display: flex; gap: 25px; align-items: center; }
+        .nav-links a { text-decoration: none; color: #495057; font-size: 15px; font-weight: 600; transition: color 0.2s ease; }
+        .nav-links a:hover { color: #007bff; }
+        .nav-auth { display: flex; gap: 12px; align-items: center; }
+        .btn-nav { padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: bold; cursor: pointer; border: none; transition: all 0.2s; }
+        .btn-login { background-color: #f8f9fa; color: #343a40; border: 1px solid #ced4da; }
+        .btn-login:hover { background-color: #e2e6ea; }
+        .btn-logout { background-color: #ff4757; color: white; }
+        .btn-logout:hover { background-color: #ff6b81; }
+
         body {
             font-family: 'Malgun Gothic', sans-serif;
             background-color: #f4f7f6;
             display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .page-content {
+            flex: 1;
+            display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
         }
         .container {
             background: white;
@@ -42,8 +71,6 @@
             font-weight: bold;
         }
         button:hover { background-color: #0056b3; }
-
-        /* 로딩바 & 결과창 스타일 */
         #loading { display: none; margin-top: 20px; font-weight: bold; color: #ff6b6b; }
         #result-box {
             display: none;
@@ -58,73 +85,124 @@
     </style>
 </head>
 <body>
-
-<div class="container">
-    <h2>✈️ AI 맞춤 여행지 추천</h2>
-
-    <div style="text-align: left;">
-        <label><b>누구랑 가나요?</b></label>
-        <select id="companion">
-            <option value="썸녀">썸녀 👩‍🦰</option>
-            <option value="연인">연인 💑</option>
-            <option value="친구">친구 👯‍♂️</option>
-            <option value="혼자">혼자 🚶‍♂️</option>
-            <option value="가족">가족 👨‍👩‍👧‍👦</option>
-        </select>
-
-        <label><b>어떤 풍경이 좋나요?</b></label>
-        <select id="scenery">
-            <option value="밤바다">밤바다 🌊</option>
-            <option value="푸른 산">푸른 산 ⛰️</option>
-            <option value="화려한 도심">화려한 도심 🏙️</option>
-            <option value="고즈넉한 역사">고즈넉한 역사 🏯</option>
-        </select>
-
-        <label><b>여행 스타일은?</b></label>
-        <select id="style">
-            <option value="감성카페">감성카페 ☕</option>
-            <option value="먹방">돼지런한 먹방 🐷</option>
-            <option value="액티비티">짜릿한 액티비티 🪂</option>
-            <option value="조용한 힐링">조용한 힐링 🌿</option>
-        </select>
-
-        <label><b>이동 수단은?</b></label>
-        <select id="transport">
-            <option value="뚜벅이">뚜벅이 (대중교통) 🚌</option>
-            <option value="자차">자차 (드라이브) 🚗</option>
-        </select>
+<nav class="custom-navbar">
+    <a href="/api/v1/index" class="nav-brand">✈️ GAM</a>
+    <div class="nav-links">
+        <a href="/api/v1/travel/search">지도 검색 🗺️</a>
+        <a href="/api/v1/travel/recommend">AI 여행지 추천 🤖</a>
+        <a href="/api/v1/travel/trip-create">내 여행 만들기 🧳</a>
+        <a href="/api/v1/music/playlist">음악 플레이리스트 🎵</a>
     </div>
+    <div class="nav-auth" id="nav-auth"></div>
+</nav>
 
-    <button onclick="getRecommendation()">AI 추천 받기 🚀</button>
+<div class="page-content">
+    <div class="container">
+        <h2>✈️ AI 맞춤 여행지 추천</h2>
 
-    <div id="loading">제미나이가 여행지를 고르고 있습니다... 🤔 (약 3초)</div>
+        <div style="text-align: left;">
+            <label><b>누구랑 가나요?</b></label>
+            <select id="companion">
+                <option value="썸녀">썸녀 👩‍🦰</option>
+                <option value="연인">연인 💑</option>
+                <option value="친구">친구 👯‍♂️</option>
+                <option value="혼자">혼자 🚶‍♂️</option>
+                <option value="가족">가족 👨‍👩‍👧‍👦</option>
+            </select>
 
-    <div id="result-box">
-        <div class="region-title" id="region"></div>
-        <div class="reason-text" id="reason"></div>
+            <label><b>어떤 풍경이 좋나요?</b></label>
+            <select id="scenery">
+                <option value="밤바다">밤바다 🌊</option>
+                <option value="푸른 산">푸른 산 ⛰️</option>
+                <option value="화려한 도심">화려한 도심 🏙️</option>
+                <option value="고즈넉한 역사">고즈넉한 역사 🏯</option>
+            </select>
+
+            <label><b>여행 스타일은?</b></label>
+            <select id="style">
+                <option value="감성카페">감성카페 ☕</option>
+                <option value="먹방">돼지런한 먹방 🐷</option>
+                <option value="액티비티">짜릿한 액티비티 🪂</option>
+                <option value="조용한 힐링">조용한 힐링 🌿</option>
+            </select>
+
+            <label><b>이동 수단은?</b></label>
+            <select id="transport">
+                <option value="뚜벅이">뚜벅이 (대중교통) 🚌</option>
+                <option value="자차">자차 (드라이브) 🚗</option>
+            </select>
+        </div>
+
+        <button onclick="getRecommendation()">AI 추천 받기 🚀</button>
+
+        <div id="loading">제미나이가 여행지를 고르고 있습니다... 🤔 (약 3초)</div>
+
+        <div id="result-box">
+            <div class="region-title" id="region"></div>
+            <div class="reason-text" id="reason"></div>
+        </div>
     </div>
 </div>
 
 <script>
-    // 💡 한층 더 강력해진 만능 fetch 함수! (리다이렉트 방어 추가)
+    document.addEventListener("DOMContentLoaded", () => {
+        checkAuthAndUpdateNav();
+    });
+
+    // 네비게이션 상태 확인
+    async function checkAuthAndUpdateNav() {
+        const navAuth = document.getElementById('nav-auth');
+        try {
+            const res = await fetch('/api/v1/travel/trips', { credentials: 'include' });
+            if (res.ok) {
+                navAuth.innerHTML = `
+        <a href="/api/v1/auth/user/mypage" style="font-size: 15px; font-weight: bold; margin-right: 15px; color:#343a40; text-decoration: none; white-space: nowrap;">마이페이지 👤</a>
+        <button onclick="handleLogout()" class="btn-nav btn-logout">로그아웃</button>
+    `;
+            } else { throw new Error('Not logged in'); }
+        } catch (error) {
+            navAuth.innerHTML = `
+                <a href="/api/v1/auth/login" class="btn-nav btn-login">로그인</a>
+                <a href="/api/v1/auth/join" class="nav-links" style="font-size: 14px; font-weight: bold; margin-right: 10px; color:#343a40;">회원가입</a>
+            `;
+        }
+    }
+
+    async function handleLogout() {
+        if(confirm("로그아웃 하시겠습니까? 😢")) {
+            try {
+                const response = await fetch('/api/v1/auth/logout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                if(response.ok) {
+                    alert("성공적으로 로그아웃 되었습니다.");
+                    window.location.href = '/api/v1/auth/login';
+                } else {
+                    alert("로그아웃 처리 중 문제가 발생했습니다.");
+                }
+            } catch(error) {
+                console.error("Logout error:", error);
+            }
+        }
+    }
+
     async function fetchWithToken(url, options = {}) {
-        options.credentials = 'include'; // 쿠키 전송을 위해 필수!
+        options.credentials = 'include';
 
         let response = await fetch(url, options);
 
-        // 401 에러거나, 스프링이 로그인 페이지로 튕겨낸 경우 둘 다 캐치!
         if (response.status === 401 || (response.redirected && response.url.includes('/login'))) {
             console.log("토큰 만료 감지. 쿠키로 재발급 시도...");
 
-            // 백엔드 몰래 새 토큰 발급 요청 (이제 body에 refreshToken 안 넣어도 브라우저가 알아서 쿠키로 보냄!)
             const reissueRes = await fetch('/api/v1/auth/reissue', {
                 method: 'POST',
-                credentials: 'include' // 👈 이게 핵심!
+                credentials: 'include'
             });
 
             if (reissueRes.ok) {
                 console.log("토큰 재발급 성공! 원래 하려던 요청 다시 쏩니다 🚀");
-                return await fetch(url, options); // 원래 요청 다시 쏘기
+                return await fetch(url, options);
             } else {
                 alert("세션이 만료되었습니다. 다시 로그인해주세요.");
                 window.location.href = "/api/v1/auth/login";
@@ -135,7 +213,6 @@
         return response;
     }
 
-    // 기존 추천 함수
     async function getRecommendation() {
         const requestData = {
             companion: document.getElementById('companion').value,
