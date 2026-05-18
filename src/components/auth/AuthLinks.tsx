@@ -1,14 +1,14 @@
 import type { AuthLinksProps } from "../../types/AuthLinksProps";
 
-export default function AuthLinks({ links }: AuthLinksProps) {
+export default function AuthLinks({ links, animation }: AuthLinksProps) {
     return (
         <div
-        className="
-            opacity-0 animate-[appear_0.5s_ease-out_0.4s_forwards] 
+        className={`
+            opacity-0 ${animation} 
             flex 
             mt-5 
             text-xs 
-            md:text-base"
+            md:text-base`}
         >
 
             {links.map((link, index) => (

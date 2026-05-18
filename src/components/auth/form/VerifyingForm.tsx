@@ -29,6 +29,7 @@ export default function VerifyingForm() {
                     links={[
                         { label: "로그인 페이지로 이동", onClick: () => nav('/sign-in') },
                     ]}
+                    animation="animate-[appear_0.5s_ease-out_0.3s_forwards]"
                 />
             </div>
 

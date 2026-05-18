@@ -5,14 +5,14 @@ import noshow from "../../assets/noshow.png"
 
 export default function PasswordInput({ password, onChange, isPasswordShown, onClick, animation }: PasswordInputProps) {
     return (
-        <div className="opacity-0 animate-[appear_0.5s_ease-out_0.2s_forwards] relative">
+        <div className={`opacity-0 ${animation} relative`}>
 
             <input 
             type={isPasswordShown ? "text" : "password"}
             placeholder="비밀번호" 
             value={password}
             onChange={onChange}
-            className={`${animation} auth-input w-full`}
+            className="auth-input w-full"
             />
 
             <img 

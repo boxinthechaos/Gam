@@ -1,13 +1,13 @@
 import type { AuthButtonProps } from "../../types/AuthButtonProps";
 
-export default function AuthButton({ isInfoValid, text, func }: AuthButtonProps) {
+export default function AuthButton({ isInfoValid, text, func, animation }: AuthButtonProps) {
     return (
         <button 
         onClick={func}
         disabled={!isInfoValid} 
         className={`
             opacity-0 
-            animate-[appear_0.5s_ease-out_0.3s_forwards]
+            ${animation}
             auth-btn
             w-full h-10 
             mt-2

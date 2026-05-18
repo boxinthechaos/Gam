@@ -1,9 +1,9 @@
 import type { AuthInputProps } from "../../types/AuthInputProps";
 
-export default function AuthInput({ value, placeholder, onChange, animation }: AuthInputProps) {
+export default function AuthInput({ type, value, placeholder, onChange, animation }: AuthInputProps) {
     return (
         <input 
-        type="text" 
+        type={type} 
         placeholder={placeholder}
         value={value} 
         onChange={onChange}

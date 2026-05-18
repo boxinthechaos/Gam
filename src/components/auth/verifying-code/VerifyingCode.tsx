@@ -12,6 +12,7 @@ export default function VerifyingCode() {
         <div>
 
             <AuthInput
+            type="text"
             value={code}
             placeholder="코드"
             onChange={(e) => setCode(e.target.value)}
@@ -22,6 +23,7 @@ export default function VerifyingCode() {
             
             isInfoValid={isCodeValid}
             text="인증하기"
+            animation="animate-[appear_0.5s_ease-out_0.3s_forwards]"
             />
 
         </div>

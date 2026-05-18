@@ -33,6 +33,7 @@ export default function SignInForm(){
             </p>
 
             <AuthInput
+            type="text"
             value={nickname}
             placeholder="닉네임"
             onChange={(e) => setNickname(e.target.value)}
@@ -51,6 +52,7 @@ export default function SignInForm(){
             
             isInfoValid={isInfoValid} 
             text="로그인"
+            animation="animate-[appear_0.5s_ease-out_0.3s_forwards]"
             />
 
             <div className="flex justify-center w-full">
@@ -60,6 +62,7 @@ export default function SignInForm(){
                         { label: "비밀번호 재설정", onClick: () => nav('/verify') },
                         { label: "회원가입", onClick: () => nav('/verify') },
                     ]}
+                    animation="animate-[appear_0.5s_ease-out_0.4s_forwards]"
                 />
             </div>
             

@@ -28,6 +28,7 @@ export default function NicknameForm({ onNext }: NicknameFormProps) {
             </p>
 
             <AuthInput
+            type="text"
             value={nickname}
             placeholder="닉네임"
             onChange={(e) => setNickname(e.target.value)}
@@ -38,6 +39,7 @@ export default function NicknameForm({ onNext }: NicknameFormProps) {
             func={() => onNext(nickname)}
             isInfoValid={isNicknameValid}
             text="다음"
+            animation="animate-[appear_0.5s_ease-out_0.2s_forwards]"
             />
 
             <div className="flex justify-end w-full">
@@ -45,6 +47,7 @@ export default function NicknameForm({ onNext }: NicknameFormProps) {
                     links={[
                         { label: "로그인 페이지로 이동", onClick: () => nav('/sign-in') },
                     ]}
+                    animation="animate-[appear_0.5s_ease-out_0.3s_forwards]"
                 />
             </div>
 

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import AuthInput from "../../AuthInput";
 import AuthButton from "../../AuthButton";
 import AuthLinks from "../../AuthLinks";
 import PasswordRuleList from "../../PasswordRuleList";
@@ -29,24 +30,26 @@ export default function PasswordSettingForm({ nickname }: { nickname: string }) 
     return (
         <div className="w-full max-w-md mx-auto px-5 md:max-w-lg">
 
-            <p className="auth-text mb-6 md:mb-10">비밀번호를 입력해주세요.</p>
+            <p className="auth-text mb-6 md:mb-10">
+                비밀번호를 입력해주세요.
+            </p>
 
-            <input
-                type="password"
-                placeholder="비밀번호"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="auth-input w-full"
+            <AuthInput
+            type="text"
+            value={password}
+            placeholder="비밀번호"
+            onChange={(e) => setPassword(e.target.value)}
+            animation="animate-[appear_0.5s_ease-out_0.1s_forwards]"
             />
 
             <PasswordRuleList password={password} /> {/* ← 한 줄로 대체 */}
 
-            <input
-                type="password"
-                placeholder="비밀번호 재입력"
-                value={passwordAgain}
-                onChange={(e) => setPasswordAgain(e.target.value)}
-                className="auth-input w-full"
+            <AuthInput
+            type="text"
+            value={passwordAgain}
+            placeholder="비밀번호 재입력"
+            onChange={(e) => setPasswordAgain(e.target.value)}
+            animation="animate-[appear_0.5s_ease-out_0.3s_forwards]"
             />
 
             {passwordAgain.length > 0 && password !== passwordAgain && (
@@ -54,9 +57,10 @@ export default function PasswordSettingForm({ nickname }: { nickname: string }) 
             )}
 
             <AuthButton 
-            
+
             isInfoValid={isPasswordValid} 
             text="회원가입" 
+            animation="animate-[appear_0.5s_ease-out_0.4s_forwards]"
             />
 
             <div className="flex justify-end w-full">
@@ -64,6 +68,7 @@ export default function PasswordSettingForm({ nickname }: { nickname: string }) 
                     links={[
                         { label: "로그인 페이지로 이동", onClick: () => nav('/sign-in') },
                     ]}
+                    animation="animate-[appear_0.5s_ease-out_0.5s_forwards]"
                 />
             </div>
 
