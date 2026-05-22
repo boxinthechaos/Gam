@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
-import RequestingCode from "../verifying-code/RequestingCode";
-import VerifyingCode from "../verifying-code/VerifyingCode";
+import RequestingCode from "./verifying-code/RequestingCode";
+import VerifyingCode from "./verifying-code/VerifyingCode";
 import AuthLinks from "../AuthLinks";
 
 export default function VerifyingForm() {

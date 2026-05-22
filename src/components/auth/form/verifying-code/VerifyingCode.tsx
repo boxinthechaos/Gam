@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-import AuthInput from "../AuthInput";
-import AuthButton from "../AuthButton";
+import AuthInput from "../../AuthInput";
+import AuthButton from "../../AuthButton";
 
 export default function VerifyingCode() {
     const [code, setCode] = useState<string>("");
