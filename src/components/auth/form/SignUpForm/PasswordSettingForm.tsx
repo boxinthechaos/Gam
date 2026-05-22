@@ -35,7 +35,7 @@ export default function PasswordSettingForm({ nickname }: { nickname: string }) 
             </p>
 
             <AuthInput
-            type="text"
+            type="password"
             value={password}
             placeholder="비밀번호"
             onChange={(e) => setPassword(e.target.value)}
@@ -45,7 +45,7 @@ export default function PasswordSettingForm({ nickname }: { nickname: string }) 
             <PasswordRuleList password={password} /> {/* ← 한 줄로 대체 */}
 
             <AuthInput
-            type="text"
+            type="password"
             value={passwordAgain}
             placeholder="비밀번호 재입력"
             onChange={(e) => setPasswordAgain(e.target.value)}

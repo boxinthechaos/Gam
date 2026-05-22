@@ -15,7 +15,13 @@ export default function FindingNickname() {
                     닉네임을 찾았어요!
                 </p>
 
-                <p className="opacity-0 animate-[appear_0.5s_ease-out_0.1s_forwards] text-[#AAAAAA] ">
+                <p className="
+                    opacity-0 
+                    text-[#AAAAAA] text-sm 
+                    animate-[appear_0.5s_ease-out_0.1s_forwards]
+
+                    md:text-base"
+                >
                     인증된 이메일과 연결된 닉네임입니다.
                 </p>
 

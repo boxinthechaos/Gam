@@ -17,7 +17,14 @@ export default function PasswordRuleList({ password }: PasswordRuleListProps) {
     const ruleResults = PASSWORD_RULES.map((rule) => rule.test(password));
 
     return (
-        <ul className="opacity-0 mt-2 mb-4 space-y-1 text-sm animate-[appear_0.5s_ease-out_0.2s_forwards]">
+        <ul className="
+            opacity-0 
+            mt-2 mb-4 space-y-1 
+            text-xs 
+            animate-[appear_0.5s_ease-out_0.2s_forwards]
+            
+            md:text-sm"
+        >
 
             {PASSWORD_RULES.map((rule, idx) => (
                 <li key={idx} className="flex items-start gap-2">

@@ -28,7 +28,7 @@ export default function NicknameForm({ onNext }: NicknameFormProps) {
             </p>
 
             <AuthInput
-            type="text"
+            type="password"
             value={nickname}
             placeholder="닉네임"
             onChange={(e) => setNickname(e.target.value)}
