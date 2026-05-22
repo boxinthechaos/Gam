@@ -32,7 +32,7 @@ export default function NicknameCard() {
                 </h2>
 
                 <div className="
-                    w-full h-[1px] mb-4 bg-[#ececec]
+                    w-full h-px mb-4 bg-[#ececec]
                     md:mb-8
                     "
                 />
