@@ -7,7 +7,7 @@ export default function FindingNickname() {
     const nav = useNavigate();
 
     return (
-        <div className="flex justify-center items-center w-screen h-screen">
+        <div className="page">
             
             <div>
 

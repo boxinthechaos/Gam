@@ -11,6 +11,10 @@
   }
 }
 
+.page{
+  @apply flex justify-center items-center w-screen h-screen
+}
+
 .auth-text{
   @apply opacity-0 animate-[appear_0.5s_ease-out_forwards] text-base font-bold 
 

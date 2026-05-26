@@ -1,6 +1,6 @@
 import { useState } from "react";
 import NicknameForm from "../../components/auth/form/SignUpForm/NicknameForm";
-import PasswordSettingForm from "../../components/auth/form/SignUpForm/PasswordSettingForm";
+import SetPasswordForm from "../../components/auth/form/SignUpForm/SetPasswordForm";
 
 export default function SignUp() {
     const [step, setStep] = useState<"nickname" | "password">("nickname");
@@ -12,12 +12,12 @@ export default function SignUp() {
     };
 
     return (
-        <div className="flex justify-center items-center w-screen h-screen">
+        <div className="page">
             {step === "nickname" && (
                 <NicknameForm onNext={handleNicknameSubmit} />
             )}
             {step === "password" && (
-                <PasswordSettingForm nickname={nickname} />
+                <SetPasswordForm nickname={nickname} />
             )}
         </div>
     );
