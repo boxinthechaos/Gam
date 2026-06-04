@@ -2,7 +2,7 @@ export default function NicknameCard() {
     return (
         <div className="
             opacity-0 
-            mt-10 mb-4 px-5 py-4
+            mt-10 mb-4 px-12 py-4
             border border-[#FFEDD8] rounded-[18px] 
             bg-white shadow-sm 
             animate-[appear_0.5s_ease-out_0.2s_forwards]
@@ -28,7 +28,7 @@ export default function NicknameCard() {
                     md:mb-8
                     md:text-[50px]
                 ">
-                    사용자 이름
+                    최준영
                 </h2>
 
                 <div className="
@@ -42,7 +42,7 @@ export default function NicknameCard() {
                     md:text-[16px]
                     "
                 >
-                    a01067220266@gmail.com으로 인증 됨
+                    s24052@gsm.hs.kr으로 인증 됨
                 </p>
 
             </div>

@@ -1,4 +1,3 @@
-// PasswordRuleList.tsx
 import { Check, X } from "lucide-react";
 
 import type { PasswordRuleListProps } from "../../types/PasswordRuleListProps";

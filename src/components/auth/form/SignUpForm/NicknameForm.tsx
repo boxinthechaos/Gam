@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import type { NicknameFormProps } from "../../../../types/NicknameFormProps";
 
+import NicknameRuleList from "../../NicknameRuleList";
 import AuthInput from "../../AuthInput";
 import AuthButton from "../../AuthButton";
 import AuthLinks from "../../AuthLinks";
@@ -28,13 +29,15 @@ export default function NicknameForm({ onNext }: NicknameFormProps) {
             </p>
 
             <AuthInput
-            type="password"
+            type="text"
             value={nickname}
             placeholder="닉네임"
             onChange={(e) => setNickname(e.target.value)}
             animation="animate-[appear_0.5s_ease-out_0.1s_forwards]"
             />
 
+            <NicknameRuleList nickname={nickname} />
+            
             <AuthButton
             func={() => onNext(nickname)}
             isInfoValid={isNicknameValid}
