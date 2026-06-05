@@ -10,22 +10,18 @@ export default function VerifyingCode() {
 
     return (
         <div>
-
             <AuthInput
-            type="text"
-            value={code}
-            placeholder="코드"
-            onChange={(e) => setCode(e.target.value)}
-            animation="animate-[appear_0.5s_ease-out_0.2s_forwards]"
+                type="text"
+                value={code}
+                placeholder="코드"
+                onChange={(e) => setCode(e.target.value)}
+                animation="animate-[appear_0.5s_ease-out_0.2s_forwards]"
             />
-
             <AuthButton
-            
-            isInfoValid={isCodeValid}
-            text="인증하기"
-            animation="animate-[appear_0.5s_ease-out_0.3s_forwards]"
+                isInfoValid={isCodeValid}
+                text="인증하기"
+                animation="animate-[appear_0.5s_ease-out_0.3s_forwards]"
             />
-
         </div>
     );
 }

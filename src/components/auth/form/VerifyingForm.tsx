@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import RequestingCode from "./verifying-code/RequestingCode";
@@ -6,13 +7,13 @@ import AuthLinks from "../AuthLinks";
 
 export default function VerifyingForm() {
     const nav = useNavigate();
+    const [codeSent, setCodeSent] = useState<boolean>(false);
 
     return (
         <div className="
             w-full max-w-md mx-auto px-5
             md:max-w-lg"
         >
-            
             <p className="
                 auth-text mb-6 
                 md:mb-10"
@@ -20,9 +21,9 @@ export default function VerifyingForm() {
                 이메일을 입력해주세요.
             </p>
 
-            <RequestingCode/>
+            <RequestingCode onCodeSent={() => setCodeSent(true)} />
 
-            <VerifyingCode/>
+            {codeSent && <VerifyingCode />}
 
             <div className="flex justify-end w-full">
                 <AuthLinks
@@ -32,7 +33,6 @@ export default function VerifyingForm() {
                     animation="animate-[appear_0.5s_ease-out_0.3s_forwards]"
                 />
             </div>
-
         </div>
     );
 }
