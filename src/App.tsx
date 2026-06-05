@@ -6,6 +6,7 @@ import SignUp from "./pages/auth/SignUp";
 import FindingNickname from "./pages/auth/FindingNickname";
 import ResetPassword from "./pages/auth/ResetPassoword";
 import MainPage from "./pages/MainPage";
+import SearchPage from "./pages/SearchPage";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/find-nickname" element={<FindingNickname/>}/>
           <Route path="/reset-password" element={<ResetPassword/>}/>
           <Route path="/main" element={<MainPage/>}/>
+          <Route path="/search" element={<SearchPage/>}/>
         </Routes>
       </BrowserRouter>
     </>

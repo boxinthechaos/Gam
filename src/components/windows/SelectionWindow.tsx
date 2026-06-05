@@ -13,10 +13,12 @@ export default function SelectionWindow({ message, onConfirm, onCancel }: Select
             <div className="
                 opacity-0 
                 w-full max-w-sm
-                p-8 pb-6
+                mx-2 p-8 pb-6
                 border border-black/[0.08] rounded-2xl
                 bg-white     
-                animate-[appear_0.5s_ease-out_0s_forwards]"
+                animate-[appear_0.5s_ease-out_0s_forwards]
+                
+                md:mx-0"
             >
 
                 <p className="
