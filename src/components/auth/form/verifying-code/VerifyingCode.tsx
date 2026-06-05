@@ -15,12 +15,12 @@ export default function VerifyingCode() {
                 value={code}
                 placeholder="코드"
                 onChange={(e) => setCode(e.target.value)}
-                animation="animate-[appear_0.5s_ease-out_0.2s_forwards]"
+                animation="animate-[appear_0.5s_ease-out_0s_forwards]"
             />
             <AuthButton
                 isInfoValid={isCodeValid}
                 text="인증하기"
-                animation="animate-[appear_0.5s_ease-out_0.3s_forwards]"
+                animation="animate-[appear_0.5s_ease-out_0.1s_forwards]"
             />
         </div>
     );
