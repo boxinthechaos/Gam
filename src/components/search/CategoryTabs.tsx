@@ -12,7 +12,6 @@ const TABS: { value: Category; label: string; Icon: React.ElementType }[] = [
 export default function CategoryTabs({ category, onChange }: CategoryTabsProps) {
     return (
         <div className="flex gap-2 mb-3">
-
             {TABS.map(({ value, label, Icon }) => {
                 const active = category === value;
                 return (
@@ -22,11 +21,10 @@ export default function CategoryTabs({ category, onChange }: CategoryTabsProps) 
                         className={`
                             opacity-0
                             flex-1 flex flex-col items-center gap-1
-                            py-3 rounded-xl 
-                            border 
+                            py-2.5 md:py-3
+                            rounded-xl border
                             text-xs font-medium
                             transition-all duration-150 cursor-pointer
-
                             animate-[appear_0.5s_ease-out_0.1s_forwards]
                             ${active
                                 ? "border-[#ff8c00] text-[#ff8c00] bg-orange-50"
@@ -34,14 +32,11 @@ export default function CategoryTabs({ category, onChange }: CategoryTabsProps) 
                             }
                         `}
                     >
-
-                        <Icon size={18} />
+                        <Icon size={16} />
                         {label}
-                        
                     </button>
                 );
             })}
-
         </div>
     );
 }
