@@ -12,12 +12,12 @@ import MobileTabBar from "../components/search/MobileTabBar";
 
 export type MobileTab = "list" | "map";
 
-export default function SearchPage() {
-    const [category, setCategory]     = useState<Category>("food");
-    const [keyword, setKeyword]       = useState<string>("");
-    const [added, setAdded]           = useState<Place[]>([]);
-    const [selected, setSelected]     = useState<Place | null>(null);
-    const [mobileTab, setMobileTab]   = useState<MobileTab>("list"); // 모바일 탭 상태
+export default function Search() {
+    const [category, setCategory] = useState<Category>("food");
+    const [keyword, setKeyword] = useState<string>("");
+    const [added, setAdded] = useState<Place[]>([]);
+    const [selected, setSelected] = useState<Place | null>(null);
+    const [mobileTab, setMobileTab] = useState<MobileTab>("list"); // 모바일 탭 상태
 
     const { places, loading } = usePlaceSearch(category, keyword);
 
@@ -59,7 +59,7 @@ export default function SearchPage() {
                 {/* 사이드패널 — 모바일: list 탭일 때만 표시 */}
                 <div className={`
                     flex flex-col
-                    w-full md:w-[300px] md:flex-shrink-0
+                    w-full md:w-75 md:shrink-0
                     border-r border-gray-100
                     overflow-hidden
                     ${mobileTab === "list" ? "flex" : "hidden"} md:flex

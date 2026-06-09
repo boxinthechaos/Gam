@@ -6,7 +6,8 @@ import SignUp from "./pages/auth/SignUp";
 import FindingNickname from "./pages/auth/FindingNickname";
 import ResetPassword from "./pages/auth/ResetPassoword";
 import MainPage from "./pages/MainPage";
-import SearchPage from "./pages/SearchPage";
+import Search from "./pages/Search";
+import AiRecommending from "./pages/AiRecommending";
 
 function App() {
   return (
@@ -20,7 +21,8 @@ function App() {
           <Route path="/find-nickname" element={<FindingNickname/>}/>
           <Route path="/reset-password" element={<ResetPassword/>}/>
           <Route path="/main" element={<MainPage/>}/>
-          <Route path="/search" element={<SearchPage/>}/>
+          <Route path="/search" element={<Search/>}/>
+          <Route path="/ai" element={<AiRecommending/>}/>
         </Routes>
       </BrowserRouter>
     </>

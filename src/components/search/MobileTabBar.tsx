@@ -5,14 +5,23 @@ import type { MobileTabBarProps } from "../../types/MobileTabBarProps";
 export default function MobileTabBar({ mobileTab, addedCount, onChange }: MobileTabBarProps) {
     return (
         // 모바일에서만 표시
-        <div className="flex md:hidden border-b border-gray-100 bg-white flex-shrink-0">
+        <div className="
+            flex shrink-0 
+            border-b border-gray-100 
+            bg-white 
+            
+            md:hidden"
+        >
 
             <button
                 onClick={() => onChange("list")}
                 className={`
-                    flex-1 flex items-center justify-center gap-2
-                    py-3 text-sm font-medium
-                    border-b-2 transition-all cursor-pointer border-none bg-transparent
+                    flex flex-1 items-center justify-center gap-2
+                    py-3 
+                    border-b-2 border-none
+                    text-sm font-medium
+                    transition-all cursor-pointer bg-transparent
+
                     ${mobileTab === "list"
                         ? "border-[#ff8c00] text-[#ff8c00]"
                         : "border-transparent text-gray-400"
@@ -26,9 +35,12 @@ export default function MobileTabBar({ mobileTab, addedCount, onChange }: Mobile
             <button
                 onClick={() => onChange("map")}
                 className={`
-                    flex-1 flex items-center justify-center gap-2
-                    py-3 text-sm font-medium
-                    border-b-2 transition-all cursor-pointer border-none bg-transparent
+                    flex flex-1 items-center justify-center gap-2
+                    py-3 
+                    border-b-2 border-none
+                    text-sm font-medium
+                    transition-all cursor-pointer bg-transparent
+
                     ${mobileTab === "map"
                         ? "border-[#ff8c00] text-[#ff8c00]"
                         : "border-transparent text-gray-400"
@@ -40,8 +52,10 @@ export default function MobileTabBar({ mobileTab, addedCount, onChange }: Mobile
                 {addedCount > 0 && (
                     <span className="
                         inline-flex items-center justify-center
-                        w-4 h-4 rounded-full
-                        bg-[#ff8c00] text-white text-[10px] font-bold"
+                        w-4 h-4 
+                        rounded-full
+                        bg-[#ff8c00] 
+                        text-white text-[10px] font-bold"
                     >
                         {addedCount}
                     </span>

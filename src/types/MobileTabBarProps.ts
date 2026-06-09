@@ -1,4 +1,4 @@
-import type { MobileTab } from "../pages/SearchPage";
+import type { MobileTab } from "../pages/Search";
 
 export interface MobileTabBarProps {
     mobileTab: MobileTab;

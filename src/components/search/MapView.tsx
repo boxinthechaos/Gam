@@ -21,8 +21,8 @@ export default function MapView({ places, selected }: MapViewProps) {
                         containerRef.current,
                         {
                             center: new window.kakao.maps.LatLng(
-                                35.1796,
-                                129.0756
+                                37.566826,
+                                126.9786567
                             ),
                             level: 5,
                         }
