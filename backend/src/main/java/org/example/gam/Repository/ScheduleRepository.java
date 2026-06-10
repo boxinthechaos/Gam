@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     List<Schedule> findByTripOrderByVisitDateAscStartTimeAsc(Trip trip);
+    void deleteAllByTripIn(List<Trip> trips);
 }

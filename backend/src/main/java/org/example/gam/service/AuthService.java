@@ -1,17 +1,19 @@
 package org.example.gam.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.gam.Repository.RefreshTokenRepository;
-import org.example.gam.Repository.UserRepository;
+import org.example.gam.Repository.*;
 import org.example.gam.dto.auth.*;
 import org.example.gam.entitiy.RefreshToken;
 import org.example.gam.entitiy.Role;
+import org.example.gam.entitiy.Trip;
 import org.example.gam.entitiy.User;
 import org.example.gam.token.TokenProvider;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +24,9 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final StringRedisTemplate redisTemplate;
+    private final TripRepository tripRepository;
+    private final ScheduleRepository scheduleRepository;
+    private final PlaylistRepository playlistRepository;
 
     @Transactional
     public void join(JoinRequest request){
@@ -116,5 +121,20 @@ public class AuthService {
         user.updatePassword(encodedPassword);
 
         redisTemplate.delete("AuthSuccess:" + request.getEmail());
+    }
+
+    @Transactional
+    public void withdraw(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("유저를 찾을 수 없습니다"));
+
+        List<Trip> trips = tripRepository.findAllByUserId(user.getId());
+        scheduleRepository.deleteAllByTripIn(trips);
+        tripRepository.deleteAll(trips);
+        playlistRepository.deleteAll(playlistRepository.findByUser(user));
+
+        refreshTokenRepository.deleteByEmail(email);
+        redisTemplate.delete("AuthSuccess:" + email);
+        userRepository.delete(user);
     }
 }

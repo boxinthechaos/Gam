@@ -141,4 +141,25 @@ public class AuthController {
 
     @GetMapping("/user/mypage")
     public String myPage(){return "my-page";}
+
+    @DeleteMapping("/withdraw")
+    public ResponseEntity<String> withdraw(Authentication authentication, HttpServletResponse response) {
+        String email = authentication.getName();
+        authService.withdraw(email);
+
+        Cookie cookie = new Cookie("accessToken", null);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+
+        Cookie refreshCookie = new Cookie("refreshToken", null);
+        refreshCookie.setPath("/");
+        refreshCookie.setHttpOnly(true);
+        refreshCookie.setMaxAge(0);
+        response.addCookie(refreshCookie);
+
+        SecurityContextHolder.clearContext();
+        return ResponseEntity.ok("회원탈퇴가 완료되었습니다");
+    }
 }
