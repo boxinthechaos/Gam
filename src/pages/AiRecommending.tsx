@@ -76,7 +76,7 @@ export default function AiRecommending() {
                         w-full 
                         mt-2 py-3.5 
                         border-none rounded-xl 
-                        text-sm font-medium
+                        text-sm font-bold
                         transition-all duration-150 cursor-pointer
                         animate-[appear_0.5s_ease-out_0.3s_forwards]
 

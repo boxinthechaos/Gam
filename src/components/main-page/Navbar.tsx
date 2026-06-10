@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { LogOut } from "lucide-react";
+import { LogOut, User, UserRoundX } from "lucide-react";
 import { NAV_LINKS } from "../../types/NavData";
 
 import SelectionWindow from "../windows/SelectionWindow";
@@ -9,12 +9,40 @@ import logo from "../../assets/gam-logo.png"
 
 export default function Navbar() {
     const [windowOpen, setWindowOpen] = useState<boolean>(false);
+    const [windowMessage, setWindowMessage] = useState<string>("");
+    const [windowType, setWindowType] = useState<string>("");
 
     const nav = useNavigate();
+
+    const signOutWindow = () => {
+        setWindowOpen(true);
+        setWindowType("signOut")
+        setWindowMessage("로그아웃 하시겠습니까?");
+    }
+
+    const userDeleteWindow = () => {
+        setWindowOpen(true);
+        setWindowType("userDelete")
+        setWindowMessage("회원탈퇴를 하시겠습니까?\n회원님의 모든 데이터가 사라지게 됩니다!");
+    }
 
     const handleSignOut = () => {
         setWindowOpen(false);
         nav('/sign-in');
+    }
+
+    const handleUserDelete = () => {
+        setWindowOpen(false);
+        nav('/sign-in');
+    }
+
+    const handleConfirm = () =>{
+        if (windowType == "signOut") {
+            handleSignOut();
+        }
+        if (windowType == "userDelete") {
+            handleUserDelete();
+        }
     }
 
     return (
@@ -44,7 +72,7 @@ export default function Navbar() {
                         cursor-pointer"
                 >
 
-                    <img src={logo} className="h-8 md:h-10 w-auto object-contain"/>
+                    <img src={logo} className="h-8 w-auto object-contain md:h-10"/>
 
                 </button>
 
@@ -68,26 +96,54 @@ export default function Navbar() {
 
                 </div>
 
-                <button
-                    onClick={() => setWindowOpen(true)}
-                    className="
-                        flex items-center gap-1.5 
-                        px-3 py-1.5 md:px-4 md:py-2 
-                        rounded-full border border-gray-300 
-                        bg-transparent 
-                        text-xs md:text-sm font-semibold text-gray-700 
-                        hover:bg-gray-100 transition-colors cursor-pointer"
-                >
-                    <LogOut size={13} />
-                    로그아웃
-                </button>
+                <div className="flex justify-between w-48 md:w-60">
+
+                    <button
+                        onClick={() => signOutWindow()}
+                        className="
+                            flex items-center gap-1.5 
+                            px-3 py-1.5  
+                            rounded-full border border-gray-300 
+                            bg-transparent 
+                            text-xs font-semibold text-gray-700 
+
+                            md:px-4
+                            md:py-2 
+                            md:text-sm
+
+                            hover:bg-gray-100 transition-colors cursor-pointer"
+                    >
+                        <LogOut size={13} />
+                        로그아웃
+                    </button>
+
+                    <button
+                        onClick={() => userDeleteWindow()}
+                        className="
+                            flex items-center gap-1.5 
+                            px-3 py-1.5  
+                            rounded-full border border-gray-300 
+                            bg-transparent 
+                            text-xs font-semibold text-red-600
+
+                            md:py-2 
+                            md:px-4
+                            md:text-sm
+
+                            hover:bg-gray-100 transition-colors cursor-pointer"
+                    >
+                        <UserRoundX size={13} />
+                        회원탈퇴
+                    </button>
+
+                </div>
 
             </div>
 
             { windowOpen && 
             <SelectionWindow
-            message="로그아웃을 하시겠습니까?"
-            onConfirm={handleSignOut}
+            message={windowMessage}
+            onConfirm={handleConfirm}
             onCancel={() => setWindowOpen(false)}
             /> }
 
