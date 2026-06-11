@@ -12,7 +12,7 @@ export default function FindingNickname() {
             <div>
 
                 <p className="auth-text mb-2">
-                    닉네임을 찾았어요!
+                    아이디를 찾았어요!
                 </p>
 
                 <p className="
@@ -22,7 +22,7 @@ export default function FindingNickname() {
 
                     md:text-base"
                 >
-                    인증된 이메일과 연결된 닉네임입니다.
+                    인증된 이메일과 연결된 아이디입니다.
                 </p>
 
                 <NicknameCard/>

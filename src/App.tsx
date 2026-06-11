@@ -8,6 +8,8 @@ import ResetPassword from "./pages/auth/ResetPassoword";
 import MainPage from "./pages/MainPage";
 import Search from "./pages/Search";
 import AiRecommending from "./pages/AiRecommending";
+import MyPage from "./pages/MyPage";
+import Playlist from "./pages/PlayList";
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
           <Route path="/main" element={<MainPage/>}/>
           <Route path="/search" element={<Search/>}/>
           <Route path="/ai" element={<AiRecommending/>}/>
+          <Route path="/my-page" element={<MyPage/>}/>
+          <Route path="/playlist" element={<Playlist/>}/>
         </Routes>
       </BrowserRouter>
     </>
