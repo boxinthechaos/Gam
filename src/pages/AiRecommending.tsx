@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Sparkles } from "lucide-react";
 
-import Navbar from "../components/main-page/Navbar";
+import Navbar from "../components/main-page/NavBar";
 import OptionSection from "../components/recommend/OptionSection";
 import ResultCard from "../components/recommend/ResultCard";
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { LogOut, User, UserRoundX } from "lucide-react";
+import { LogOut, UserRoundX } from "lucide-react";
 import { NAV_LINKS } from "../../types/NavData";
 
 import SelectionWindow from "../windows/SelectionWindow";

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Music, Loader2, Save } from "lucide-react";
 
-import Navbar from "../components/main-page/Navbar";
+import Navbar from "../components/main-page/NavBar";
 import SongItem from "../components/play-list/Songitem";
 import PlaylistSummary from "../components/play-list/PlayListSummary";
 import { usePlaylist } from "../hooks/usePlayList";

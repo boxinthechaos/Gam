@@ -4,7 +4,7 @@ import { usePlaceSearch } from "../hooks/usePlaceSearch";
 
 import type { Category, Place } from "../types/SearchTypes";
 
-import Navbar from "../components/main-page/Navbar";
+import Navbar from "../components/main-page/NavBar";
 import SidePanel from "../components/search/SidePanel";
 import MapView from "../components/search/MapView";
 import ScheduleBar from "../components/search/ScheduleBar";

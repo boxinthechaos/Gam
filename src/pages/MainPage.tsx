@@ -1,4 +1,4 @@
-import Navbar from "../components/main-page/Navbar";
+import Navbar from "../components/main-page/NavBar";
 import HeroSection from "../components/main-page/HeroSection";
 import FeatureGrid from "../components/main-page/FeatureGrid";
 
