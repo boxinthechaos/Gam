@@ -1,12 +1,6 @@
 import { createPortal } from "react-dom";
 import { X, Clock, CalendarDays } from "lucide-react";
-import type { Schedule } from "../../types/MyPageTypes";
-
-interface Props {
-    date: string;
-    schedules: Schedule[];
-    onClose: () => void;
-}
+import type { ScheduleDayModalProps } from "../../types/ScheduleDayModalProps";
 
 const CATEGORY_STYLE: Record<string, string> = {
     식당: "bg-orange-100 text-orange-700",
@@ -21,7 +15,7 @@ function formatDateLabel(d: string) {
     return `${Number(y)}년 ${Number(m)}월 ${Number(day)}일`;
 }
 
-export default function ScheduleDayModal({ date, schedules, onClose }: Props) {
+export default function ScheduleDayModal({ date, schedules, onClose }: ScheduleDayModalProps) {
     return createPortal(
         <div
             className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center"

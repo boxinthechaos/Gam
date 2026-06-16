@@ -54,45 +54,66 @@ export default function NotionCalendar({ schedules, tripStart, tripEnd }: Notion
 
     return (
         <>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-3 md:gap-4">
 
                 {/* 월 네비 */}
                 <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
+
+                    <div className="flex items-center gap-1.5 md:gap-2">
+
                         <button
                             onClick={() => goMonth(-1)}
                             className="
-                                w-7 h-7 flex items-center justify-center
-                                rounded-lg border border-gray-200 bg-white
-                                text-gray-400 hover:bg-gray-50
-                                cursor-pointer transition-colors"
+                                flex items-center justify-center
+                                w-7 h-7 
+                                border border-gray-200 rounded-lg  
+                                bg-white
+                                text-gray-400 
+                                cursor-pointer transition-colors
+                                
+                                hover:bg-gray-50"
                         >
                             <ChevronLeft size={14} />
                         </button>
-                        <span className="text-sm font-medium text-gray-800 min-w-[80px] text-center">
+
+                        <span className="min-w-19 text-sm font-medium text-gray-800 text-center">
                             {year}년 {month + 1}월
                         </span>
+
                         <button
                             onClick={() => goMonth(1)}
                             className="
-                                w-7 h-7 flex items-center justify-center
-                                rounded-lg border border-gray-200 bg-white
-                                text-gray-400 hover:bg-gray-50
-                                cursor-pointer transition-colors"
+                                flex items-center justify-center
+                                w-7 h-7 
+                                border border-gray-200 rounded-lg 
+                                bg-white
+                                text-gray-400 
+                                cursor-pointer transition-colors
+                                
+                                hover:bg-gray-50"
                         >
                             <ChevronRight size={14} />
                         </button>
+
                     </div>
+
                     <button
                         onClick={() => setCur({ year: today.getFullYear(), month: today.getMonth() })}
                         className="
-                            text-sm px-4 py-1.5
-                            border border-gray-200 rounded-xl bg-white
-                            text-gray-500 hover:bg-gray-50
-                            cursor-pointer transition-colors"
+                            text-xs px-3 py-1.5
+                            border border-gray-200 rounded-xl 
+                            bg-white
+                            text-gray-500 
+                            cursor-pointer transition-colors
+                            
+                            hover:bg-gray-50
+
+                            md:text-sm
+                            md:px-4"
                     >
                         오늘
                     </button>
+
                 </div>
 
                 {/* 그리드 */}
@@ -100,12 +121,21 @@ export default function NotionCalendar({ schedules, tripStart, tripEnd }: Notion
 
                     {/* 요일 헤더 */}
                     <div className="grid grid-cols-7 border-b border-gray-100">
+
                         {DAY_LABELS.map((d) => (
-                            <div key={d} className="
-                                py-2.5 text-center text-xs text-gray-400 bg-gray-50">
+                            <div 
+                            key={d} 
+                            className="
+                                py-2 
+                                bg-gray-50 
+                                text-center text-[10px] text-gray-400  
+                                md:py-2.5 
+                                md:text-xs"
+                            >
                                 {d}
                             </div>
                         ))}
+
                     </div>
 
                     {/* 날짜 셀 */}
@@ -113,33 +143,48 @@ export default function NotionCalendar({ schedules, tripStart, tripEnd }: Notion
 
                         {/* 이전 달 */}
                         {leading.map((d) => (
-                            <div key={`p-${d}`} className="min-h-[88px] p-2 bg-gray-50/60">
-                                <span className="text-xs text-gray-300">{d}</span>
+                            <div key={`p-${d}`} className="min-h-14 bg-gray-50/60 md:min-h-22 p-1 md:p-2">
+                                <span className="text-[10px] text-gray-300 md:text-xs">
+                                    {d}
+                                </span>
                             </div>
                         ))}
 
                         {/* 현재 달 */}
                         {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((d) => {
-                            const key        = fmtKey(year, month, d);
-                            const daySched   = scheduleMap[key] ?? [];
-                            const isToday    = today.getFullYear() === year && today.getMonth() === month && today.getDate() === d;
-                            const cellDate   = new Date(year, month, d);
-                            const inTrip     = cellDate >= tripStart_ && cellDate <= tripEnd_;
+                            const key = fmtKey(year, month, d);
+                            const daySched = scheduleMap[key] ?? [];
+                            const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === d;
+                            const cellDate = new Date(year, month, d);
+                            const inTrip = cellDate >= tripStart_ && cellDate <= tripEnd_;
 
                             return (
                                 <div
                                     key={d}
                                     onClick={() => setDayModal({ date: key, schedules: daySched })}
                                     className={`
-                                        min-h-[88px] p-2 cursor-pointer transition-colors
-                                        ${inTrip ? "bg-orange-50/50" : "bg-white"}
+                                        min-h-14 p-1 
+                                        cursor-pointer transition-colors
+
                                         hover:bg-orange-50
+
+                                        md:min-h-22
+                                        md:p-2
+
+                                        ${inTrip ? "bg-orange-50/50" : "bg-white"}
                                     `}
                                 >
                                     {/* 날짜 숫자 */}
                                     <div className={`
-                                        w-6 h-6 flex items-center justify-center
-                                        text-xs rounded-full mb-1.5
+                                        w-5 h-5 
+                                        flex items-center justify-center
+                                        text-[10px] rounded-full mb-1 
+
+                                        md:w-6 
+                                        md:h-6
+                                        md:text-xs
+                                        md:mb-1.5
+
                                         ${isToday
                                             ? "bg-[#ff8c00] text-white font-medium"
                                             : "text-gray-500"
@@ -148,46 +193,74 @@ export default function NotionCalendar({ schedules, tripStart, tripEnd }: Notion
                                         {d}
                                     </div>
 
-                                    {/* 일정 칩 (최대 2개) */}
-                                    {daySched.slice(0, 2).map((s) => (
-                                        <div
-                                            key={s.id}
-                                            className={`
-                                                text-[10px] px-1.5 py-0.5 rounded
-                                                mb-0.5 truncate
-                                                ${CATEGORY_COLOR[s.category] ?? "bg-gray-100 text-gray-600"}
-                                            `}
-                                        >
-                                            {s.placeName}
-                                        </div>
-                                    ))}
-                                    {daySched.length > 2 && (
-                                        <p className="text-[9px] text-gray-400 mt-0.5">
-                                            +{daySched.length - 2}개 더
-                                        </p>
-                                    )}
+                                    {/* 일정 칩 — 모바일: 점으로, 데스크탑: 텍스트 칩 */}
+                                    <div className="flex gap-0.5 flex-wrap md:hidden ">
+                                        {daySched.slice(0, 3).map((s) => (
+                                            <div
+                                                key={s.id}
+                                                className={`
+                                                    w-1.5 h-1.5 rounded-full shrink-0
+                                                    ${s.category === "식당" ? "bg-orange-400" :
+                                                      s.category === "관광지" ? "bg-emerald-400" :
+                                                      s.category === "카페" ? "bg-purple-400" :
+                                                      s.category === "숙소" ? "bg-blue-400" :
+                                                      "bg-slate-400"}
+                                                `}
+                                            />
+                                        ))}
+                                    </div>
+
+                                    <div className="hidden md:block">
+
+                                        {daySched.slice(0, 2).map((s) => (
+                                            <div
+                                                key={s.id}
+                                                className={`
+                                                    text-[10px] px-1.5 py-0.5 rounded
+                                                    mb-0.5 truncate
+
+                                                    ${CATEGORY_COLOR[s.category] ?? "bg-gray-100 text-gray-600"}
+                                                `}
+                                            >
+                                                {s.placeName}
+                                            </div>
+                                        ))}
+
+                                        {daySched.length > 2 && (
+                                            <p className="text-[9px] text-gray-400 mt-0.5">
+                                                +{daySched.length - 2}개 더
+                                            </p>
+                                        )}
+
+                                    </div>
                                 </div>
                             );
                         })}
 
                         {/* 다음 달 */}
                         {trailing.map((d) => (
-                            <div key={`n-${d}`} className="min-h-[88px] p-2 bg-gray-50/60">
-                                <span className="text-xs text-gray-300">{d}</span>
+                            <div key={`n-${d}`} className="min-h-14 bg-gray-50/60 md:min-h-22 p-1 md:p-2">
+                                <span className="text-[10px] text-gray-300 md:text-xs">
+                                    {d}
+                                </span>
                             </div>
                         ))}
+
                     </div>
+
                 </div>
+
             </div>
 
             {/* 날짜 클릭 모달 */}
             {dayModal && (
                 <ScheduleDayModal
-                    date={dayModal.date}
-                    schedules={dayModal.schedules}
-                    onClose={() => setDayModal(null)}
+                date={dayModal.date}
+                schedules={dayModal.schedules}
+                onClose={() => setDayModal(null)}
                 />
             )}
+            
         </>
     );
 }

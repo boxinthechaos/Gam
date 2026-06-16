@@ -6,8 +6,8 @@ import type { AiFeedBackModalProps } from "../../types/AiFeedBackModalProps";
 
 export default function AIFeedbackModal({ tripId, onClose }: AiFeedBackModalProps) {
     const [feedback, setFeedback] = useState<string | null>(null);
-    const [loading, setLoading]   = useState(true);
-    const [error, setError]       = useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         fetch(`/api/v1/travel/feedback/trips/${tripId}`, { credentials: "include" })
