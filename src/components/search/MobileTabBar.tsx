@@ -6,9 +6,11 @@ export default function MobileTabBar({ mobileTab, addedCount, onChange }: Mobile
     return (
         // 모바일에서만 표시
         <div className="
+            opacity-0
             flex shrink-0 
             border-b border-gray-100 
             bg-white 
+            animate-[appear_0.5s_ease-out_0.1s_forwards]
             
             md:hidden"
         >

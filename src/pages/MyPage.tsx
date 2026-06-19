@@ -64,12 +64,12 @@ export default function MyPage() {
                 onSelect={setSelected}
                 onDeleteTrip={deleteTrip}
                 onDeletePlaylist={deletePlaylist}
-                onCreateTrip={() => nav("/trip/create")}
+                onCreateTrip={() => nav("/create-trip")}
                 />
 
                 <MainPanel
                 selected={selected}
-                onCreateTrip={() => nav("/trip/create")}
+                onCreateTrip={() => nav("/create-trip")}
                 />
 
             </div>

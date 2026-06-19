@@ -9,6 +9,7 @@ import MainPage from "./pages/MainPage";
 import Search from "./pages/Search";
 import AiRecommending from "./pages/AiRecommending";
 import MyPage from "./pages/MyPage";
+import TripCreate from "./pages/TripCreate";
 import Playlist from "./pages/PlayList";
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
           <Route path="/search" element={<Search/>}/>
           <Route path="/ai" element={<AiRecommending/>}/>
           <Route path="/my-page" element={<MyPage/>}/>
+          <Route path="/create-trip" element={<TripCreate/>}/>
           <Route path="/playlist" element={<Playlist/>}/>
         </Routes>
       </BrowserRouter>

@@ -21,7 +21,7 @@ export interface FeatureCardData {
 
 export const NAV_LINKS: NavLink[] = [
     { label: "지도 검색", path: "/search" },
-    { label: "AI 스케줄", path: "/ai" },
+    { label: "AI 추천", path: "/ai" },
     { label: "내 여행", path: "/my-page" },
     { label: "플레이리스트", path: "/playlist" },
 ];

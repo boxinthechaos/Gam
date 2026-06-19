@@ -91,7 +91,9 @@ export default function Sidebar({
                     cursor-pointer transition-colors
 
                     hover:border-[#ff8c00] 
-                    hover:text-[#ff8c00]"
+                    hover:bg-[#ff8c00]
+                    hover:text-white
+                    hover:font-semibold"
             >
                 <Plus size={14} />
                 새 여행 만들기
@@ -158,7 +160,7 @@ export default function Sidebar({
                     </div>
                 );
             })}
-            
+
         </aside>
     );
 }

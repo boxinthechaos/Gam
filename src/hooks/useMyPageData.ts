@@ -10,7 +10,7 @@ export function useMyPageData() {
         const fetchAll = async () => {
             try {
                 const [tRes, pRes] = await Promise.all([
-                    fetch("/api/v1/travel/trips",    { credentials: "include" }),
+                    fetch("/api/v1/travel/trips", { credentials: "include" }),
                     fetch("/api/v1/music/playlists", { credentials: "include" }),
                 ]);
                 if (tRes.ok) setTrips(await tRes.json());
