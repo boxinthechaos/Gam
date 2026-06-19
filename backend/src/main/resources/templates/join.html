@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>회원가입</title>
+  <style>
+    body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f4f4f9; }
+    .container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 350px; }
+    h2 { text-align: center; }
+    .input-group { display: flex; gap: 5px; margin: 10px 0; }
+    input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; width: 100%; margin: 10px 0;}
+    .input-group input { margin: 0; }
+    button { padding: 10px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; white-space: nowrap; }
+    button:hover { background-color: #218838; }
+    .submit-btn { width: 100%; background-color: #007bff; margin-top: 15px; }
+    .submit-btn:hover { background-color: #0056b3; }
+    #codeSection { display: none; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>회원가입</h2>
+
+  <div class="input-group">
+    <input type="email" id="email" placeholder="이메일" required>
+    <button onclick="sendEmailCode()">인증번호 전송</button>
+  </div>
+
+  <div class="input-group" id="codeSection">
+    <input type="text" id="verifyCode" placeholder="인증번호 6자리">
+    <button onclick="verifyEmailCode()">확인</button>
+  </div>
+
+  <input type="text" id="nickname" placeholder="닉네임" required>
+  <input type="password" id="password" placeholder="비밀번호" required>
+
+  <button class="submit-btn" onclick="join()">회원가입 완료</button>
+</div>
+
+<script>
+  let isEmailVerified = false;
+
+  async function sendEmailCode() {
+    const email = document.getElementById('email').value;
+    if(!email) return alert('이메일을 입력해주세요.');
+
+    try {
+      const response = await fetch('/api/v1/auth/email/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email })
+      });
+
+      if (response.ok) {
+        alert(await response.text());
+        document.getElementById('codeSection').style.display = 'flex';
+      } else {
+        alert('인증번호 발송에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+
+  async function verifyEmailCode() {
+    const email = document.getElementById('email').value;
+    const code = document.getElementById('verifyCode').value;
+
+    try {
+      const response = await fetch('/api/v1/auth/email/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, code: code })
+      });
+
+      if (response.ok) {
+        alert(await response.text());
+        isEmailVerified = true;
+        document.getElementById('verifyCode').disabled = true;
+      } else {
+        alert(await response.text());
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+
+  async function join() {
+    // 서버 측 검증(isVerified)이 있지만, 프론트에서도 한 번 더 막아줍니다.
+    if (!isEmailVerified) {
+      return alert('먼저 이메일 인증을 완료해주세요.');
+    }
+
+    const email = document.getElementById('email').value;
+    const nickname = document.getElementById('nickname').value;
+    const password = document.getElementById('password').value;
+
+    try {
+      const response = await fetch('/api/v1/auth/join', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        // DTO 필드명에 완벽하게 일치: email, password, nickname
+        body: JSON.stringify({ email: email, password: password, nickname: nickname })
+      });
+
+      if (response.ok) {
+        alert(await response.text());
+        window.location.href = '/api/v1/auth/login';
+      } else {
+        // 이전 대화에서 발생했던 IllegalArgumentException 메시지를 띄워줍니다.
+        alert(await response.text());
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+</script>
+
+</body>
+</html>

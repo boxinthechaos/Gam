@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>로그인</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f4f4f9; }
+        .container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 300px; }
+        h2 { text-align: center; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        .link { text-align: center; margin-top: 15px; font-size: 0.9em; display: flex; flex-direction: column; gap: 8px; }
+        .link div { display: flex; justify-content: space-around; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>로그인</h2>
+    <input type="text" id="nickname" placeholder="닉네임" required>
+    <input type="password" id="password" placeholder="비밀번호" required>
+    <button onclick="login()">로그인</button>
+
+    <div class="link">
+        <a href="/api/v1/auth/join">회원가입 하러가기</a>
+        <div>
+            <a href="#" onclick="showFindNickname()">닉네임 찾기</a>
+            <span>|</span>
+            <a href="#" onclick="showResetPassword()">비밀번호 재설정</a>
+        </div>
+    </div>
+
+    <div id="findNicknameBox" style="display:none; margin-top:20px; border-top: 1px solid #ddd; padding-top: 10px;">
+        <h4 style="margin-bottom: 10px;">닉네임 찾기</h4>
+        <div style="display: flex; gap: 5px;">
+            <input type="email" id="findEmail" placeholder="가입한 이메일 입력" style="margin: 0; flex: 3;">
+            <button onclick="sendEmailCode()" style="background-color: #28a745; flex: 2; font-size: 0.8em;">번호 발송</button>
+        </div>
+        <div id="verifyStep" style="display:none; margin-top: 10px;">
+            <div style="display: flex; gap: 5px;">
+                <input type="text" id="authCode" placeholder="인증번호 6자리" style="margin: 0; flex: 3;">
+                <button onclick="verifyEmailCode()" style="background-color: #ffc107; color: black; flex: 2; font-size: 0.8em;">인증하기</button>
+            </div>
+        </div>
+        <button id="finalFindBtn" onclick="findNickname()" style="display:none; background-color: #17a2b8; margin-top: 10px; font-weight: bold;">
+            내 닉네임 확인하기
+        </button>
+    </div>
+
+    <div id="resetPasswordBox" style="display:none; margin-top:20px; border-top: 1px solid #ddd; padding-top: 10px;">
+        <h4 style="margin-bottom: 10px;">비밀번호 재설정</h4>
+
+        <div style="display: flex; gap: 5px;">
+            <input type="email" id="resetEmail" placeholder="가입한 이메일 입력" style="margin: 0; flex: 3;">
+            <button onclick="sendResetEmailCode()" style="background-color: #28a745; flex: 2; font-size: 0.8em;">번호 발송</button>
+        </div>
+
+        <div id="resetVerifyStep" style="display:none; margin-top: 10px;">
+            <div style="display: flex; gap: 5px;">
+                <input type="text" id="resetAuthCode" placeholder="인증번호 6자리" style="margin: 0; flex: 3;">
+                <button onclick="verifyResetEmailCode()" style="background-color: #ffc107; color: black; flex: 2; font-size: 0.8em;">인증하기</button>
+            </div>
+        </div>
+
+        <div id="newPasswordStep" style="display:none; margin-top: 10px;">
+            <input type="password" id="newPassword" placeholder="새로운 비밀번호 입력" style="margin-bottom: 10px;">
+            <button onclick="submitNewPassword()" style="background-color: #dc3545; font-weight: bold;">비밀번호 변경하기</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==========================================
+    // 1. 기존 로그인 관련 로직 복구 완료!
+    // ==========================================
+    async function login() {
+        const nickname = document.getElementById('nickname').value;
+        const password = document.getElementById('password').value;
+
+        try {
+            const response = await fetch('/api/v1/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nickname: nickname, password: password })
+            });
+
+            if (response.ok) {
+                // 백엔드가 알아서 쿠키를 구워주므로 JS는 그냥 페이지 이동만 하면 됨!
+                alert('로그인 성공! 이동합니다.');
+                window.location.href = '/api/v1/index';
+            } else {
+                const errorText = await response.text();
+                alert('로그인 실패: ' + errorText);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('로그인 중 통신 에러가 발생했습니다.');
+        }
+    }
+
+    // ==========================================
+    // 2. 기존 닉네임 찾기 로직 복구 완료!
+    // ==========================================
+    function showFindNickname() {
+        document.getElementById('findNicknameBox').style.display = 'block';
+        document.getElementById('resetPasswordBox').style.display = 'none'; // 다른 박스 숨기기
+    }
+
+    async function sendEmailCode() {
+        const email = document.getElementById('findEmail').value;
+        if(!email) return alert("이메일을 입력해주세요.");
+
+        const response = await fetch('/api/v1/auth/email/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email })
+        });
+
+        if (response.ok) {
+            alert("인증번호가 발송되었습니다.");
+            document.getElementById('verifyStep').style.display = 'block';
+        } else {
+            alert("발송 실패: " + await response.text());
+        }
+    }
+
+    async function verifyEmailCode() {
+        const email = document.getElementById('findEmail').value;
+        const code = document.getElementById('authCode').value;
+
+        const response = await fetch('/api/v1/auth/email/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email, code: code })
+        });
+
+        if (response.ok) {
+            alert("이메일 인증 성공!");
+            document.getElementById('finalFindBtn').style.display = 'block';
+        } else {
+            alert("인증 실패: " + await response.text());
+        }
+    }
+
+    async function findNickname() {
+        const email = document.getElementById('findEmail').value;
+
+        try {
+            const response = await fetch(`/api/v1/auth/user/email?email=${email}`);
+
+            if (response.ok) {
+                const data = await response.json();
+                alert('당신의 닉네임은: ' + data.nickname);
+            } else {
+                const errorText = await response.text();
+                alert('실패: ' + errorText);
+            }
+        } catch (error) {
+            alert('통신 오류 발생');
+        }
+    }
+
+    // ==========================================
+    // 3. 신규: 비밀번호 재설정 로직
+    // ==========================================
+    function showResetPassword() {
+        document.getElementById('resetPasswordBox').style.display = 'block';
+        document.getElementById('findNicknameBox').style.display = 'none'; // 다른 박스 숨기기
+    }
+
+    async function sendResetEmailCode() {
+        const email = document.getElementById('resetEmail').value;
+        if(!email) return alert("이메일을 입력해주세요.");
+
+        const response = await fetch('/api/v1/auth/email/send', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email })
+        });
+
+        if (response.ok) {
+            alert("인증번호가 발송되었습니다.");
+            document.getElementById('resetVerifyStep').style.display = 'block';
+        } else {
+            alert("발송 실패: " + await response.text());
+        }
+    }
+
+    async function verifyResetEmailCode() {
+        const email = document.getElementById('resetEmail').value;
+        const code = document.getElementById('resetAuthCode').value;
+
+        const response = await fetch('/api/v1/auth/email/verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email, code: code })
+        });
+
+        if (response.ok) {
+            alert("이메일 인증 성공! 새 비밀번호를 입력해주세요.");
+            document.getElementById('newPasswordStep').style.display = 'block';
+        } else {
+            alert("인증 실패: " + await response.text());
+        }
+    }
+
+    async function submitNewPassword() {
+        const email = document.getElementById('resetEmail').value;
+        const newPassword = document.getElementById('newPassword').value;
+
+        if(!newPassword) return alert("새 비밀번호를 입력해주세요.");
+
+        try {
+            // URL 경로 /reset-password 로 맞춰두었습니다!
+            const response = await fetch('/api/v1/auth/reset-password', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email, newPassword: newPassword })
+            });
+
+            if (response.ok) {
+                alert('비밀번호가 성공적으로 변경되었습니다. 새 비밀번호로 로그인해주세요.');
+                window.location.reload();
+            } else {
+                const errorText = await response.text();
+                alert('변경 실패: ' + errorText);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('통신 중 에러가 발생했습니다.');
+        }
+    }
+</script>
+
+</body>
+</html>
