@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@keyframes appear{
+  from{
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to{
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page{
+  @apply flex justify-center items-center w-screen h-screen
+}
+
+.auth-text{
+  @apply opacity-0 animate-[appear_0.5s_ease-out_forwards] text-base font-bold 
+
+  md:text-3xl; 
+}
+
+.auth-input{
+  @apply block h-8 mb-4 pl-2 border border-[#cccccc] rounded-md placeholder-[#cccccc] text-xs placeholder:text-xs
+
+  focus:outline-none focus:ring-1 focus:ring-[#ff8c00]
+
+  md:h-10 md:pl-3 md:text-base md:placeholder:text-base; 
+}
+
+.auth-btn{
+  @apply rounded-md text-white font-extrabold
+}
+
+.auth-btn-able{
+  @apply bg-[#ff8c00] hover:bg-[#e67e00] active:scale-95 cursor-pointer
+}
+
+.auth-btn-disabled{
+  @apply bg-gray-300 text-white cursor-not-allowed
+}
