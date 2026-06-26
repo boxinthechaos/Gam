@@ -15,6 +15,28 @@ export default function SignInForm(){
 
     const nav = useNavigate();
 
+    const handleLogin = async () => {
+        try {
+            const response = await fetch("/api/v1/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ nickname, password }),
+            });
+
+            if (!response.ok) {
+                const message = await response.text();
+                alert(message || "로그인에 실패했습니다.");
+                return;
+            }
+
+            nav("/main");
+        } catch (error) {
+            console.error("로그인 요청 실패:", error);
+            alert("서버와 통신 중 오류가 발생했습니다.");
+        }
+    };
+
     return(
         <div className="
             w-full max-w-md mx-auto px-5
@@ -26,33 +48,34 @@ export default function SignInForm(){
             </p>
 
             <p className="
-                auth-text mb-6 
+                auth-text mb-6
                 md:mb-10"
             >
                 로그인하고 감과 함께 떠나볼까요?
             </p>
 
             <AuthInput
-            type="text"
-            value={nickname}
-            placeholder="닉네임"
-            onChange={(e) => setNickname(e.target.value)}
-            animation="animate-[appear_0.5s_ease-out_0.1s_forwards]"
+                type="text"
+                value={nickname}
+                placeholder="닉네임"
+                onChange={(e) => setNickname(e.target.value)}
+                animation="animate-[appear_0.5s_ease-out_0.1s_forwards]"
             />
 
             <PasswordInput
-            password={password}
-            onChange={(e) => setPassword(e.target.value)}
-            isPasswordShown={isPasswordShown}
-            onClick={() => setIsPasswordShown(!isPasswordShown)}
-            animation="animate-[appear_0.5s_ease-out_0.2s_forwards]"
+                password={password}
+                onChange={(e) => setPassword(e.target.value)}
+                isPasswordShown={isPasswordShown}
+                onClick={() => setIsPasswordShown(!isPasswordShown)}
+                animation="animate-[appear_0.5s_ease-out_0.2s_forwards]"
             />
 
-            <AuthButton 
-            
-            isInfoValid={isInfoValid} 
-            text="로그인"
-            animation="animate-[appear_0.5s_ease-out_0.3s_forwards]"
+            <AuthButton
+
+                isInfoValid={isInfoValid}
+                text="로그인"
+                func={handleLogin}
+                animation="animate-[appear_0.5s_ease-out_0.3s_forwards]"
             />
 
             <div className="flex justify-center w-full">
@@ -65,7 +88,7 @@ export default function SignInForm(){
                     animation="animate-[appear_0.5s_ease-out_0.4s_forwards]"
                 />
             </div>
-            
+
         </div>
     );
 }

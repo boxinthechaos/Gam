@@ -29,11 +29,6 @@ public class SongController {
         return ResponseEntity.ok(playList);
     }
 
-    @GetMapping("/playlist")
-    public String showPlaylistPage() {
-        return "music";
-    }
-
     @PostMapping("/save")
     public ResponseEntity<String> savePlaylist(
             @RequestBody PlaylistSaveRequestDto requestDto,

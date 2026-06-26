@@ -26,16 +26,6 @@ public class TravelController {
     @Value("${kakao.restapi.key}")
     private String kakaoApiKey;
 
-    @GetMapping("/recommend")
-    public String openRecommendPage() {
-        return "recommend";
-    }
-
-    @GetMapping("/search")
-    public String searchPage(Model model){
-        model.addAttribute("Kakao_API", kakaoApiKey);
-        return "search";
-    }
 
     @GetMapping("/restaurants")
     public ResponseEntity<List<TravelSearchResponse.Item>> getRestaurants(@RequestParam String region) {
@@ -134,12 +124,6 @@ public class TravelController {
         calendarService.deleteSchedule(tripId, scheduleId, email);
 
         return ResponseEntity.ok("일정이 성공적으로 삭제되었습니다.");
-    }
-
-
-    @GetMapping("/trip-create")
-    public String createTripPage() {
-        return "create-trip";
     }
 
     @GetMapping("/keyword")

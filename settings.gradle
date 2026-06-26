@@ -1,0 +1,4 @@
+rootProject.name = 'Gam'
+
+include 'backend'
+include 'frontend'

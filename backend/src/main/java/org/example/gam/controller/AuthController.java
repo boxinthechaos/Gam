@@ -129,19 +129,6 @@ public class AuthController {
         return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
     }
 
-    @GetMapping("/login")
-    public String loginP(){
-        return "login";
-    }
-
-    @GetMapping("/join")
-    public String joinP(){
-        return "join";
-    }
-
-    @GetMapping("/user/mypage")
-    public String myPage(){return "my-page";}
-
     @DeleteMapping("/withdraw")
     public ResponseEntity<String> withdraw(Authentication authentication, HttpServletResponse response) {
         String email = authentication.getName();

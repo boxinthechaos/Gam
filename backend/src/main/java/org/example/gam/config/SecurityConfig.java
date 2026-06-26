@@ -1,5 +1,6 @@
 package org.example.gam.config;
 
+import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
 import org.example.gam.security.JwtAuthenticationFilter;
 import org.example.gam.token.TokenProvider;
@@ -23,6 +24,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http
+
                 .cors(cors -> {})
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
@@ -33,18 +35,29 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
+                        // 정적 파일 허용 (패턴 수정!)
+                        .requestMatchers("/", "/index.html").permitAll()
+                        .requestMatchers("/assets/**").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/img/**", "/images/**").permitAll()
+                        // 인증 API 허용
                         .requestMatchers("/api/v1/auth/**").permitAll()
-                        .requestMatchers("/api/v1/travel/**", "/api/v1/music/**", "/api/v1/index").hasAnyAuthority("USER", "ADMIN")
-                        .anyRequest().denyAll()
+                        // 나머지는 인증 필요
+                        .requestMatchers("/api/v1/**").authenticated()
+                        .dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll()
+                        .anyRequest().permitAll()
                 )
 
                 .exceptionHandling(exception -> exception
+                        // 리다이렉트 대신 401 반환
                         .authenticationEntryPoint(((request, response, authException) -> {
-                            response.sendRedirect("/api/v1/auth/login");
+                            response.setStatus(401);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"error\":\"Unauthorized\"}");
                         }))
-
                         .accessDeniedHandler(((request, response, accessDeniedException) -> {
-                            response.sendRedirect("/api/v1/auth/login");
+                            response.setStatus(403);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"error\":\"Forbidden\"}");
                         }))
                 )
 

@@ -29,11 +29,26 @@ export default function MapView({ places, selected }: MapViewProps) {
                     );
 
                     console.log("카카오맵 생성 완료");
+
+                    // 생성 시점에 컨테이너 크기가 0이거나 아직 자리잡지 않은 경우
+                    // 지도가 빈 화면으로 보이는 문제 방지 (relayout으로 강제 재계산)
+                    setTimeout(() => mapRef.current?.relayout(), 0);
                 });
             }
         }, 100);
 
-        return () => clearInterval(timer);
+        // 컨테이너 크기가 바뀔 때마다(레이아웃 변경, 창 크기 조절 등) 지도 재계산
+        const resizeObserver = new ResizeObserver(() => {
+            mapRef.current?.relayout();
+        });
+        if (containerRef.current) {
+            resizeObserver.observe(containerRef.current);
+        }
+
+        return () => {
+            clearInterval(timer);
+            resizeObserver.disconnect();
+        };
     }, []);
 
     // places 변경 시 마커 재렌더링
