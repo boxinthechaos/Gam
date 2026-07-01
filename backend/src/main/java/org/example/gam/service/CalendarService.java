@@ -176,4 +176,30 @@ public class CalendarService {
 
         return feedback;
     }
+
+    @Transactional
+    public ScheduleResponseDto updateSchedule(Long tripId, Long scheduleId, String username, ScheduleRequestDto dto) {
+        User user = userRepository.findByEmail(username)
+                .orElseGet(() -> userRepository.findByNickname(username)
+                        .orElseThrow(() -> new IllegalArgumentException("해당 유저를 찾을 수 없습니다.")));
+
+        Trip trip = tripRepository.findById(tripId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 여행을 찾을 수 없습니다."));
+
+        if (!trip.getUser().getId().equals(user.getId())) {
+            throw new IllegalArgumentException("이 여행의 일정을 수정할 권한이 없습니다.");
+        }
+
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 일정을 찾을 수 없습니다."));
+
+        if (!schedule.getTrip().getId().equals(trip.getId())) {
+            throw new IllegalArgumentException("해당 여행에 속한 일정이 아닙니다.");
+        }
+
+        schedule.update(dto);
+        trip.setAiFeedback(null);
+
+        return ScheduleResponseDto.fromEntity(schedule);
+    }
 }

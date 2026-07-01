@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.example.gam.dto.travel.ScheduleRequestDto;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -36,5 +37,14 @@ public class Schedule {
         this.startTime = startTime;
         this.endTime = endTime;
         this.isNextDay = isNextDay;
+    }
+
+    public void update(ScheduleRequestDto dto) {
+        this.placeName = dto.getPlaceName();
+        this.category = dto.getCategory();
+        this.visitDate = dto.getVisitDate();
+        this.startTime = dto.getStartTime();
+        this.endTime = dto.getEndTime();
+        this.isNextDay = dto.isNextDay();
     }
 }

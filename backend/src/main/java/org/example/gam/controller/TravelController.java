@@ -145,4 +145,21 @@ public class TravelController {
 
         return ResponseEntity.ok(feedback);
     }
+
+    @PutMapping("/trips/{tripId}/schedules/{scheduleId}")
+    public ResponseEntity<ScheduleResponseDto> updateSchedule(
+            @PathVariable Long tripId,
+            @PathVariable Long scheduleId,
+            Authentication authentication,
+            @RequestBody ScheduleRequestDto requestDto) {
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(401).build();
+        }
+
+        String email = authentication.getName();
+        ScheduleResponseDto response = calendarService.updateSchedule(tripId, scheduleId, email, requestDto);
+
+        return ResponseEntity.ok(response);
+    }
 }
