@@ -1,8 +1,8 @@
 import { List, Map } from "lucide-react";
 
-import type { MobileTabBarProps } from "../../types/MobileTabBarProps";
+import type { SearchMobileTabBarProps } from "../../types/SearchMobileTabBarProps";
 
-export default function MobileTabBar({ mobileTab, addedCount, onChange }: MobileTabBarProps) {
+export default function MobileTabBar({ mobileTab, addedCount, onChange }: SearchMobileTabBarProps) {
     return (
         // 모바일에서만 표시
         <div className="
