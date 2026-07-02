@@ -13,7 +13,9 @@ export interface Schedule {
     visitDate: string;
     startTime: string;
     endTime?: string;
-    isNextDay: boolean;
+    isNextDay?: boolean;
+    lat?: number;   // 추가
+    lng?: number;   // 추가
 }
 
 export interface Song {
