@@ -13,6 +13,8 @@ export interface Schedule {
     visitDate: string;
     startTime: string;
     endTime?: string;
+    lat?: number;
+    lng?: number;
 }
 
 export interface Song {
