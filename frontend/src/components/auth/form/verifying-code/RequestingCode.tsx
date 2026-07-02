@@ -1,18 +1,39 @@
 import { useState } from "react";
 
-interface Props {
-    onCodeSent: () => void;
-}
+import type { RequestingCodeProps } from "../../../../types/RequestingCodeProps";
 
-export default function RequestingCode({ onCodeSent }: Props) {
-    const [email, setEmail] = useState<string>("");
+import AlertWindow from "../../../windows/AlertWindow";
+
+import axios from "axios";
+
+export default function RequestingCode({ email, setEmail, onCodeSent }: RequestingCodeProps) {
+    const [isAlertOpen, setIsAlertOpen] = useState(false);
+    const [alertMessage, setAlertMessage] = useState("");
 
     const isEmailValid: boolean = email.trim().length > 0;
 
-    const handleSend = () => {
+    const handleSend = async () => {
         if (!isEmailValid) return;
-        // TODO: 실제 API 호출
-        onCodeSent();
+
+        try {
+            await axios.post(
+                "/api/v1/auth/email/send",
+                {
+                    email: email,
+                },
+                {
+                    withCredentials: true,
+                    headers: { "Content-Type": "application/json" },
+                }
+            );
+
+            onCodeSent();
+        } catch (error: any) {
+            const message = "인증 코드 발송에 실패했습니다.";
+
+            setAlertMessage(message);
+            setIsAlertOpen(true);
+        }
     };
 
     return (
@@ -35,6 +56,12 @@ export default function RequestingCode({ onCodeSent }: Props) {
             >
                 코드 발송
             </button>
+            {isAlertOpen && (
+                <AlertWindow
+                    message={alertMessage}
+                    onClose={() => setIsAlertOpen(false)}
+                />
+            )}
         </div>
     );
 }

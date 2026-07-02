@@ -22,7 +22,7 @@ function fmtKey(y: number, m: number, d: number) {
 
 interface DayModal { date: string; schedules: Schedule[]; }
 
-export default function NotionCalendar({ schedules, tripStart, tripEnd }: NotionCalendarProps) {
+export default function NotionCalendar({ schedules, tripStart, tripEnd, tripId, onEditSaved }: NotionCalendarProps) {
     const init = new Date(tripStart);
     const [cur, setCur] = useState({ year: init.getFullYear(), month: init.getMonth() });
     const [dayModal, setDayModal] = useState<DayModal | null>(null);
@@ -255,9 +255,11 @@ export default function NotionCalendar({ schedules, tripStart, tripEnd }: Notion
             {/* 날짜 클릭 모달 */}
             {dayModal && (
                 <ScheduleDayModal
-                date={dayModal.date}
-                schedules={dayModal.schedules}
-                onClose={() => setDayModal(null)}
+                    tripId={tripId}          // 추가
+                    date={dayModal.date}
+                    schedules={dayModal.schedules}
+                    onClose={() => setDayModal(null)}
+                    onEditSaved={onEditSaved} // 추가
                 />
             )}
             

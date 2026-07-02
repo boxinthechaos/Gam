@@ -1,4 +1,35 @@
+import { useEffect, useState } from "react";
+
+import type { UserInfo } from "../../types/UserInfo";
+
+import axios from "axios";
+
+
 export default function NicknameCard() {
+    const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+
+    useEffect(() => {
+        const getUserInfo = async () => {
+            try {
+                const response = await axios.get<UserInfo>(
+                    "/api/v1/auth/user/email",
+                    {
+                        withCredentials: true,
+                        headers: { "Content-Type": "application/json" },
+                    }
+                );
+
+                setUserInfo(response.data);
+                
+                sessionStorage.removeItem("verifiedEmail");
+            } catch (error) {
+                console.error("닉네임 조회 실패", error);
+            }
+        };
+
+        getUserInfo();
+    }, []);
+
     return (
         <div className="
             opacity-0 
@@ -28,7 +59,7 @@ export default function NicknameCard() {
                     md:mb-8
                     md:text-[50px]
                 ">
-                    최준영
+                    {userInfo?.nickname ?? ""}
                 </h2>
 
                 <div className="
@@ -42,7 +73,7 @@ export default function NicknameCard() {
                     md:text-[16px]
                     "
                 >
-                    s24052@gsm.hs.kr으로 인증 됨
+                    {userInfo?.email ?? ""}으로 인증 됨
                 </p>
 
             </div>

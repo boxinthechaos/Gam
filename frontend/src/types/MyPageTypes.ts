@@ -13,6 +13,7 @@ export interface Schedule {
     visitDate: string;
     startTime: string;
     endTime?: string;
+    isNextDay: boolean;
 }
 
 export interface Song {
