@@ -1,0 +1,10 @@
+package org.example.gam.dto.auth;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@NoArgsConstructor
+public class ReissueRequest {
+    private String refreshToken;
+}

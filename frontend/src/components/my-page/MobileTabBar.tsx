@@ -1,9 +1,14 @@
 import { Plane, Music } from "lucide-react";
+import type { Trip, Playlist, SidebarView } from "../../types/MyPageTypes";
 
-import type { SidebarView } from "../../types/MyPageTypes";
-import type { MyPageMobileTabBarProps } from "../../types/MyPageMobileTabBarProps";
+interface Props {
+    trips: Trip[];
+    playlists: Playlist[];
+    selected: SidebarView | null;
+    onSelect: (view: SidebarView) => void;
+}
 
-export default function MobileTabBar({ trips, playlists, selected, onSelect }: MyPageMobileTabBarProps) {
+export default function MobileTabBar({ trips, playlists, selected, onSelect }: Props) {
     const isActive = (view: SidebarView) =>
         !!selected && selected.type === view.type && selected.data.id === view.data.id;
 

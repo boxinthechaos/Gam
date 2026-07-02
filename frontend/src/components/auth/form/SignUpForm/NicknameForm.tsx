@@ -29,20 +29,20 @@ export default function NicknameForm({ onNext }: NicknameFormProps) {
             </p>
 
             <AuthInput
-                type="text"
-                value={nickname}
-                placeholder="닉네임"
-                onChange={(e) => setNickname(e.target.value)}
-                animation="animate-[appear_0.5s_ease-out_0.1s_forwards]"
+            type="text"
+            value={nickname}
+            placeholder="닉네임"
+            onChange={(e) => setNickname(e.target.value)}
+            animation="animate-[appear_0.5s_ease-out_0.1s_forwards]"
             />
 
             <NicknameRuleList nickname={nickname} />
             
             <AuthButton
-                func={() => onNext(nickname)}
-                isInfoValid={isNicknameValid}
-                text="다음"
-                animation="animate-[appear_0.5s_ease-out_0.2s_forwards]"
+            func={() => onNext(nickname)}
+            isInfoValid={isNicknameValid}
+            text="다음"
+            animation="animate-[appear_0.5s_ease-out_0.2s_forwards]"
             />
 
             <div className="flex justify-end w-full">

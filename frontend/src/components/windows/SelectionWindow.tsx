@@ -14,7 +14,7 @@ export default function SelectionWindow({ message, onConfirm, onCancel }: Select
                 opacity-0 
                 w-full max-w-sm
                 mx-2 p-8 pb-6
-                border border-black/8 rounded-2xl
+                border border-black/[0.08] rounded-2xl
                 bg-white     
                 animate-[appear_0.5s_ease-out_0s_forwards]
                 

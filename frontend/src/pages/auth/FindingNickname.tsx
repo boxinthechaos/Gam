@@ -12,7 +12,7 @@ export default function FindingNickname() {
             <div>
 
                 <p className="auth-text mb-2">
-                    닉네임을 찾았어요!
+                    아이디를 찾았어요!
                 </p>
 
                 <p className="
@@ -22,7 +22,7 @@ export default function FindingNickname() {
 
                     md:text-base"
                 >
-                    인증된 이메일과 연결된 닉네임입니다.
+                    인증된 이메일과 연결된 아이디입니다.
                 </p>
 
                 <NicknameCard/>
@@ -31,20 +31,7 @@ export default function FindingNickname() {
                     <AuthLinks
                         links={[
                             { label: "로그인 페이지로 가기", onClick: () => nav('/sign-in') },
-                            { 
-                                label: "비밀번호 재설정", 
-                                onClick: () => {
-                                    nav('/verify');
-                                    sessionStorage.setItem("verifyType", "reset-password");
-                                } 
-                            },
-                            { 
-                                label: "회원가입", 
-                                onClick: () => {
-                                    nav('/verify');
-                                    sessionStorage.setItem("verifyType", "sign-up");
-                                } 
-                            },
+                            { label: "비밀번호 재설정", onClick: () => nav('/verify') },
                         ]}
                         animation="animate-[appear_0.5s_ease-out_0.3s_forwards]"
                     />

@@ -3,21 +3,15 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { LogOut, UserRoundX, Menu, X } from "lucide-react";
 import { NAV_LINKS } from "../../types/NavData";
 
-import AlertWindow from "../windows/AlertWindow";
 import SelectionWindow from "../windows/SelectionWindow";
 
 import logo from "../../assets/gam-logo.png"
 
-import axios from "axios";
-
 export default function Navbar() {
-    const [windowOpen, setWindowOpen] = useState<boolean>(false);
+    const [windowOpen, setWindowOpen]       = useState<boolean>(false);
     const [windowMessage, setWindowMessage] = useState<string>("");
-    const [windowType, setWindowType] = useState<string>("");
-    const [menuOpen, setMenuOpen] = useState<boolean>(false); // 모바일 드로어
-
-    const [isAlertOpen, setIsAlertOpen] = useState(false);
-    const [alertMessage, setAlertMessage] = useState("");
+    const [windowType, setWindowType]       = useState<string>("");
+    const [menuOpen, setMenuOpen]           = useState<boolean>(false); // 모바일 드로어
 
     const nav = useNavigate();
     const location = useLocation();
@@ -34,44 +28,14 @@ export default function Navbar() {
         setWindowMessage("회원탈퇴를 하시겠습니까?\n회원님의 모든 데이터가 사라지게 됩니다!");
     }
 
-    const handleSignOut = async () => {
-        try {
-            await axios.post(
-                "/api/v1/auth/logout",
-                {},
-                {
-                    withCredentials: true,
-                }
-            );
-
-            setWindowOpen(false);
-            nav("/sign-in");
-        } catch (error) {
-            setWindowOpen(false);
-
-            setAlertMessage("로그아웃 도중 오류가 발생했습니다.");
-            setIsAlertOpen(true);
-        }
+    const handleSignOut = () => {
+        setWindowOpen(false);
+        nav('/sign-in');
     }
 
-    const handleUserDelete = async () => {
-        try {
-            await axios.post(
-                "/api/v1/auth/withdraw",
-                {},
-                {
-                    withCredentials: true,
-                }
-            );
-
-            setWindowOpen(false);
-            nav("/sign-in");
-        } catch (error) {
-            setWindowOpen(false);
-
-            setAlertMessage("회원탈퇴 도중 오류가 발생했습니다.");
-            setIsAlertOpen(true);
-        }
+    const handleUserDelete = () => {
+        setWindowOpen(false);
+        nav('/sign-in');
     }
 
     const handleConfirm = () =>{
@@ -207,7 +171,7 @@ export default function Navbar() {
             {/* 모바일 드로어 — 오버레이 + 배경 어둡게 */}
             {menuOpen && (
                 <div
-                    className="md:hidden fixed inset-0 z-60 bg-black/40"
+                    className="md:hidden fixed inset-0 z-[60] bg-black/40"
                     onClick={() => setMenuOpen(false)}
                 >
                     <div
@@ -262,20 +226,12 @@ export default function Navbar() {
                 </div>
             )}
 
-            {windowOpen && (
-                <SelectionWindow
-                    message={windowMessage}
-                    onConfirm={handleConfirm}
-                    onCancel={() => setWindowOpen(false)}
-                />
-            )}
-
-            {isAlertOpen && (
-                <AlertWindow
-                    message={alertMessage}
-                    onClose={() => setIsAlertOpen(false)}
-                />
-            )}
+            { windowOpen && 
+            <SelectionWindow
+            message={windowMessage}
+            onConfirm={handleConfirm}
+            onCancel={() => setWindowOpen(false)}
+            /> }
 
         </nav>
     );

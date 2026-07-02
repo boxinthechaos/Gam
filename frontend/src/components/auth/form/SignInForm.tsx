@@ -5,17 +5,11 @@ import AuthInput from "../AuthInput";
 import PasswordInput from "../PasswordInput";
 import AuthButton from "../AuthButton";
 import AuthLinks from "../AuthLinks";
-import AlertWindow from "../../windows/AlertWindow";
-
-import axios from "axios";
 
 export default function SignInForm(){
     const [nickname, setNickname] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [isPasswordShown, setIsPasswordShown] = useState<boolean>(false);
-
-    const [isAlertOpen, setIsAlertOpen] = useState(false);
-    const [alertMessage, setAlertMessage] = useState("");
 
     const isInfoValid: boolean = nickname.trim().length > 0 && password.trim().length > 0;
 
@@ -23,24 +17,23 @@ export default function SignInForm(){
 
     const handleLogin = async () => {
         try {
-            await axios.post(
-                "/api/v1/auth/login",
-                {
-                    nickname: nickname,
-                    password: password,
-                },
-                {
-                    withCredentials: true,
-                    headers: { "Content-Type": "application/json" },
-                }
-            );
+            const response = await fetch("/api/v1/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ nickname, password }),
+            });
+
+            if (!response.ok) {
+                const message = await response.text();
+                alert(message || "로그인에 실패했습니다.");
+                return;
+            }
 
             nav("/main");
-        } catch (error: any) {
-            const message = "로그인에 실패했습니다.";
-
-            setAlertMessage(message);
-            setIsAlertOpen(true);
+        } catch (error) {
+            console.error("로그인 요청 실패:", error);
+            alert("서버와 통신 중 오류가 발생했습니다.");
         }
     };
 
@@ -78,6 +71,7 @@ export default function SignInForm(){
             />
 
             <AuthButton
+
                 isInfoValid={isInfoValid}
                 text="로그인"
                 func={handleLogin}
@@ -87,38 +81,13 @@ export default function SignInForm(){
             <div className="flex justify-center w-full">
                 <AuthLinks
                     links={[
-                        { 
-                            label: "닉네임 찾기", 
-                            onClick: () => {
-                                nav('/verify');
-                                sessionStorage.setItem("verifyType", "find-nickname");
-                            } 
-                        },
-                        { 
-                            label: "비밀번호 재설정", 
-                            onClick: () => {
-                                nav('/verify');
-                                sessionStorage.setItem("verifyType", "reset-password");
-                            } 
-                        },
-                        { 
-                            label: "회원가입", 
-                            onClick: () => {
-                                nav('/verify');
-                                sessionStorage.setItem("verifyType", "sign-up");
-                            } 
-                        },
+                        { label: "닉네임 찾기", onClick: () => nav('/verify') },
+                        { label: "비밀번호 재설정", onClick: () => nav('/verify') },
+                        { label: "회원가입", onClick: () => nav('/verify') },
                     ]}
                     animation="animate-[appear_0.5s_ease-out_0.4s_forwards]"
                 />
             </div>
-
-            {isAlertOpen && (
-                <AlertWindow
-                    message={alertMessage}
-                    onClose={() => setIsAlertOpen(false)}
-                />
-            )}
 
         </div>
     );
