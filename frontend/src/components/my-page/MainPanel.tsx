@@ -36,7 +36,7 @@ export default function MainPanel({ selected, onCreateTrip }: Props) {
                         px-5 py-2.5 
                         border-none rounded-full 
                         bg-[#ff8c00] text-white
-                        text-sm font-medium
+                        text-sm font-bold
                         cursor-pointer 
                         hover:bg-[#e67e00] transition-colors
                         
