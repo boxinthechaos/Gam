@@ -8,21 +8,21 @@ export default function PasswordFormFields({ password, passwordAgain, onPassword
     <div>
 
         <AuthInput
-        type="password"
-        value={password}
-        placeholder="비밀번호"
-        onChange={(e) => onPasswordChange(e.target.value)}
-        animation="animate-[appear_0.5s_ease-out_0.1s_forwards]"
+          type="password"
+          value={password}
+          placeholder="비밀번호"
+          onChange={(e) => onPasswordChange(e.target.value)}
+          animation="animate-[appear_0.5s_ease-out_0.1s_forwards]"
         />
 
         <PasswordRuleList password={password} />
 
         <AuthInput
-        type="password"
-        value={passwordAgain}
-        placeholder="비밀번호 재입력"
-        onChange={(e) => onPasswordAgainChange(e.target.value)}
-        animation="animate-[appear_0.5s_ease-out_0.3s_forwards]"
+          type="password"
+          value={passwordAgain}
+          placeholder="비밀번호 재입력"
+          onChange={(e) => onPasswordAgainChange(e.target.value)}
+          animation="animate-[appear_0.5s_ease-out_0.3s_forwards]"
         />
 
         {passwordAgain.length > 0 && password !== passwordAgain && (

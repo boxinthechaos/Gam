@@ -1,34 +1,45 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
 import { usePasswordForm } from "../../../../hooks/usePasswordForm";
 
 import AuthButton from "../../AuthButton";
 import AuthLinks from "../../AuthLinks";
 import PasswordFormFields from "../PasswordFormField";
+import AlertWindow from "../../../windows/AlertWindow";
 
 export default function SetPasswordFormForm({ nickname }: { nickname: string }) {
     const { password, setPassword, passwordAgain, setPasswordAgain, isPasswordValid } = usePasswordForm();
+    const [alertMessage, setAlertMessage] = useState<string | null>(null);
     const nav = useNavigate();
 
-    // 회원가입 핸들러 추가
-    const handleSignUp = async () => {
+    const handleSignUp = async (): Promise<void> => {
         if (!isPasswordValid) return;
 
-        try {
-            const response = await fetch("/api/v1/auth/join", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    email: nickname,  // 또는 email이면 이렇게
-                    password: password
-                }),
-            });
+        const email = sessionStorage.getItem("email");
+        if (!email) {
+            setAlertMessage("이메일 인증이 필요합니다.");
+            return;
+        }
 
-            if (response.ok) {
-                alert("회원가입 성공!");
-                nav('/sign-in');
-            }
-        } catch (error) {
-            console.error("회원가입 실패:", error);
+        try {
+            await axios.post(
+                "/api/v1/auth/join",
+                { email, nickname, password },
+                {
+                    withCredentials: true,
+                    headers: { "Content-Type": "application/json" },
+                }
+            );
+            sessionStorage.removeItem("email");
+            setAlertMessage("회원가입이 완료되었습니다.");
+        } catch (e: unknown) {
+            const msg =
+                axios.isAxiosError(e) && e.response?.data
+                    ? e.response.data
+                    : "회원가입에 실패했습니다.";
+            setAlertMessage(msg);
         }
     };
 
@@ -55,11 +66,23 @@ export default function SetPasswordFormForm({ nickname }: { nickname: string }) 
             <div className="flex justify-end w-full">
                 <AuthLinks
                     links={[
-                        { label: "로그인 페이지로 이동", onClick: () => nav('/sign-in') },
+                        { label: "로그인 페이지로 이동", onClick: () => nav("/sign-in") },
                     ]}
                     animation="animate-[appear_0.5s_ease-out_0.5s_forwards]"
                 />
             </div>
+
+            {alertMessage && (
+                <AlertWindow
+                    message={alertMessage}
+                    onClose={() => {
+                        if (alertMessage === "회원가입이 완료되었습니다.") {
+                            nav("/sign-in");
+                        }
+                        setAlertMessage(null);
+                    }}
+                />
+            )}
         </div>
     );
 }

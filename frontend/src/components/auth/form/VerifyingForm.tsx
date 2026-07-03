@@ -7,6 +7,7 @@ import AuthLinks from "../AuthLinks";
 
 export default function VerifyingForm() {
     const nav = useNavigate();
+    const [email, setEmail] = useState<string>("");
     const [codeSent, setCodeSent] = useState<boolean>(false);
 
     return (
@@ -21,9 +22,13 @@ export default function VerifyingForm() {
                 이메일을 입력해주세요.
             </p>
 
-            <RequestingCode onCodeSent={() => setCodeSent(true)} />
+            <RequestingCode 
+                onCodeSent={() => setCodeSent(true)} 
+                email={email} 
+                setEmail={setEmail}
+            />
 
-            {codeSent && <VerifyingCode />}
+            {codeSent && <VerifyingCode email={email}/>}
 
             <div className="flex justify-end w-full">
                 <AuthLinks

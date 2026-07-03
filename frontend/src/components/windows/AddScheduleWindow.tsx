@@ -8,20 +8,20 @@ import { useMyTrips } from "../../hooks/useMyTrips";
 import { getTripDayOptions } from "../../types/TripDays";
 
 const ICON_MAP = {
-    food:  { Icon: Utensils,  bg: "bg-orange-100",  color: "text-[#ff8c00]"    },
-    hotel: { Icon: Building2, bg: "bg-blue-100",    color: "text-blue-500"     },
-    tour:  { Icon: Camera,    bg: "bg-emerald-100", color: "text-emerald-500"  },
+    food: { Icon: Utensils, bg: "bg-orange-100", color: "text-[#ff8c00]" },
+    hotel: { Icon: Building2, bg: "bg-blue-100", color: "text-blue-500" },
+    tour: { Icon: Camera, bg: "bg-emerald-100", color: "text-emerald-500" },
 };
 
 export default function AddScheduleWindow({ place, onClose, onSaved, onError }: AddScheduleWindowProps) {
     const { trips, loading: tripsLoading } = useMyTrips();
 
-    const [tripId, setTripId]       = useState<number | "">("");
+    const [tripId, setTripId] = useState<number | "">("");
     const [visitDate, setVisitDate] = useState<string>("");
     const [startTime, setStartTime] = useState<string>("10:00");
-    const [endTime, setEndTime]     = useState<string>("12:00");
+    const [endTime, setEndTime] = useState<string>("12:00");
     const [isNextDay, setIsNextDay] = useState<boolean>(false);
-    const [saving, setSaving]       = useState(false);
+    const [saving, setSaving] = useState(false);
 
     const { Icon, bg, color } = ICON_MAP[place.category];
 
