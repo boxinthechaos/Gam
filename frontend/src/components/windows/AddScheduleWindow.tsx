@@ -69,10 +69,7 @@ export default function AddScheduleWindow({ place, onClose, onSaved, onError }: 
             onSaved?.();
             onClose();
         } catch (e) {
-            const msg =
-                axios.isAxiosError(e) && e.response?.data?.message
-                    ? e.response.data.message
-                    : "일정 추가에 실패했습니다.";
+            const msg = "일정 추가에 실패했습니다.";
 
             // onError가 있으면 부모(AlertWindow)에 위임, 없으면 창 안에 인라인 표시
             if (onError) {
