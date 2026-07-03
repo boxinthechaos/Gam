@@ -1,91 +1,98 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { LogOut, UserRoundX, Menu, X } from "lucide-react";
+import axios from "axios";
+
 import { NAV_LINKS } from "../../types/NavData";
-
 import SelectionWindow from "../windows/SelectionWindow";
+import AlertWindow from "../windows/AlertWindow";
 
-import logo from "../../assets/gam-logo.png"
+import logo from "../../assets/gam-logo.png";
 
 export default function Navbar() {
     const [windowOpen, setWindowOpen]       = useState<boolean>(false);
     const [windowMessage, setWindowMessage] = useState<string>("");
     const [windowType, setWindowType]       = useState<string>("");
-    const [menuOpen, setMenuOpen]           = useState<boolean>(false); // 모바일 드로어
+    const [menuOpen, setMenuOpen]           = useState<boolean>(false);
+    const [alertMessage, setAlertMessage]   = useState<string | null>(null);
 
     const nav = useNavigate();
     const location = useLocation();
 
-    const signOutWindow = () => {
+    const signOutWindow = (): void => {
         setWindowOpen(true);
-        setWindowType("signOut")
+        setWindowType("signOut");
         setWindowMessage("로그아웃 하시겠습니까?");
-    }
+    };
 
-    const userDeleteWindow = () => {
+    const userDeleteWindow = (): void => {
         setWindowOpen(true);
-        setWindowType("userDelete")
+        setWindowType("userDelete");
         setWindowMessage("회원탈퇴를 하시겠습니까?\n회원님의 모든 데이터가 사라지게 됩니다!");
-    }
+    };
 
-    const handleSignOut = () => {
+    const handleSignOut = async (): Promise<void> => {
         setWindowOpen(false);
-        nav('/sign-in');
-    }
+        try {
+            await axios.post("/api/v1/auth/logout", {}, { withCredentials: true });
+            nav("/sign-in");
+        } catch (e: unknown) {
+            const msg = "로그아웃에 실패했습니다.";
+            setAlertMessage(msg);
+        }
+    };
 
-    const handleUserDelete = () => {
+    const handleUserDelete = async (): Promise<void> => {
         setWindowOpen(false);
-        nav('/sign-in');
-    }
-
-    const handleConfirm = () =>{
-        if (windowType == "signOut") {
-            handleSignOut();
+        try {
+            await axios.delete("/api/v1/users/me", { withCredentials: true });
+            nav("/sign-in");
+        } catch (e: unknown) {
+            const msg = "회원탈퇴에 실패했습니다.";
+            setAlertMessage(msg);
         }
-        if (windowType == "userDelete") {
-            handleUserDelete();
-        }
-    }
+    };
 
-    const handleNavClick = (path: string) => {
+    const handleConfirm = (): void => {
+        if (windowType === "signOut")    handleSignOut();
+        if (windowType === "userDelete") handleUserDelete();
+    };
+
+    const handleNavClick = (path: string): void => {
         nav(path);
-        setMenuOpen(false); // 이동 후 드로어 닫기
-    }
+        setMenuOpen(false);
+    };
 
     return (
         <nav className="
-            sticky top-0 z-50 border-b 
+            sticky top-0 z-50 border-b
             border-black/8
             bg-white backdrop-blur-md"
         >
+            <div className="
+                opacity-0
+                flex items-center justify-between
+                max-w-6xl mx-auto h-14
+                px-4
+                animate-[appear_0.5s_ease-out_0s_forwards]
 
-                <div className="
-                    opacity-0
-                    flex items-center justify-between
-                    max-w-6xl mx-auto h-14 
-                    px-4 
-                    animate-[appear_0.5s_ease-out_0s_forwards]
-                    
-                    md:h-16
-                    md:px-8"
-                >
+                md:h-16
+                md:px-8"
+            >
 
                 <button
                     onClick={() => nav("/main")}
                     className="
-                        flex items-center gap-2.5 
-                        p-0 
-                        border-none bg-transparent 
+                        flex items-center gap-2.5
+                        p-0
+                        border-none bg-transparent
                         cursor-pointer"
                 >
-
-                    <img src={logo} className="h-8 w-auto object-contain md:h-10"/>
-
+                    <img src={logo} className="h-8 w-auto object-contain md:h-10" />
                 </button>
 
-                {/* 데스크탑 네비 링크 — 모바일에서 숨김 */}
+                {/* 데스크탑 네비 링크 */}
                 <div className="hidden md:flex items-center gap-8">
-
                     {NAV_LINKS.map((l) => (
                         <button
                             key={l.label}
@@ -94,32 +101,26 @@ export default function Navbar() {
                                 border-none p-0 bg-transparent
                                 text-sm font-medium text-[#aaaaaa]
                                 cursor-pointer transition-all duration-200
-
                                 hover:text-gray-900 hover:underline underline-offset-4"
                         >
                             {l.label}
                         </button>
                     ))}
-
                 </div>
 
                 {/* 우측 버튼 영역 */}
                 <div className="flex items-center gap-2">
 
-                    {/* 로그아웃 — 모바일: 아이콘만 / 데스크탑: 텍스트 포함 */}
                     <button
-                        onClick={() => signOutWindow()}
+                        onClick={signOutWindow}
                         className="
-                            flex items-center gap-1.5 
+                            flex items-center gap-1.5
                             p-2
-                            rounded-full border border-gray-300 
-                            bg-transparent 
-                            text-xs font-semibold text-gray-700 
+                            rounded-full border border-gray-300
+                            bg-transparent
+                            text-xs font-semibold text-gray-700
 
-                            md:px-4
-                            md:py-2 
-                            md:text-sm
-
+                            md:px-4 md:py-2 md:text-sm
                             hover:bg-gray-100 transition-colors cursor-pointer"
                         aria-label="로그아웃"
                     >
@@ -127,20 +128,16 @@ export default function Navbar() {
                         <span className="hidden md:inline">로그아웃</span>
                     </button>
 
-                    {/* 회원탈퇴 — 모바일: 아이콘만 / 데스크탑: 텍스트 포함 */}
                     <button
-                        onClick={() => userDeleteWindow()}
+                        onClick={userDeleteWindow}
                         className="
-                            flex items-center gap-1.5 
+                            flex items-center gap-1.5
                             p-2
-                            rounded-full border border-gray-300 
-                            bg-transparent 
+                            rounded-full border border-gray-300
+                            bg-transparent
                             text-xs font-semibold text-red-600
 
-                            md:py-2 
-                            md:px-4
-                            md:text-sm
-
+                            md:py-2 md:px-4 md:text-sm
                             hover:bg-gray-100 transition-colors cursor-pointer"
                         aria-label="회원탈퇴"
                     >
@@ -148,7 +145,6 @@ export default function Navbar() {
                         <span className="hidden md:inline">회원탈퇴</span>
                     </button>
 
-                    {/* 햄버거 메뉴 — 모바일에서만 표시 */}
                     <button
                         onClick={() => setMenuOpen((prev) => !prev)}
                         className="
@@ -165,13 +161,12 @@ export default function Navbar() {
                     </button>
 
                 </div>
-
             </div>
 
-            {/* 모바일 드로어 — 오버레이 + 배경 어둡게 */}
+            {/* 모바일 드로어 */}
             {menuOpen && (
                 <div
-                    className="md:hidden fixed inset-0 z-[60] bg-black/40"
+                    className="md:hidden fixed inset-0 z-60 bg-black/40"
                     onClick={() => setMenuOpen(false)}
                 >
                     <div
@@ -181,7 +176,6 @@ export default function Navbar() {
                             shadow-lg"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        {/* 드로어 헤더 — 로고 + 닫기 */}
                         <div className="flex items-center justify-between h-14 px-4 border-b border-gray-100">
                             <img src={logo} className="h-8 w-auto object-contain" />
                             <button
@@ -197,7 +191,6 @@ export default function Navbar() {
                             </button>
                         </div>
 
-                        {/* 링크 목록 */}
                         <div className="flex flex-col">
                             {NAV_LINKS.map((l) => {
                                 const active = location.pathname === l.path;
@@ -226,12 +219,20 @@ export default function Navbar() {
                 </div>
             )}
 
-            { windowOpen && 
-            <SelectionWindow
-            message={windowMessage}
-            onConfirm={handleConfirm}
-            onCancel={() => setWindowOpen(false)}
-            /> }
+            {windowOpen && (
+                <SelectionWindow
+                    message={windowMessage}
+                    onConfirm={handleConfirm}
+                    onCancel={() => setWindowOpen(false)}
+                />
+            )}
+
+            {alertMessage && (
+                <AlertWindow
+                    message={alertMessage}
+                    onClose={() => setAlertMessage(null)}
+                />
+            )}
 
         </nav>
     );
