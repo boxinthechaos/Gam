@@ -48,28 +48,28 @@ export default function MyPage() {
 
             {/* 모바일 탭바 — md 미만에서만 표시 */}
             <MobileTabBar
-            trips={trips}
-            playlists={playlists}
-            selected={selected}
-            onSelect={setSelected}
+                trips={trips}
+                playlists={playlists}
+                selected={selected}
+                onSelect={setSelected}
             />
 
             <div className="flex flex-1 overflow-hidden">
 
                 {/* 데스크탑 사이드바 — md 이상에서만 표시 */}
                 <Sidebar
-                trips={trips}
-                playlists={playlists}
-                selected={selected}
-                onSelect={setSelected}
-                onDeleteTrip={deleteTrip}
-                onDeletePlaylist={deletePlaylist}
-                onCreateTrip={() => nav("/create-trip")}
+                    trips={trips}
+                    playlists={playlists}
+                    selected={selected}
+                    onSelect={setSelected}
+                    onDeleteTrip={deleteTrip}
+                    onDeletePlaylist={deletePlaylist}
+                    onCreateTrip={() => nav("/create-trip")}
                 />
 
                 <MainPanel
-                selected={selected}
-                onCreateTrip={() => nav("/create-trip")}
+                    selected={selected}
+                    onCreateTrip={() => nav("/create-trip")}
                 />
 
             </div>

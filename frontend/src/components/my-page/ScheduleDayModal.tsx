@@ -17,11 +17,11 @@ interface Props {
 type RouteStep = "from" | "to" | null;
 
 const CATEGORY_STYLE: Record<string, string> = {
-    식당:  "bg-orange-100 text-orange-700",
-    숙소:  "bg-blue-100 text-blue-700",
+    식당: "bg-orange-100 text-orange-700",
+    숙소: "bg-blue-100 text-blue-700",
     관광지: "bg-emerald-100 text-emerald-700",
     카페:  "bg-purple-100 text-purple-700",
-    이동:  "bg-slate-100 text-slate-600",
+    이동: "bg-slate-100 text-slate-600",
 };
 
 function formatDateLabel(d: string): string {
@@ -30,12 +30,12 @@ function formatDateLabel(d: string): string {
 }
 
 export default function ScheduleDayModal({ tripId, date, schedules, onClose, onEditSaved }: Props) {
-    const [editTarget, setEditTarget]   = useState<Schedule | null>(null);
+    const [editTarget, setEditTarget] = useState<Schedule | null>(null);
     const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
     const [fromSchedule, setFromSchedule] = useState<Schedule | null>(null);
-    const [toSchedule, setToSchedule]     = useState<Schedule | null>(null);
-    const [routeStep, setRouteStep]       = useState<RouteStep>(null);
+    const [toSchedule, setToSchedule] = useState<Schedule | null>(null);
+    const [routeStep, setRouteStep] = useState<RouteStep>(null);
 
     const handleEditSaved = (): void => {
         onEditSaved();

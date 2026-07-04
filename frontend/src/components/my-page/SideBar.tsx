@@ -3,10 +3,7 @@ import { Plane, Music, Plus, Trash2 } from "lucide-react";
 import type { MyPageSideBarProps } from "../../types/MyPageSideBarProps";
 import type { SidebarView } from "../../types/MyPageTypes";
 
-export default function Sidebar({
-    trips, playlists, selected,
-    onSelect, onDeleteTrip, onDeletePlaylist, onCreateTrip,
-}: MyPageSideBarProps) {
+export default function Sidebar({ trips, playlists, selected, onSelect, onDeleteTrip, onDeletePlaylist, onCreateTrip }: MyPageSideBarProps) {
 
     const isActive = (view: SidebarView) =>
         !!selected && selected.type === view.type && selected.data.id === view.data.id;
