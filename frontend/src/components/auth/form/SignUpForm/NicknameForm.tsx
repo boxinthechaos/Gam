@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import type { NicknameFormProps } from "../../../../types/NicknameFormProps";
-
 import NicknameRuleList from "../../NicknameRuleList";
 import AuthInput from "../../AuthInput";
 import AuthButton from "../../AuthButton";
 import AuthLinks from "../../AuthLinks";
 
-export default function NicknameForm({ onNext }: NicknameFormProps) {
+interface Props {
+    onNext: (nickname: string) => void;
+}
+
+export default function NicknameForm({ onNext }: Props) {
     const [nickname, setNickname] = useState<string>("");
 
     const isNicknameValid: boolean = nickname.trim().length > 0;

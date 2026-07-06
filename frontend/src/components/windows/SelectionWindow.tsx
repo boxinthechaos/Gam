@@ -1,8 +1,12 @@
 import { createPortal } from "react-dom";
 
-import type { SelectionWindowProps } from "../../types/SelectionWindowProps";
+interface Props {
+    message: string;
+    onConfirm: () => void;
+    onCancel: () => void;
+}
 
-export default function SelectionWindow({ message, onConfirm, onCancel }: SelectionWindowProps) {
+export default function SelectionWindow({ message, onConfirm, onCancel }: Props) {
     return createPortal(
         <div className="
             flex items-center justify-center

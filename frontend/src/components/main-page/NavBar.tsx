@@ -4,17 +4,18 @@ import { LogOut, UserRoundX, Menu, X } from "lucide-react";
 import axios from "axios";
 
 import { NAV_LINKS } from "../../types/NavData";
+
 import SelectionWindow from "../windows/SelectionWindow";
 import AlertWindow from "../windows/AlertWindow";
 
 import logo from "../../assets/gam-logo.png";
 
 export default function Navbar() {
-    const [windowOpen, setWindowOpen]       = useState<boolean>(false);
+    const [windowOpen, setWindowOpen] = useState<boolean>(false);
     const [windowMessage, setWindowMessage] = useState<string>("");
-    const [windowType, setWindowType]       = useState<string>("");
-    const [menuOpen, setMenuOpen]           = useState<boolean>(false);
-    const [alertMessage, setAlertMessage]   = useState<string | null>(null);
+    const [windowType, setWindowType] = useState<string>("");
+    const [menuOpen, setMenuOpen] = useState<boolean>(false);
+    const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
     const nav = useNavigate();
     const location = useLocation();

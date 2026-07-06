@@ -1,11 +1,15 @@
 import { useState } from "react";
 import axios from "axios";
 
-import type { RequestingCodeProps } from "../../../../types/RequestingCodeProps";
-
 import AlertWindow from "../../../windows/AlertWindow";
 
-export default function RequestingCode({ onCodeSent, email, setEmail }: RequestingCodeProps) {
+interface Props {
+    onCodeSent: () => void;
+    email: string;
+    setEmail: (value: string) => void;
+}
+
+export default function RequestingCode({ onCodeSent, email, setEmail }: Props) {
     const [loading, setLoading]           = useState<boolean>(false);
     const [alertMessage, setAlertMessage] = useState<string | null>(null);
 

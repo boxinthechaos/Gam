@@ -1,6 +1,11 @@
-import type { AuthButtonProps } from "../../types/AuthButtonProps";
+interface Props {
+    isInfoValid: boolean;
+    text: string;
+    func?: () => void;
+    animation: string
+}
 
-export default function AuthButton({ isInfoValid, text, func, animation }: AuthButtonProps) {
+export default function AuthButton({ isInfoValid, text, func, animation }: Props) {
     return (
         <button 
         onClick={func}

@@ -1,4 +1,3 @@
-import type { PlayListSummaryProps } from "../../types/PlayListSummaryProps";
 import type { Song } from "../../types/PlayListTypes";
 
 function formatTotal(songs: Song[]): string {
@@ -8,7 +7,7 @@ function formatTotal(songs: Song[]): string {
     return `${min}분 ${sec}초`;
 }
 
-export default function PlaylistSummary({ songs }: PlayListSummaryProps) {
+export default function PlaylistSummary({ songs }: { songs: Song[] }) {
     return (
         <div className="
             mb-4 px-4 py-2.5 

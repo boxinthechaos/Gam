@@ -1,6 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 
-import type { MapViewProps } from "../../types/MapViewProps";
+import type { Place } from "../../types/SearchTypes";
+
+interface Props {
+    places: Place[];
+    selected: Place | null;
+}
 
 const MARKER_COLOR: Record<string, string> = {
     food: "#ff8c00",
@@ -23,7 +28,7 @@ function createMarkerImage(kakao: any, color: string) {
     });
 }
 
-export default function MapView({ places, selected }: MapViewProps) {
+export default function MapView({ places, selected }: Props) {
     const containerRef  = useRef<HTMLDivElement>(null);
     const mapRef = useRef<any>(null);
     const markersRef = useRef<any[]>([]);

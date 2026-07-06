@@ -1,7 +1,15 @@
 import { useNavigate } from "react-router-dom";
-import type { FeatureCardProps } from "../../types/FeatureCardProps";
+import type { FeatureCardData } from "../../types/NavData";
 
-export default function FeatureCard({ card, hovered, onMouseEnter, onMouseLeave, animation }: FeatureCardProps) {
+interface Props {
+    card: FeatureCardData;
+    hovered: boolean;
+    onMouseEnter: () => void;
+    onMouseLeave: () => void;
+    animation: string;
+}
+
+export default function FeatureCard({ card, hovered, onMouseEnter, onMouseLeave, animation }: Props) {
     const nav = useNavigate();
     const { Icon } = card;
 

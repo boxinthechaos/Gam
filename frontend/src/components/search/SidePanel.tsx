@@ -1,17 +1,29 @@
 import { Search } from "lucide-react";
 
-import type { SidePanelProps } from "../../types/SidePanelProps";
+import type { Place, Category } from "../../types/SearchTypes";
 
 import CategoryTabs from "./CategoryTabs";
 import ResultItem from "./ResultItem";
 
 const CATEGORY_LABEL = { food: "식당", hotel: "숙소", tour: "관광지" };
 
+interface Props {
+    category: Category;
+    keyword: string;
+    places: Place[];
+    loading: boolean;
+    added: Place[];
+    onCategoryChange: (c: Category) => void;
+    onKeywordChange: (k: string) => void;
+    onToggleAdd: (place: Place) => void;
+    onSelect: (place: Place) => void;
+}
+
 export default function SidePanel({
     category, keyword, places, loading,
     added, onCategoryChange, onKeywordChange,
     onToggleAdd, onSelect,
-}: SidePanelProps) {
+}: Props) {
     return (
         <div className="flex flex-col w-full h-full bg-white overflow-hidden">
 

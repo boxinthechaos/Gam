@@ -1,9 +1,17 @@
-import type { PasswordInputProps } from "../../types/PasswordInputProps";
+import type { ChangeEvent } from "react";
 
 import show from "../../assets/show.png";
 import noshow from "../../assets/noshow.png"
 
-export default function PasswordInput({ password, onChange, isPasswordShown, onClick, animation }: PasswordInputProps) {
+interface Props {
+    password: string;
+    onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+    isPasswordShown: boolean;
+    onClick: () => void;
+    animation: string;
+}
+
+export default function PasswordInput({ password, onChange, isPasswordShown, onClick, animation }: Props) {
     return (
         <div className={`opacity-0 ${animation} relative`}>
 

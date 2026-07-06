@@ -3,12 +3,19 @@ import { createPortal } from "react-dom";
 import { X, Clock, CalendarDays, Pencil, Navigation } from "lucide-react";
 
 import type { Schedule } from "../../types/MyPageTypes";
-import type { ScheduleDayModalProps } from "../../types/ScheduleDayModalProps";
 
 import EditScheduleWindow from "../windows/EditScheduleWindow";
 import AlertWindow from "../windows/AlertWindow";
 
 type RouteStep = "from" | "to" | null;
+
+interface Props {
+    tripId: number;
+    date: string;
+    schedules: Schedule[];
+    onClose: () => void;
+    onEditSaved: () => void;
+}
 
 const CATEGORY_STYLE: Record<string, string> = {
     식당: "bg-orange-100 text-orange-700",
@@ -23,7 +30,7 @@ function formatDateLabel(d: string): string {
     return `${Number(y)}년 ${Number(m)}월 ${Number(day)}일`;
 }
 
-export default function ScheduleDayModal({ tripId, date, schedules, onClose, onEditSaved }: ScheduleDayModalProps) {
+export default function ScheduleDayModal({ tripId, date, schedules, onClose, onEditSaved }: Props) {
     const [editTarget, setEditTarget] = useState<Schedule | null>(null);
     const [alertMessage, setAlertMessage] = useState<string | null>(null);
 

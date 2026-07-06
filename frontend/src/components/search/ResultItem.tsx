@@ -1,21 +1,29 @@
 import { useState } from "react";
 import { Plus, Check, Utensils, Building2, Camera } from "lucide-react";
 
-import type { ResultItemProps } from "../../types/ResultItemProps";
+import type { Place } from "../../types/SearchTypes";
+
 import AddScheduleWindow from "../windows/AddScheduleWindow";
 import AlertWindow from "../windows/AlertWindow";
 
+interface Props {
+    place: Place;
+    isAdded: boolean;
+    onToggleAdd: (place: Place) => void;
+    onSelect: (place: Place) => void;
+}
+
 const ICON_MAP = {
-    food:  { Icon: Utensils,  bg: "bg-orange-100",  color: "text-[#ff8c00]",    tag: "식당",   tagStyle: "bg-orange-50 text-orange-500"   },
-    hotel: { Icon: Building2, bg: "bg-blue-100",    color: "text-blue-500",     tag: "숙소",   tagStyle: "bg-blue-50 text-blue-500"       },
-    tour:  { Icon: Camera,    bg: "bg-emerald-100", color: "text-emerald-500",  tag: "관광지", tagStyle: "bg-emerald-50 text-emerald-600"  },
+    food: { Icon: Utensils, bg: "bg-orange-100", color: "text-[#ff8c00]", tag: "식당", tagStyle: "bg-orange-50 text-orange-500"   },
+    hotel: { Icon: Building2, bg: "bg-blue-100", color: "text-blue-500", tag: "숙소", tagStyle: "bg-blue-50 text-blue-500"       },
+    tour: { Icon: Camera, bg: "bg-emerald-100", color: "text-emerald-500", tag: "관광지", tagStyle: "bg-emerald-50 text-emerald-600"  },
 };
 
-export default function ResultItem({ place, isAdded, onToggleAdd, onSelect }: ResultItemProps) {
+export default function ResultItem({ place, isAdded, onToggleAdd, onSelect }: Props) {
     const { Icon, bg, color, tag, tagStyle } = ICON_MAP[place.category];
 
-    const [windowOpen, setWindowOpen]         = useState<boolean>(false);
-    const [alertMessage, setAlertMessage]     = useState<string | null>(null);
+    const [windowOpen, setWindowOpen] = useState<boolean>(false);
+    const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
     return (
         <>

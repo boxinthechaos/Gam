@@ -9,10 +9,10 @@ import AuthLinks from "../AuthLinks";
 import AlertWindow from "../../windows/AlertWindow";
 
 export default function SignInForm() {
-    const [nickname, setNickname]           = useState<string>("");
-    const [password, setPassword]           = useState<string>("");
+    const [nickname, setNickname] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
     const [isPasswordShown, setIsPasswordShown] = useState<boolean>(false);
-    const [alertMessage, setAlertMessage]   = useState<string | null>(null);
+    const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
     const isInfoValid: boolean = nickname.trim().length > 0 && password.trim().length > 0;
 

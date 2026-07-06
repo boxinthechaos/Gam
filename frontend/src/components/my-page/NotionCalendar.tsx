@@ -2,10 +2,17 @@ import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import type { Schedule } from "../../types/MyPageTypes";
-import type { NotionCalendarProps } from "../../types/NotionCalendarProps";
 import type { DayModal } from "../../types/DayModal";
 
 import ScheduleDayModal from "./ScheduleDayModal";
+
+interface Props {
+    schedules: Schedule[];
+    tripStart: string;
+    tripEnd: string;
+    tripId: number;
+    onEditSaved: () => void;
+}
 
 const DAY_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
 
@@ -21,7 +28,7 @@ function fmtKey(y: number, m: number, d: number): string {
     return `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
 }
 
-export default function NotionCalendar({ schedules, tripStart, tripEnd, tripId, onEditSaved }: NotionCalendarProps) {
+export default function NotionCalendar({ schedules, tripStart, tripEnd, tripId, onEditSaved }: Props) {
     const init = new Date(tripStart);
     const [cur, setCur] = useState({ year: init.getFullYear(), month: init.getMonth() });
     const [dayModal, setDayModal] = useState<DayModal | null>(null);

@@ -1,7 +1,8 @@
 import { Music, ExternalLink } from "lucide-react";
-import type { PlayListPanelProps } from "../../types/PlayListPanelProps";
 
-export default function PlaylistPanel({ playlist }: PlayListPanelProps) {
+import type { Playlist } from "../../types/MyPageTypes";
+
+export default function PlaylistPanel({ playlist }: { playlist: Playlist }) {
     return (
         <div className="p-1">
 

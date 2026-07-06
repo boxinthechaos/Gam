@@ -1,6 +1,11 @@
-import type { AuthLinksProps } from "../../types/AuthLinksProps";
+import type { AuthLinkItem } from "../../types/AuthLinkItem";
 
-export default function AuthLinks({ links, animation }: AuthLinksProps) {
+interface Props {
+    links: AuthLinkItem[];
+    animation: string;
+};
+
+export default function AuthLinks({ links, animation }: Props) {
     return (
         <div
         className={`

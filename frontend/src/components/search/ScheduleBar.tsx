@@ -1,8 +1,8 @@
 import { useNavigate } from "react-router-dom";
 
-import type { ScheduleBarProps } from "../../types/ScheduleBarProps";
+import type { Place } from "../../types/SearchTypes";
 
-export default function ScheduleBar({ added }: ScheduleBarProps) {
+export default function ScheduleBar({ added }: { added: Place[] }) {
     const nav = useNavigate();
 
     return (

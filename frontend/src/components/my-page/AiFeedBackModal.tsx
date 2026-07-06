@@ -3,10 +3,14 @@ import { createPortal } from "react-dom";
 import { X, Sparkles } from "lucide-react";
 import axios from "axios";
 
-import type { AiFeedBackModalProps } from "../../types/AiFeedBackModalProps";
 import AlertWindow from "../windows/AlertWindow";
 
-export default function AIFeedbackModal({ tripId, onClose }: AiFeedBackModalProps) {
+interface Props {
+    tripId: number;
+    onClose: () => void;
+}
+
+export default function AIFeedbackModal({ tripId, onClose }: Props) {
     const [feedback, setFeedback] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [alertMessage, setAlertMessage] = useState<string | null>(null);

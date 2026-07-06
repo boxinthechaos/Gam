@@ -1,5 +1,11 @@
 import { Mic2, Clock, RefreshCw, ExternalLink } from "lucide-react";
-import type { SongItemProps } from "../../types/SongItemProps";
+import type { Song } from "../../types/PlayListTypes";
+
+interface Props {
+    index: number;
+    song: Song;
+    onReplace: (index: number) => void;
+}
 
 function formatDuration(ms: number): string {
     const totalSec = Math.floor(ms / 1000);
@@ -8,7 +14,7 @@ function formatDuration(ms: number): string {
     return `${min}분 ${sec}초`;
 }
 
-export default function SongItem({ index, song, onReplace }: SongItemProps) {
+export default function SongItem({ index, song, onReplace }: Props) {
     return (
         <div className="
             flex items-center gap-3 

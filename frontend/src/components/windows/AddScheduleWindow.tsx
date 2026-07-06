@@ -3,9 +3,17 @@ import { createPortal } from "react-dom";
 import { X, CalendarPlus, Utensils, Building2, Camera } from "lucide-react";
 import axios from "axios";
 
-import type { AddScheduleWindowProps } from "../../types/AddScheduleWindowProps";
+import type { Place } from "../../types/SearchTypes";
+
 import { useMyTrips } from "../../hooks/useMyTrips";
-import { getTripDayOptions } from "../../types/TripDays";
+import { getTripDayOptions } from "../../hooks/TripDays";
+
+interface Props {
+    place: Place;
+    onClose: () => void;
+    onSaved?: () => void;
+    onError?: (msg: string) => void;
+}
 
 const ICON_MAP = {
     food: { Icon: Utensils, bg: "bg-orange-100", color: "text-[#ff8c00]" },
@@ -13,7 +21,7 @@ const ICON_MAP = {
     tour: { Icon: Camera, bg: "bg-emerald-100", color: "text-emerald-500" },
 };
 
-export default function AddScheduleWindow({ place, onClose, onSaved, onError }: AddScheduleWindowProps) {
+export default function AddScheduleWindow({ place, onClose, onSaved, onError }: Props) {
     const { trips, loading: tripsLoading } = useMyTrips();
 
     const [tripId, setTripId] = useState<number | "">("");

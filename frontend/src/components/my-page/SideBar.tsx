@@ -1,9 +1,20 @@
 import { Plane, Music, Plus, Trash2 } from "lucide-react";
 
-import type { MyPageSideBarProps } from "../../types/MyPageSideBarProps";
+import type { Trip } from "../../types/MyPageTypes";
+import type { Playlist } from "../../types/MyPageTypes";
 import type { SidebarView } from "../../types/MyPageTypes";
 
-export default function Sidebar({ trips, playlists, selected, onSelect, onDeleteTrip, onDeletePlaylist, onCreateTrip }: MyPageSideBarProps) {
+interface Props {
+    trips: Trip[];
+    playlists: Playlist[];
+    selected: SidebarView | null;
+    onSelect: (view: SidebarView) => void;
+    onDeleteTrip: (id: number) => void;
+    onDeletePlaylist: (id: number) => void;
+    onCreateTrip: () => void;
+}
+
+export default function Sidebar({ trips, playlists, selected, onSelect, onDeleteTrip, onDeletePlaylist, onCreateTrip }: Props) {
 
     const isActive = (view: SidebarView) =>
         !!selected && selected.type === view.type && selected.data.id === view.data.id;

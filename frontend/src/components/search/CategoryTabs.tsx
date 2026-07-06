@@ -1,7 +1,11 @@
 import { Utensils, Building2, Camera } from "lucide-react";
 
-import type { CategoryTabsProps } from "../../types/CategoryTabsProps";
 import type { Category } from "../../types/SearchTypes";
+
+interface Props {
+    category: Category;
+    onChange: (c: Category) => void;
+}
 
 const TABS: { value: Category; label: string; Icon: React.ElementType }[] = [
     { value: "food",  label: "식당",  Icon: Utensils  },
@@ -9,7 +13,7 @@ const TABS: { value: Category; label: string; Icon: React.ElementType }[] = [
     { value: "tour",  label: "관광지", Icon: Camera    },
 ];
 
-export default function CategoryTabs({ category, onChange }: CategoryTabsProps) {
+export default function CategoryTabs({ category, onChange }: Props) {
     return (
         <div className="flex gap-2 mb-3">
             {TABS.map(({ value, label, Icon }) => {

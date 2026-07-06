@@ -2,9 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plane } from "lucide-react";
 
-import Navbar from "../components/main-page/NavBar";
-import { useCreateTrip } from "../hooks/useCreateTrip";
 import type { CreateTripForm } from "../types/CreateTripForm";
+
+import Navbar from "../components/main-page/NavBar";
+
+import { useCreateTrip } from "../hooks/useCreateTrip";
 
 export default function TripCreate() {
     const nav = useNavigate();

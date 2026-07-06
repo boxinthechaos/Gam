@@ -1,7 +1,5 @@
 import { Check, X } from "lucide-react";
 
-import type { PasswordRuleListProps } from "../../types/PasswordRuleListProps";
-
 const PASSWORD_RULES = [
     { label: "8자 이상", test: (pw: string) => pw.length >= 8 },
     { label: "영문자 A~z", test: (pw: string) => /[a-zA-Z]/.test(pw) },
@@ -12,7 +10,7 @@ const PASSWORD_RULES = [
     },
 ];
 
-export default function PasswordRuleList({ password }: PasswordRuleListProps) {
+export default function PasswordRuleList({ password }: { password: string }) {
     const ruleResults = PASSWORD_RULES.map((rule) => rule.test(password));
 
     return (

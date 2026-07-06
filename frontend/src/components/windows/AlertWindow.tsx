@@ -1,8 +1,11 @@
 import { createPortal } from "react-dom";
 
-import type { AlertWindowProps } from "../../types/AlertWindowProps";
+interface Props {
+    message: string;
+    onClose: () => void;
+}
 
-export default function AlertWindow({ message, onClose }: AlertWindowProps) {
+export default function AlertWindow({ message, onClose }: Props) {
     return createPortal(
         <div
             className="
