@@ -4,27 +4,40 @@ import { Music, Loader2, Save } from "lucide-react";
 import Navbar from "../components/main-page/NavBar";
 import SongItem from "../components/play-list/SongItem";
 import PlaylistSummary from "../components/play-list/PlayListSummary";
+import AlertWindow from "../components/windows/AlertWindow";
+
 import { usePlaylist } from "../hooks/usePlayList";
 
 export default function Playlist() {
-    const { songs, loading, saving, error, fetchPlaylist, replaceSong, savePlaylist } = usePlaylist();
+    const { songs, loading, saving, error, alert, clearAlert, fetchPlaylist, replaceSong, savePlaylist } = usePlaylist();
 
-    const [keyword, setKeyword] = useState("");
+    const [keyword, setKeyword] = useState<string>("");
     const [minutes, setMinutes] = useState<number>(30);
-    const [plTitle, setPlTitle] = useState("");
-    const [saved, setSaved]     = useState(false);
+    const [plTitle, setPlTitle] = useState<string>("");
+    const [saved, setSaved] = useState<boolean>(false);
 
-    const handleMake = () => {
-        if (!keyword.trim()) { alert("검색어를 입력해주세요."); return; }
+    const [alertMessage, setAlertMessage] = useState<string | null>(null);
+
+    const handleMake = (): void => {
+        if (!keyword.trim()) { setAlertMessage("검색어를 입력해주세요."); return; }
         setSaved(false);
         setPlTitle("");
         fetchPlaylist(keyword.trim(), minutes);
     };
 
-    const handleSave = async () => {
-        if (!plTitle.trim()) { alert("플레이리스트 제목을 입력해주세요."); return; }
-        const ok = await savePlaylist({ title: plTitle.trim(), songs });
-        if (ok) setSaved(true);
+    const handleReplace = async (idx: number): Promise<void> => {
+        const msg = await replaceSong(keyword, idx);
+        if (msg) setAlertMessage(msg);
+    };
+
+    const handleSave = async (): Promise<void> => {
+        if (!plTitle.trim()) { setAlertMessage("플레이리스트 제목을 입력해주세요."); return; }
+        const result = await savePlaylist({ title: plTitle.trim(), songs });
+        if (result.ok) {
+            setSaved(true);
+        } else {
+            setAlertMessage(result.message);
+        }
     };
 
     return (
@@ -33,21 +46,18 @@ export default function Playlist() {
             <Navbar />
 
             <main className="
-                flex flex-1 
-                items-start justify-center 
-                px-4 py-8 
-                
+                flex flex-1
+                items-start justify-center
+                px-4 py-8
                 md:py-12"
             >
-
                 <div className="
                     opacity-0
                     w-full max-w-lg
                     border border-gray-100 rounded-2xl
-                    bg-white 
-                    px-6 py-7 
+                    bg-white
+                    px-6 py-7
                     animate-[appear_0.5s_ease-out_0.1s_forwards]
-                    
                     md:px-8"
                 >
 
@@ -61,7 +71,6 @@ export default function Playlist() {
 
                     {/* 검색 행 */}
                     <div className="flex gap-2 mb-4">
-
                         <input
                             type="text"
                             value={keyword}
@@ -69,19 +78,14 @@ export default function Playlist() {
                             onKeyDown={(e) => e.key === "Enter" && handleMake()}
                             placeholder="검색어 (예: aespa)"
                             className="
-                                flex-1 
-                                min-w-0 
+                                flex-1 min-w-0
                                 px-3.5 py-2.5
                                 border border-gray-200 rounded-xl
                                 text-sm text-gray-700 bg-gray-50
                                 outline-none
-
-                                focus:border-[#ff8c00] 
-                                focus:ring-2 
-                                focus:ring-orange-100
+                                focus:border-[#ff8c00] focus:ring-2 focus:ring-orange-100
                                 transition-all"
                         />
-
                         <input
                             type="number"
                             value={minutes}
@@ -89,44 +93,33 @@ export default function Playlist() {
                             min={1} max={180}
                             placeholder="30"
                             className="
-                                w-16 
+                                w-16
                                 px-2.5 py-2.5
                                 border border-gray-200 rounded-xl
                                 bg-gray-50
                                 text-sm text-gray-700 text-center
                                 outline-none
-
-                                focus:border-[#ff8c00] 
-                                focus:ring-2 
-                                focus:ring-orange-100
+                                focus:border-[#ff8c00] focus:ring-2 focus:ring-orange-100
                                 transition-all"
                         />
-
                         <span className="flex items-center shrink-0 text-sm text-gray-400">분</span>
-
                         <button
                             onClick={handleMake}
                             disabled={loading}
                             className="
                                 shrink-0
-                                px-5 py-2.5 
-                                border-none rounded-xl 
-                                bg-[#ff8c00] 
+                                px-5 py-2.5
+                                border-none rounded-xl
+                                bg-[#ff8c00]
                                 text-white text-sm font-bold
-
-                                hover:bg-[#e67e00] 
-                                transition-colors cursor-pointer
-
-                                disabled:bg-gray-100 
-                                disabled:text-gray-300 
-                                disabled:cursor-not-allowed"
+                                hover:bg-[#e67e00] transition-colors cursor-pointer
+                                disabled:bg-gray-100 disabled:text-gray-300 disabled:cursor-not-allowed"
                         >
                             만들기
                         </button>
-
                     </div>
 
-                    {/* 에러 */}
+                    {/* 로딩 실패 — 인라인 표시 */}
                     {error && (
                         <p className="text-xs text-red-400 mb-3">{error}</p>
                     )}
@@ -149,7 +142,6 @@ export default function Playlist() {
                     {/* 결과 */}
                     {!loading && songs.length > 0 && (
                         <>
-
                             <PlaylistSummary songs={songs} />
 
                             <div className="mb-4">
@@ -158,40 +150,34 @@ export default function Playlist() {
                                         key={`${song.title}-${i}`}
                                         index={i}
                                         song={song}
-                                        onReplace={(idx) => replaceSong(keyword, idx)}
+                                        onReplace={handleReplace}
                                     />
                                 ))}
                             </div>
 
                             {/* 저장 행 */}
                             <div className="flex gap-2 mt-2">
-
                                 <input
                                     type="text"
                                     value={plTitle}
                                     onChange={(e) => { setPlTitle(e.target.value); setSaved(false); }}
                                     placeholder="플레이리스트 제목"
                                     className="
-                                        flex-1 
-                                        min-w-0 
+                                        flex-1 min-w-0
                                         px-3.5 py-2.5
                                         border border-gray-200 rounded-xl
                                         text-sm text-gray-700 bg-gray-50
                                         outline-none
-
-                                        focus:border-[#ff8c00] 
-                                        focus:ring-2 
-                                        focus:ring-orange-100
+                                        focus:border-[#ff8c00] focus:ring-2 focus:ring-orange-100
                                         transition-all"
                                 />
-
                                 <button
                                     onClick={handleSave}
                                     disabled={saving || saved}
                                     className={`
                                         flex items-center gap-1.5 shrink-0
-                                        px-5 py-2.5 
-                                        border-none rounded-xl 
+                                        px-5 py-2.5
+                                        border-none rounded-xl
                                         text-sm font-medium
                                         transition-all cursor-pointer
                                         ${saved
@@ -207,7 +193,6 @@ export default function Playlist() {
                                     }
                                     {saved ? "저장됨" : "저장하기"}
                                 </button>
-
                             </div>
 
                             {saved && (
@@ -215,13 +200,21 @@ export default function Playlist() {
                                     마이페이지에서 확인할 수 있어요 ✓
                                 </p>
                             )}
-
                         </>
                     )}
 
                 </div>
-
             </main>
+
+            {/* 저장/교체 실패 AlertWindow */}
+            {alert && (
+                <AlertWindow message={alert} onClose={clearAlert} />
+            )}
+
+            {/* 유효성 검사 / 204 / 401 AlertWindow */}
+            {alertMessage && (
+                <AlertWindow message={alertMessage} onClose={() => setAlertMessage(null)} />
+            )}
 
         </div>
     );
