@@ -3,37 +3,36 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import type { Schedule } from "../../types/MyPageTypes";
 import type { NotionCalendarProps } from "../../types/NotionCalendarProps";
+import type { DayModal } from "../../types/DayModal";
 
 import ScheduleDayModal from "./ScheduleDayModal";
 
 const DAY_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
 
 const CATEGORY_COLOR: Record<string, string> = {
-    식당:  "bg-orange-100 text-orange-700",
-    숙소:  "bg-blue-100 text-blue-700",
+    식당: "bg-orange-100 text-orange-700",
+    숙소: "bg-blue-100 text-blue-700",
     관광지: "bg-emerald-100 text-emerald-700",
-    카페:  "bg-purple-100 text-purple-700",
-    이동:  "bg-slate-100 text-slate-600",
+    카페: "bg-purple-100 text-purple-700",
+    이동: "bg-slate-100 text-slate-600",
 };
 
 function fmtKey(y: number, m: number, d: number): string {
     return `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
 }
 
-interface DayModal { date: string; schedules: Schedule[]; }
-
 export default function NotionCalendar({ schedules, tripStart, tripEnd, tripId, onEditSaved }: NotionCalendarProps) {
     const init = new Date(tripStart);
-    const [cur, setCur]         = useState({ year: init.getFullYear(), month: init.getMonth() });
+    const [cur, setCur] = useState({ year: init.getFullYear(), month: init.getMonth() });
     const [dayModal, setDayModal] = useState<DayModal | null>(null);
 
     const { year, month } = cur;
-    const today        = new Date();
-    const firstDay     = new Date(year, month, 1).getDay();
-    const daysInMonth  = new Date(year, month + 1, 0).getDate();
-    const prevDays     = new Date(year, month, 0).getDate();
-    const tripStart_   = new Date(tripStart);
-    const tripEnd_     = new Date(tripEnd);
+    const today = new Date();
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const prevDays = new Date(year, month, 0).getDate();
+    const tripStart_ = new Date(tripStart);
+    const tripEnd_ = new Date(tripEnd);
 
     const scheduleMap = schedules.reduce<Record<string, Schedule[]>>((acc, s) => {
         if (!acc[s.visitDate]) acc[s.visitDate] = [];
@@ -134,11 +133,11 @@ export default function NotionCalendar({ schedules, tripStart, tripEnd, tripId, 
 
                         {/* 현재 달 */}
                         {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((d) => {
-                            const key      = fmtKey(year, month, d);
+                            const key = fmtKey(year, month, d);
                             const daySched = scheduleMap[key] ?? [];
-                            const isToday  = today.getFullYear() === year && today.getMonth() === month && today.getDate() === d;
+                            const isToday = today.getFullYear() === year && today.getMonth() === month && today.getDate() === d;
                             const cellDate = new Date(year, month, d);
-                            const inTrip   = cellDate >= tripStart_ && cellDate <= tripEnd_;
+                            const inTrip = cellDate >= tripStart_ && cellDate <= tripEnd_;
 
                             return (
                                 <div
@@ -172,10 +171,10 @@ export default function NotionCalendar({ schedules, tripStart, tripEnd, tripId, 
                                                 key={s.id}
                                                 className={`
                                                     w-1.5 h-1.5 rounded-full shrink-0
-                                                    ${s.category === "식당"   ? "bg-orange-400" :
+                                                    ${s.category === "식당" ? "bg-orange-400" :
                                                       s.category === "관광지" ? "bg-emerald-400" :
-                                                      s.category === "카페"   ? "bg-purple-400" :
-                                                      s.category === "숙소"   ? "bg-blue-400" :
+                                                      s.category === "카페" ? "bg-purple-400" :
+                                                      s.category === "숙소" ? "bg-blue-400" :
                                                       "bg-slate-400"}
                                                 `}
                                             />

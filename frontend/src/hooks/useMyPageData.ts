@@ -3,10 +3,10 @@ import axios from "axios";
 import type { Trip, Playlist, Schedule } from "../types/MyPageTypes";
 
 export function useMyPageData() {
-    const [trips, setTrips]         = useState<Trip[]>([]);
+    const [trips, setTrips] = useState<Trip[]>([]);
     const [playlists, setPlaylists] = useState<Playlist[]>([]);
-    const [loading, setLoading]     = useState<boolean>(true);
-    const [error, setError]         = useState<string | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchAll = async (): Promise<void> => {

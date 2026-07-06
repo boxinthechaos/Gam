@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Calendar, List, Sparkles, Map, Plus, Pencil } from "lucide-react";
 
-import type { SidebarView, TripTab, Schedule } from "../../types/MyPageTypes";
+import type { TripTab, Schedule } from "../../types/MyPageTypes";
+import type { MainPanelProps } from "../../types/MainPanelProps";
 
 import NotionCalendar from "./NotionCalendar";
 import PlaylistPanel from "./PlayListPanel";
@@ -11,12 +12,7 @@ import AlertWindow from "../windows/AlertWindow";
 
 import { useTripSchedules } from "../../hooks/useMyPageData";
 
-interface Props {
-    selected: SidebarView | null;
-    onCreateTrip: () => void;
-}
-
-export default function MainPanel({ selected, onCreateTrip }: Props) {
+export default function MainPanel({ selected, onCreateTrip }: MainPanelProps) {
     const [tab, setTab]     = useState<TripTab>("calendar");
     const [aiOpen, setAiOpen] = useState<boolean>(false);
 
