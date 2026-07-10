@@ -23,4 +23,7 @@ public class ScheduleRequestDto {
 
     @JsonProperty("isNextDay")
     private boolean isNextDay;
+
+    private Double lat;
+    private Double lng;
 }

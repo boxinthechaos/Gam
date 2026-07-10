@@ -23,6 +23,8 @@ public class ScheduleResponseDto {
     private LocalTime endTime;
 
     private boolean isNextDay;
+    private Double lat;
+    private Double lng;
 
     public static ScheduleResponseDto fromEntity(Schedule schedule) {
         return ScheduleResponseDto.builder()
@@ -33,6 +35,8 @@ public class ScheduleResponseDto {
                 .startTime(schedule.getStartTime())
                 .endTime(schedule.getEndTime())
                 .isNextDay(schedule.isNextDay())
+                .lat(schedule.getLatitude())
+                .lng(schedule.getLongitude())
                 .build();
     }
 }

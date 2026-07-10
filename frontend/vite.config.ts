@@ -9,6 +9,7 @@ export default defineConfig({
     tailwindcss(),
   ],
   server: {
+    allowedHosts: ['removing-caring-repaying.ngrok-free.dev'],
     proxy: {
       '/api': {
         target: 'http://localhost:8080',

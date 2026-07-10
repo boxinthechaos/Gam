@@ -27,9 +27,11 @@ public class Schedule {
     private LocalTime startTime;
     private LocalTime endTime;
     private boolean isNextDay;
+    private Double latitude;
+    private Double longitude;
 
     @Builder
-    public Schedule(Trip trip, String placeName, String category, LocalDate visitDate, LocalTime startTime, LocalTime endTime, boolean isNextDay) {
+    public Schedule(Trip trip, String placeName, String category, LocalDate visitDate, LocalTime startTime, LocalTime endTime, boolean isNextDay, Double latitude, Double longitude) {
         this.trip = trip;
         this.placeName = placeName;
         this.category = category;
@@ -37,6 +39,8 @@ public class Schedule {
         this.startTime = startTime;
         this.endTime = endTime;
         this.isNextDay = isNextDay;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public void update(ScheduleRequestDto dto) {
@@ -46,5 +50,7 @@ public class Schedule {
         this.startTime = dto.getStartTime();
         this.endTime = dto.getEndTime();
         this.isNextDay = dto.isNextDay();
+        if (dto.getLat() != null) this.latitude = dto.getLat();
+        if (dto.getLng() != null) this.longitude = dto.getLng();
     }
 }

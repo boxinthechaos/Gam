@@ -24,8 +24,8 @@ function toPlace(raw: RawItem, category: Category, index: number): Place {
         name:     raw.title,
         address:  raw.roadAddress,
         category,
-        lat:      Number(raw.mapy),
-        lng:      Number(raw.mapx),
+        lat:      Number(raw.mapy) / 10000000,
+        lng:      Number(raw.mapx) / 10000000,
     };
 }
 

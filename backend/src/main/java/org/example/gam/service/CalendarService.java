@@ -59,6 +59,8 @@ public class CalendarService {
                 .startTime(dto.getStartTime())
                 .endTime(dto.getEndTime())
                 .isNextDay(dto.isNextDay())
+                .latitude(dto.getLat())
+                .longitude(dto.getLng())
                 .build();
 
         scheduleRepository.save(schedule);

@@ -34,4 +34,4 @@ export type SidebarView =
     | { type: "trip";     data: Trip }
     | { type: "playlist"; data: Playlist };
 
-export type TripTab = "calendar" | "list";
+export type TripTab = "calendar" | "list" | "map";
