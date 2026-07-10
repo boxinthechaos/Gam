@@ -10,7 +10,7 @@ interface Props {
 }
 
 export default function RequestingCode({ onCodeSent, email, setEmail }: Props) {
-    const [loading, setLoading]           = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
     const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
     const isEmailValid: boolean = email.trim().length > 0;

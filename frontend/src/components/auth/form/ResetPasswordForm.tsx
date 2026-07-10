@@ -61,14 +61,10 @@ export default function ResetPasswordForm() {
                 animation="animate-[appear_0.5s_ease-out_0.4s_forwards]"
             />
 
-            <div className="flex justify-center w-full">
+            <div className="flex justify-end w-full">
                 <AuthLinks
                     links={[
                         { label: "로그인 페이지로 이동", onClick: () => nav("/sign-in") },
-                        { label: "닉네임 찾기", onClick: () => {
-                            sessionStorage.setItem("verifyType", "find-nickname");
-                            nav("/verify");
-                        }},
                     ]}
                     animation="animate-[appear_0.5s_ease-out_0.5s_forwards]"
                 />

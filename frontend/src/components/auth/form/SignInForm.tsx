@@ -77,10 +77,6 @@ export default function SignInForm() {
             <div className="flex justify-center w-full">
                 <AuthLinks
                     links={[
-                        { label: "닉네임 찾기", onClick: () => {
-                            nav("/verify");
-                            sessionStorage.setItem("verifyType", "find-nickname");
-                        } },
                         { label: "비밀번호 재설정", onClick: () => {
                             nav("/verify");
                             sessionStorage.setItem("verifyType", "reset-password");

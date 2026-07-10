@@ -55,10 +55,7 @@ export default function VerifyingCode({ email }: { email: string }) {
                 }
             );
 
-            if (sessionStorage.getItem("verifyType") == "find-nickname"){
-                nav('/find-nickname');
-            }
-            else if (sessionStorage.getItem("verifyType") == "reset-password"){
+            if (sessionStorage.getItem("verifyType") == "reset-password"){
                 nav('/reset-password');
             }
             else if (sessionStorage.getItem("verifyType") == "sign-up"){
