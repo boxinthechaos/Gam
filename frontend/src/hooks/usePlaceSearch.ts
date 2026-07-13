@@ -3,9 +3,9 @@ import axios from "axios";
 import type { Category, Place } from "../types/SearchTypes";
 
 const CATEGORY_ENDPOINT: Record<Category, string> = {
-    food:  "restaurants",
+    food: "restaurants",
     hotel: "hotels",
-    tour:  "attractions",
+    tour: "attractions",
 };
 
 type RawItem = {
@@ -20,12 +20,12 @@ type RawItem = {
 
 function toPlace(raw: RawItem, category: Category, index: number): Place {
     return {
-        id:       index,
-        name:     raw.title,
-        address:  raw.roadAddress,
+        id: index,
+        name: raw.title,
+        address: raw.roadAddress,
         category,
-        lat:      Number(raw.mapy) / 10000000,
-        lng:      Number(raw.mapx) / 10000000,
+        lat: Number(raw.mapy) / 10000000,
+        lng: Number(raw.mapx) / 10000000,
     };
 }
 
@@ -40,15 +40,15 @@ export function usePlaceSearch(category: Category, keyword: string) {
         }
 
         const controller = new AbortController();
-        const endpoint   = CATEGORY_ENDPOINT[category];
+        const endpoint = CATEGORY_ENDPOINT[category];
 
         const timer = setTimeout(async () => {
             setLoading(true);
             try {
                 const res = await axios.get<RawItem[]>(`/api/v1/travel/${endpoint}`, {
-                    params:          { region: keyword },
+                    params: { region: keyword },
                     withCredentials: true,
-                    signal:          controller.signal,
+                    signal: controller.signal,
                 });
                 setPlaces(res.data.map((item, idx) => toPlace(item, category, idx)));
             } catch (err: unknown) {

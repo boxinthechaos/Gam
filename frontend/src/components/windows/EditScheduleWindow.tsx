@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { X, CalendarDays } from "lucide-react";
-import axios from "axios";
 
-import type { EditScheduleWindowProps } from "../../types/EditScheduleWindowProps";
+import axios from "axios";
 
 const CATEGORY_STYLE: Record<string, string> = {
     식당: "bg-orange-100 text-orange-700",
