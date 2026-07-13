@@ -15,6 +15,7 @@ export interface Schedule {
     endTime?: string;
     lat?: number;
     lng?: number;
+    isNextDay: boolean;
 }
 
 export interface Song {

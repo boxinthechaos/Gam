@@ -2,7 +2,17 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import { X, CalendarDays } from "lucide-react";
 
+import type { Schedule } from "../../types/MyPageTypes";
+
 import axios from "axios";
+
+interface Props {
+    tripId: number;
+    schedule: Schedule;
+    onClose: () => void;
+    onSaved: () => void;
+    onError: (msg: string) => void;
+}
 
 const CATEGORY_STYLE: Record<string, string> = {
     식당: "bg-orange-100 text-orange-700",
@@ -12,7 +22,7 @@ const CATEGORY_STYLE: Record<string, string> = {
     이동: "bg-slate-100 text-slate-600",
 };
 
-export default function EditScheduleWindow({ tripId, schedule, onClose, onSaved, onError }: EditScheduleWindowProps) {
+export default function EditScheduleWindow({ tripId, schedule, onClose, onSaved, onError }: Props) {
     const [visitDate, setVisitDate] = useState(schedule.visitDate);
     const [startTime, setStartTime] = useState(schedule.startTime);
     const [endTime, setEndTime] = useState(schedule.endTime ?? "");
