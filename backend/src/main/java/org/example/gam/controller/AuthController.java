@@ -32,7 +32,7 @@ public class AuthController {
         Cookie cookie = new Cookie("accessToken", tokenResponse.getAccessToken());
         cookie.setHttpOnly(true);
         cookie.setPath("/");
-        cookie.setMaxAge(60 * 60 * 24);
+        cookie.setMaxAge(60 * 60 * 24 * 7);
 
         Cookie refreshCookie = new Cookie("refreshToken", tokenResponse.getRefreshToken());
         refreshCookie.setHttpOnly(true);
@@ -102,7 +102,7 @@ public class AuthController {
         accessCookie.setHttpOnly(true);
         accessCookie.setSecure(true);
         accessCookie.setPath("/");
-        accessCookie.setMaxAge(60 * 60 * 24);
+        accessCookie.setMaxAge(60 * 60 * 24 * 7);
         response.addCookie(accessCookie);
 
         Cookie refreshCookie = new Cookie("refreshToken", tokenResponse.getRefreshToken());
