@@ -41,7 +41,7 @@ AI기반 여행 일정 편성 플랫폼
  
 - 플레이리스트 제공
 
-  ![플레이리스트](.src/assets/screens/making-playlist.png)
+  ![플레이리스트 제공](.src/assets/screens/making-playlist.png)
 
   - 가수 이름을 입력하고 시간을 설정하면 AI가 플레이리스트 제작
   - 곡 교체 기능
