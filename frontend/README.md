@@ -26,14 +26,14 @@ AI기반 여행 일정 편성 플랫폼
  
 - AI 여행지 추천
 
-  ![여행지 추천](.src/assets/screens/recommending.png)
+  ![여행지 추천](./src/assets/screens/recommending.png)
 
   - 취향을 선택하면 AI가 여행지를 추천
   - 다시 여행지를 추천 받을 수 있다
  
 - 마이페이지
 
-  ![마이페이지](.src/assets/screens/my-page.png)
+  ![마이페이지](./src/assets/screens/my-page.png)
 
   - 내 여행 & 플레이리스트 확인 가능
   - 일정을 더 알차게 AI가 피드백 가능
@@ -41,7 +41,7 @@ AI기반 여행 일정 편성 플랫폼
  
 - 플레이리스트 제공
 
-  ![플레이리스트 제공](.src/assets/screens/making-playlist.png)
+  ![플레이리스트 제공](./src/assets/screens/making-playlist.png)
 
   - 가수 이름을 입력하고 시간을 설정하면 AI가 플레이리스트 제작
   - 곡 교체 기능
