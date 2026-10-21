@@ -46,3 +46,18 @@ AI기반 여행 일정 편성 플랫폼
   - 가수 이름을 입력하고 시간을 설정하면 AI가 플레이리스트 제작
   - 곡 교체 기능
   - 플레이리스트 저장 기능
+
+## 🛠️ 기술 스택
+
+  - FrontEnd
+    
+    ![React](https://img.shields.io/badge/react-%2361DAFB?style=for-the-badge&logo=react&logoColor=black)
+    ![Tailwind CSS](https://img.shields.io/badge/tailwind-%2306B6D4?style=for-the-badge&logo=tailwind-css&logoColor=white)
+    ![TypeScript](https://img.shields.io/badge/typescript-%233178C6?style=for-the-badge&logo=typescript&logoColor=white)
+    ![HTML5](https://img.shields.io/badge/html5-%23E34F26?style=for-the-badge&logo=html5&logoColor=white)
+
+  - Development Tool
+
+    ![Vite](https://img.shields.io/badge/vite-%239135FF?style=for-the-badge&logo=vite&logoColor=white)
+    ![git](https://img.shields.io/badge/git-%23F05032?style=for-the-badge&logo=git&logoColor=white)
+    ![github](https://img.shields.io/badge/github-%23181717?style=for-the-badge&logo=github&logoColor=white)
