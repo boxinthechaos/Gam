@@ -61,3 +61,9 @@ AI기반 여행 일정 편성 플랫폼
     ![Vite](https://img.shields.io/badge/vite-%239135FF?style=for-the-badge&logo=vite&logoColor=white)
     ![git](https://img.shields.io/badge/git-%23F05032?style=for-the-badge&logo=git&logoColor=white)
     ![github](https://img.shields.io/badge/github-%23181717?style=for-the-badge&logo=github&logoColor=white)
+
+## 🤔 트러블 슈팅
+
+### 지도 마커 표시 문제
+
+- 문제: 
